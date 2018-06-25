@@ -1,0 +1,5 @@
+EXT js
+PKG bytes js_of_ocaml js_of_ocaml.ppx note
+S src
+S test
+B _build/**

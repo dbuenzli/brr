@@ -1,0 +1,52 @@
+@charset "UTF-8";
+
+/* Reset a few things. */
+
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,
+a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,
+small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,
+fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,
+article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,
+menu,nav,output,ruby,section,summary,time,mark,audio,video
+{ margin:0; padding:0; border:0; /* outline: 0; */
+  font-size:100%; font: inherit; line-height:inherit; vertical-align:baseline;
+  text-align: inherit; color: inherit; background: transparent; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+*,  *:before,  *:after { box-sizing: border-box; }
+
+h1 { font-size: 2rem; font-weight: 300; text-transform: uppercase; }
+h2 { font-size: 1.5rem; font-weight: 300; text-transform: uppercase; }
+body { background-color: black;
+       color: #A0A0A0;
+       font-size: 1rem;
+       line-height: 1.3125rem;
+       font-family: monospace;
+       font-weight: 300;
+       margin: 2rem; }
+
+a { color : inherit; display: block; padding-left: 2ex; padding-top: 0.656rem; }
+h1, h2, details, div, ul { margin-top:1.3125rem; }
+
+
+#help { font-size: 1rem; display: inline-block; text-transform:none }
+
+#ui { outline: 0; margin:0; padding:0; display:flex; flex-direction:row; }
+#map { height: 500px; width: 66%; display:flex;flex-direction:column; }
+#meta { width: 33%; display:flex;  margin-left:1.5em; flex-direction:column; }
+#tracks { list-style: none; font-size: 1rem; }
+
+#tracks span.target { margin-left: 1ex; display: inline-block; cursor: pointer;}
+#tracks span.target:hover {  transform: scale(1.35); }
+
+#tracks span.audio-button
+{ cursor: pointer; font-size: 0.6rem; margin-right: 1ex; padding: 0.1rem}
+
+#tracks span.audio-button:hover
+{ background: gray; color: black; }
+
+#tracks span.name { cursor: pointer; padding-right: 0.2em; padding-left: 0.2em}
+#tracks span.selected { background: gray; color: black; }
+#tracks.selectable span.name:hover { background: gray; color: black; }
+#add_track { display: inline-block; margin-left:1ex;}
+#add_track:hover { background: gray; color: black; cursor:pointer; }

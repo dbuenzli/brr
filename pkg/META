@@ -1,0 +1,7 @@
+description = "Reactive browser programming for OCaml"
+version = "%%VERSION_NUM%%"
+requires = ""
+archive(byte) = "brr.cma"
+archive(native) = "brr.cmxa"
+plugin(byte) = "brr.cma"
+plugin(native) = "brr.cmxs"
