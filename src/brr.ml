@@ -257,34 +257,51 @@ end
 
 module El = struct
 
+  type el = Dom_html.element Js.t
   let _document_body () = Dom_html.document ##. body
 
-  (* Reactive garbage collection support. We observe DOM removals on body
-     and destroy Note loggers from nodes that are removed *and* not in the
-     HTML DOM. *)
+  (* DOM garbage collection support. We observe HTML DOM additions and
+     removals on body and invoke callback registered for the
+     appropriate life cycle event. In particular Note loggers from
+     nodes that are removed from the HTML DOM are destroyed. *)
 
-  let logrs_prop : Logr.t list Prop.t = Prop.vstr ~undefined:[] ["brr_logrs"]
-  let add_logr el l = Prop.set logrs_prop (l :: Prop.get logrs_prop el) el
-  let may_add_logr el = function None -> () | Some l -> add_logr el l
-  let destroy_logs el = List.iter Logr.destroy (Prop.get logrs_prop el)
+  let add_prop : (unit -> unit) list Prop.t = Prop.vstr ~undefined:[]["brr_add"]
+  let rem_prop : (unit -> unit) list Prop.t = Prop.vstr ~undefined:[]["brr_rem"]
+  let add_fun prop f (e : el) = Prop.set prop (f :: Prop.get prop e) e
+  let invoke_funs prop e =
+    let funs = Prop.get prop e in
+    List.iter (fun f -> f ()) funs;
+    Prop.set prop [] e
+
+  let add_logr (e : el) l =
+    add_fun rem_prop (fun () -> Logr.destroy l) e
+
+  let may_add_logr (e : el) = function None -> () | Some l -> add_logr e l
 
   let in_html_dom n =
     (Js.Unsafe.meth_call n "getRootNode" [||] :> #Dom.node Js.t) ==
     Dom_html.document
 
   let obs = match MutationObserver.is_supported () with
-  | false -> Log.warn (fun m -> m "No MutationObserver, leaks ahead !"); Js.null
+  | false ->
+      Log.warn (fun m -> m "No MutationObserver, disfunction ahead!"); Js.null
   | true ->
       let f records observer =
         for i = 0 to records ##. length - 1 do
           match Js.Optdef.to_option (Js.array_get records i) with
           | None -> ()
           | Some r ->
+              let adds = r ##. addedNodes in
+              for i = 0 to adds ##. length - 1 do
+                match Js.Opt.to_option (adds ## item i) with
+                | None -> ()
+                | Some o -> if (in_html_dom o) then invoke_funs add_prop o
+              done;
               let rems = r ##. removedNodes in
               for i = 0 to rems ##. length - 1 do
                 match Js.Opt.to_option (rems ## item i) with
                 | None -> ()
-                | Some o -> if not (in_html_dom o) then destroy_logs o
+                | Some o -> if not (in_html_dom o) then invoke_funs rem_prop o
               done
         done
       in
@@ -296,7 +313,6 @@ module El = struct
   (* Elements *)
 
   type name = Js.js_string Js.t
-  type el = Dom_html.element Js.t
   type t = [ `El of el ]
   type child = [ t | `Txt of str ]
 
@@ -346,9 +362,10 @@ module El = struct
 
   let set_children e cs = rem_children e; add_children e cs
   let rset_children e ~on =
-    may_add_logr e (E.log on (fun cs -> set_children e cs))
+    may_add_logr (el e) (E.log on (fun cs -> set_children e cs))
 
-  let def_children e cs = add_logr e (S.log cs (fun cs -> set_children e cs))
+  let def_children e cs =
+    add_logr (el e) (S.log cs (fun cs -> set_children e cs))
 
   (* Attributes *)
 
@@ -358,8 +375,11 @@ module El = struct
   | Some v -> e ## setAttribute a v
 
   let rget_att a ~on e = E.map (fun _ -> get_att a e) on
-  let rset_att a ~on e = may_add_logr e (E.log on (fun v -> set_att a v e))
-  let def_att a vs e = add_logr e (S.log vs (fun v -> set_att a v e))
+  let rset_att a ~on e =
+    may_add_logr (el e) (E.log on (fun v -> set_att a v e))
+
+  let def_att a vs e =
+    add_logr (el e) (S.log vs (fun v -> set_att a v e))
 
   (* Classes *)
 
@@ -370,9 +390,9 @@ module El = struct
 
   let rget_class c ~on e = E.map (fun _ -> get_class c e) on
   let rset_class c ~on e =
-    may_add_logr e (E.log on (fun v -> set_class c v e))
+    may_add_logr (el e) (E.log on (fun v -> set_class c v e))
 
-  let def_class c bs e = add_logr e (S.log bs (fun b -> set_class c b e))
+  let def_class c bs e = add_logr (el e) (S.log bs (fun b -> set_class c b e))
 
   (* Properties *)
 
@@ -405,6 +425,9 @@ module El = struct
 
   let hold_logr (`El e) l = add_logr e l
   let may_hold_logr (`El e) l = may_add_logr e l
+
+  let on_add f (`El e) = add_fun add_prop f e
+  let on_rem f (`El e) = add_fun rem_prop f e
 
   (* Element names *)
 

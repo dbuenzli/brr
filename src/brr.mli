@@ -480,6 +480,14 @@ module El : sig
   (** [may_hold_logr e l] is like {!hold_logr} but does nothing
       on [None]. *)
 
+  val on_add : (unit -> unit) -> t -> unit
+  (** [on_add f e] references [f] until [e] is inserted in
+      the DOM, at which point [f ()] is invoked. *)
+
+  val on_rem : (unit -> unit) -> t -> unit
+  (** [on_rem f e] references [f] until [e] is removed from
+      the DOM, at which point [f ()] is invoked. *)
+
   (** {1:cons Element constructors}
 
       Construtors only make element definition slightly more concise
