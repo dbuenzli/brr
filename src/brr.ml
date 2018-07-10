@@ -674,37 +674,45 @@ module Ev = struct
 
   let rem_cb cb = Dom.removeEventListener cb
 
-  let propagate ?default e propagate =
-    let default = match default with None -> propagate | Some v -> v in
+  let cb_ret ?(propagate = true) ?(default = propagate) e =
     if not default then Dom.preventDefault e;
     if not propagate then Dom_html.stopPropagation e;
     Js.bool propagate
 
-  (* Reactive *)
+  (* Note events *)
 
-  let map ?capture ?default ?propagate:(prop = true) kind target f =
+  let for_target ?capture ?propagate ?default t k f =
     let e, send_e = E.create () in
-    let cb t e = send_e (f e); propagate ?default e prop in
-    let _cb = add_cb ?capture target kind cb in
-    e
+    let cb _ ev = send_e (f ev); cb_ret ?propagate ?default ev in
+    ignore (add_cb ?capture t k cb); e
 
-  let event ?capture ?default ?propagate kind target =
-    map ?capture ?default ?propagate kind target (fun v -> v)
+  let for_targets ?capture ?propagate ?default ts k f =
+    let e, send_e = E.create () in
+    let cb t ev = send_e (f t ev); cb_ret ?propagate ?default ev in
+    List.iter (fun t -> ignore (add_cb ?capture t k cb)) ts; e
 
-  let el_map ?capture ?default ?propagate kind (`El target) =
-    map ?capture ?default ?propagate kind target
+  let for_el ?capture ?propagate ?default (`El t) k f =
+    for_target ?capture ?propagate ?default t k f
 
-  let el_event ?capture ?default ?propagate kind (`El target) =
-    event ?capture ?default ?propagate kind target
+  let for_els ?capture ?propagate ?default es k f =
+    let e, send_e = E.create () in
+    let cb t ev = send_e (f (`El t) ev); cb_ret ?propagate ?default ev in
+    List.iter (fun (`El t) -> ignore (add_cb ?capture t k cb)) es; e
+
+  let ev e = e
+  let unit e = ()
+  let stamp v e = v
 
   (* Event kinds *)
 
   let kind = Dom.Event.make
+
   let abort = Dom.Event.make "abort"
   let afterprint = Dom.Event.make "afterprint"
   let beforeprint = Dom.Event.make "beforeprint"
   let beforeunload = Dom.Event.make "beforeunload"
   let blur = Dom.Event.make "blur"
+  let cached = Dom.Event.make "cached"
   let change = Dom.Event.make "change"
   let click = Dom.Event.make "click"
   let dblclick = Dom.Event.make "dblclick"
@@ -719,6 +727,13 @@ module Ev = struct
   let keyup = Dom.Event.make "keyup"
   let load = Dom.Event.make "load"
   let message = Dom.Event.make "message"
+  let mousedown = Dom.Event.make "mousedown"
+  let mouseenter = Dom.Event.make "mouseenter"
+  let mouseleave = Dom.Event.make "mouseleave"
+  let mousemove = Dom.Event.make "mousemove"
+  let mouseout = Dom.Event.make "mouseout"
+  let mouseover = Dom.Event.make "mouseover"
+  let mouseup = Dom.Event.make "mouseup"
   let offline = Dom.Event.make "offline"
   let online = Dom.Event.make "online"
   let pagehide = Dom.Event.make "pagehide"
@@ -735,24 +750,24 @@ end
 module Key = struct
   type code = int
   type t =
-    [ `Alt of [ `Left | `Right ]
-    | `Arrow of [ `Up | `Down | `Left | `Right ]
-    | `Ascii of Char.t
-    | `Backspace
-    | `Ctrl of [ `Left | `Right ]
-    | `End
-    | `Enter
-    | `Escape
-    | `Func of int
-    | `Home
-    | `Insert
-    | `Key of code
-    | `Meta of [ `Left | `Right ]
-    | `Page of [ `Up | `Down ]
-    | `Return
-    | `Shift of [ `Left | `Right ]
-    | `Spacebar
-    | `Tab ]
+  [ `Alt of [ `Left | `Right ]
+  | `Arrow of [ `Up | `Down | `Left | `Right ]
+  | `Ascii of Char.t
+  | `Backspace
+  | `Ctrl of [ `Left | `Right ]
+  | `End
+  | `Enter
+  | `Escape
+  | `Func of int
+  | `Home
+  | `Insert
+  | `Key of code
+  | `Meta of [ `Left | `Right ]
+  | `Page of [ `Up | `Down ]
+  | `Return
+  | `Shift of [ `Left | `Right ]
+  | `Spacebar
+  | `Tab ]
 
   (* For browser keyboard handling see http://unixpapa.com/js/key.html *)
 
@@ -784,39 +799,39 @@ module Key = struct
 
   let equal k0 k1 = k0 = k1
   let compare k0 k1 = compare k0 k1
-  let pp ppf id =
-    let pp = Format.fprintf in
-    let dir_to_string = function
-    | `Left -> "left" | `Right -> "right" | `Up -> "up" | `Down -> "down"
-    in
-    match id with
-    | `Alt dir -> pp ppf "alt_%s" (dir_to_string dir)
-    | `Arrow dir -> pp ppf "arrow_%s" (dir_to_string dir)
-    | `Ascii c -> pp ppf "'%c'" c
-    | `Backspace -> pp ppf "backspace"
-    | `Ctrl dir -> pp ppf "ctrl_%s" (dir_to_string dir)
-    | `End -> pp ppf "end"
-    | `Enter -> pp ppf "enter"
-    | `Escape -> pp ppf "escape"
-    | `Func n -> pp ppf "f%d" n
-    | `Home -> pp ppf "home"
-    | `Insert -> pp ppf "insert"
-    | `Key c -> pp ppf "key_%d" c
-    | `Meta dir -> pp ppf "meta_%s" (dir_to_string dir)
-    | `Page dir -> pp ppf "page_%s" (dir_to_string dir)
-    | `Return -> pp ppf "return"
-    | `Shift dir -> pp ppf "shift_%s" (dir_to_string dir)
-    | `Spacebar -> pp ppf "space"
-    | `Tab -> pp ppf "tab"
+
+  let dir_to_string = function
+  | `Left -> "left" | `Right -> "right" | `Up -> "up" | `Down -> "down"
+
+  let pf = Format.fprintf
+  let pp ppf = function
+  | `Alt dir -> pf ppf "alt_%s" (dir_to_string dir)
+  | `Arrow dir -> pf ppf "arrow_%s" (dir_to_string dir)
+  | `Ascii c -> pf ppf "'%c'" c
+  | `Backspace -> pf ppf "backspace"
+  | `Ctrl dir -> pf ppf "ctrl_%s" (dir_to_string dir)
+  | `End -> pf ppf "end"
+  | `Enter -> pf ppf "enter"
+  | `Escape -> pf ppf "escape"
+  | `Func n -> pf ppf "f%d" n
+  | `Home -> pf ppf "home"
+  | `Insert -> pf ppf "insert"
+  | `Key c -> pf ppf "key_%d" c
+  | `Meta dir -> pf ppf "meta_%s" (dir_to_string dir)
+  | `Page dir -> pf ppf "page_%s" (dir_to_string dir)
+  | `Return -> pf ppf "return"
+  | `Shift dir -> pf ppf "shift_%s" (dir_to_string dir)
+  | `Spacebar -> pf ppf "space"
+  | `Tab -> pf ppf "tab"
 
   let of_ev e =  (of_keycode (e ##. keyCode) : t)
   let down = Ev.keydown
   let up = Ev.keyup
-  let event ?capture ?default ?propagate kind target =
-    Ev.map ?capture ?default ?propagate kind target of_ev
+  let for_target ?capture ?propagate ?default t k =
+    Ev.for_target ?capture ?propagate ?default t k of_ev
 
-  let el_event ?capture ?default ?propagate kind (`El t) =
-    event ?capture ?default ?propagate kind t
+  let for_el ?capture ?propagate ?default (`El t) k =
+    for_target ?capture ?propagate ?default t k
 end
 
 module Human = struct
@@ -868,8 +883,8 @@ module App = struct
   (* run *)
 
   let run ?name main =
-    let main _ e = main (); Ev.propagate e false in
-    let send_quit _ e = send_quit (); Ev.propagate e false in
+    let main _ e = main (); Ev.cb_ret ~propagate:false e in
+    let send_quit _ e = send_quit (); Ev.cb_ret ~propagate:false e in
     ignore (Ev.add_cb Dom_html.window Ev.unload send_quit);
     ignore (Ev.add_cb Dom_html.document Ev.domContentLoaded main);
     ()
@@ -927,7 +942,8 @@ module Loc = struct
 
   (* Location changes *)
 
-  let hashchange = Ev.(map hashchange Dom_html.window (fun _ -> fragment ()))
+  let hashchange =
+    Ev.(for_target Dom_html.window hashchange (fun _ -> fragment ()))
 
   let set ?(replace = false) uri =
     if replace then Dom_html.window ##. location ## replace (uri) else

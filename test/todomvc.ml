@@ -134,7 +134,7 @@ fun () ->
   let p = "What needs to be done ?" in
   let atts = Att.[type' "text"; klass "new-todo"; autofocus; placeholder p] in
   let i = El.input ~atts [] in
-  let return = E.filter (Key.equal `Return) Key.(el_event down i) in
+  let return = E.filter (Key.equal `Return) Key.(for_el i down) in
   let input = E.map Str.trim @@ El.rget_prop Prop.value i ~on:return in
   let todo v = if Str.is_empty v then None else Some (`Add_todo v) in
   let add_todo = E.filter_map todo input in
@@ -147,7 +147,7 @@ fun ~set ->
   let tid = "toggle-all" in
   let i = El.input ~atts:Att.[type' "checkbox"; klass tid; id tid] [] in
   let () = El.def_prop Prop.checked set i in
-  let toggle = El.rget_prop Prop.checked i ~on:Ev.(el_event click i) in
+  let toggle = El.rget_prop Prop.checked i ~on:Ev.(for_el i click unit) in
   let toggle = E.map (fun checked -> `All_done checked) toggle in
   let label = El.(label ~atts:Att.[for' tid] [txt "Mark all as complete"]) in
   toggle, El.div [i; label]
@@ -187,7 +187,7 @@ let str_editor :
   str -> on:'a event -> bool event * str event * [> El.t] =
 fun s ~on ->
   let ed = El.input ~atts:Att.[klass "edit"; v Name.value s] [] in
-  let keys = Key.(el_event down ed) in
+  let keys = Key.(for_el ed down) in
   let edited = E.filter (Key.equal `Return) keys in
   let undo = E.filter (Key.equal `Escape) keys in
   let start_edit = E.stamp true on in
@@ -203,7 +203,7 @@ let bool_editor : bool -> bool event * [> El.t ] =
 fun bool ->
   let atts = Att.(add_if bool checked [type' "checkbox"; klass "toggle"]) in
   let el = El.input ~atts [] in
-  let toggle = El.rget_prop Prop.checked el ~on:Ev.(el_event click el) in
+  let toggle = El.rget_prop Prop.checked el ~on:Ev.(for_el el click unit) in
   toggle, el
 
 let todo_item : Todo.t -> [> edit_action ] event * [> El.t] =
@@ -213,9 +213,11 @@ fun todo ->
   let set_done, done_editor = bool_editor done' in
   let set_done = E.map (fun d -> `Set_done (d, todo)) set_done in
   let rem_but = El.button ~atts:Att.[klass "destroy"] [] in
-  let rem = E.stamp (`Rem_todo todo) Ev.(el_event click rem_but) in
+  let rem = Ev.(for_el rem_but click @@ stamp (`Rem_todo todo)) in
   let label = El.label [`Txt task] in
-  let editing, edited, ed = str_editor task ~on:Ev.(el_event dblclick label) in
+  let editing, edited, ed =
+    str_editor task ~on:Ev.(for_el label dblclick unit)
+  in
   let edit v =
     let v = Str.trim v in
     if Str.is_empty v then Some (`Rem_todo todo) else
@@ -257,7 +259,7 @@ let footer ~todos =
     let atts = Att.[klass "clear-completed"] in
     let b = El.button ~atts [El.txt "Clear completed"] in
     let () = el_rdef_display b has_done in
-    let rem_done = E.stamp `Rem_done (Ev.(el_event click b)) in
+    let rem_done = Ev.(for_el b click @@ stamp `Rem_done) in
     rem_done, b
   in
   let foot = El.footer ~atts:Att.[klass "footer"] [left_el; fs_el; rem_el] in

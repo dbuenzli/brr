@@ -892,7 +892,48 @@ module Ev : sig
   type 'a t = (#Dom_html.event as 'a) Js.t
   (** The type for events. *)
 
-  (** {1:cb Event callbacks} *)
+  (** {1:note Events as [Note] events} *)
+
+  val for_target :
+    ?capture:bool -> ?propagate:bool -> ?default:bool -> 'a target ->
+    'b kind -> ('b t -> 'c) -> 'c event
+  (** [for_target ~capture ~propagate ~default t k f] is an event that
+      reports events of kind [k] transformed by [f] on target [t]. If
+      [capture] is [true] the event occurs during the capture phase
+      (defaults to [false]). If [propagate] is [true] (default) the
+      event is propagated. The default action is performed iff
+      [default] is [true] (defaults to the value of [propagate]. *)
+
+  val for_targets :
+    ?capture:bool -> ?propagate:bool -> ?default:bool -> 'a target list ->
+    'b kind -> ('a target -> 'b t -> 'c) -> 'c event
+  (** {!for_targets} is like {!for_target} except the event occurs
+      for the event kind on the given list of targets. *)
+
+  val for_el :
+    ?capture:bool -> ?propagate:bool -> ?default:bool -> El.t ->
+    'b kind -> ('b t -> 'c) -> 'c event
+  (** [for_el] is like {!for_target} except the target is an element. *)
+
+  val for_els :
+    ?capture:bool -> ?propagate:bool -> ?default:bool -> El.t list ->
+    'b kind -> (El.t -> 'b t -> 'c) -> 'c event
+  (** [for_els] is like {!for_targets} excepts the targets are elements. *)
+
+  (** {2:evmap Event mappers} *)
+
+  val ev : 'b t -> 'b t
+  (** [ev e] is [e]. *)
+
+  val unit : 'b t -> unit
+  (** [unit e] is [()]. *)
+
+  val stamp : 'a -> 'b t -> 'a
+  (** [stamp v e] is [v]. *)
+
+  (** {1:cb Event callbacks}
+
+      Lower-level convenience interface. *)
 
   type cb
   (** The type for event callbacks. *)
@@ -902,68 +943,58 @@ module Ev : sig
 
   val add_cb :
     ?capture:bool -> 'a target -> 'b kind -> ('a target -> 'b t -> cb_ret) -> cb
-  (** [add_cb capture e k f] is calls [f e ev] whenever an event [ev] of
-      kind [k] occurs on [e]. If [capture] is [true] the callback occurs
+  (** [add_cb ~capture t k f] calls [f e ev] whenever an event [ev] of
+      kind [k] occurs on [t]. If [capture] is [true] the callback occurs
       during the capture phase (defaults to [false]). *)
 
   val rem_cb : cb -> unit
   (** [rem_cb cb] removes the callback [cb]. *)
 
-  val propagate : ?default:bool -> 'a t -> bool -> cb_ret
-  (** [propogate default e propagate] propagate event [e] if it is
-      [propagate] is [true]. The default action is performed iff [default]
-      is [true] (defaults to [false] if [propagate] is [false] and [true]
-      if [propagate] is [true]). *)
-
-  (** {1:reactive Reactive} *)
-
-  val event :
-    ?capture:bool -> ?default:bool -> ?propagate:bool -> 'b kind ->
-    'a target -> 'b t event
-
-  val map :
-    ?capture:bool -> ?default:bool -> ?propagate:bool -> 'b kind ->
-    'a target -> ('b t -> 'c) -> 'c event
-
-  val el_event :
-    ?capture:bool -> ?default:bool -> ?propagate:bool -> 'b kind ->
-    El.t -> 'b t event
-  (** [el_event k (`El t)] is [event k t]. *)
-
-  val el_map :
-    ?capture:bool -> ?default:bool -> ?propagate:bool -> 'b kind ->
-    El.t -> ('b t -> 'c) -> 'c event
-  (** [el_map k (`El t) f] is [map k t) f]. *)
+  val cb_ret : ?propagate:bool -> ?default:bool -> 'a t -> cb_ret
+  (** [cb_ret ~propagate ~default ev] returns from the callback and
+      propagates event [ev] if [propagate] is [true] (default). The
+      default action is performed iff [default] is [true] (defaults to
+      the value of [propagate]. *)
 
   (** {1:kinds Event kinds}
 
-      See {{:https://www.w3.org/TR/DOM-Level-3-Events/}spec}. *)
+      MDN's web docs
+      {{:https://developer.mozilla.org/en-US/docs/Web/Events}Event reference}.*)
 
   val kind : string -> 'a kind
+
   val abort : Dom_html.event kind
   val afterprint : Dom_html.event kind
   val beforeprint : Dom_html.event kind
-  val beforeunload : Dom_html.event kind (* FIXME make more precise *)
+  val beforeunload : Dom_html.event kind
   val blur : Dom_html.event kind
+  val cached : Dom_html.event kind
   val change : Dom_html.event kind
   val click : Dom_html.event kind
   val dblclick : Dom_html.event kind
   val domContentLoaded : Dom_html.event kind
   val error : Dom_html.event kind
   val focus : Dom_html.event kind
-  val hashchange : Dom_html.event kind (* FIXME make more precise *)
+  val hashchange : Dom_html.event kind
   val input : Dom_html.event kind
   val invalid : Dom_html.event kind
   val keydown : Dom_html.keyboardEvent kind
   val keypress : Dom_html.keyboardEvent kind
   val keyup : Dom_html.keyboardEvent kind
   val load : Dom_html.event kind
-  val message : Dom_html.event kind (* FIXME make more precise *)
+  val message : Dom_html.event kind
+  val mousedown : Dom_html.mouseEvent kind
+  val mouseenter : Dom_html.mouseEvent kind
+  val mouseleave : Dom_html.mouseEvent kind
+  val mousemove : Dom_html.mouseEvent kind
+  val mouseout : Dom_html.mouseEvent kind
+  val mouseover : Dom_html.mouseEvent kind
+  val mouseup : Dom_html.mouseEvent kind
   val offline : Dom_html.event kind
   val online : Dom_html.event kind
-  val pagehide : Dom_html.event kind (* FIXME make more precise *)
-  val pageshow : Dom_html.event kind (* FIXME make more precise *)
-  val popstate : Dom_html.event kind (* FIXME make more precise *)
+  val pagehide : Dom_html.event kind
+  val pageshow : Dom_html.event kind
+  val popstate : Dom_html.event kind
   val readystatechange : Dom_html.event kind
   val reset : Dom_html.event kind
   val submit : Dom_html.event kind
@@ -985,24 +1016,24 @@ module Key : sig
   (** The type for physical key codes. *)
 
   type t =
-    [ `Alt of [ `Left | `Right ]
-    | `Arrow of [ `Up | `Down | `Left | `Right ]
-    | `Ascii of Char.t
-    | `Backspace
-    | `Ctrl of [ `Left | `Right ]
-    | `End
-    | `Enter
-    | `Escape
-    | `Func of int
-    | `Home
-    | `Insert
-    | `Key of code
-    | `Meta of [ `Left | `Right ]
-    | `Page of [ `Up | `Down ]
-    | `Return
-    | `Shift of [ `Left | `Right ]
-    | `Spacebar
-    | `Tab ]
+  [ `Alt of [ `Left | `Right ]
+  | `Arrow of [ `Up | `Down | `Left | `Right ]
+  | `Ascii of Char.t
+  | `Backspace
+  | `Ctrl of [ `Left | `Right ]
+  | `End
+  | `Enter
+  | `Escape
+  | `Func of int
+  | `Home
+  | `Insert
+  | `Key of code
+  | `Meta of [ `Left | `Right ]
+  | `Page of [ `Up | `Down ]
+  | `Return
+  | `Shift of [ `Left | `Right ]
+  | `Spacebar
+  | `Tab ]
   (**  The type for physical keys. *)
 
   val equal : t -> t -> bool
@@ -1025,15 +1056,15 @@ module Key : sig
   val up : Dom_html.keyboardEvent Ev.kind
   (** [up] is {!Ev.keyup}. *)
 
-  val event :
-    ?capture:bool -> ?default:bool -> ?propagate:bool ->
-    (Dom_html.keyboardEvent) Ev.kind -> 'a Ev.target -> t event
-  (** [event k t] is {!Ev.map}[ k t of_ev]. *)
+  val for_target :
+    ?capture:bool -> ?propagate:bool -> ?default:bool ->
+    'a Ev.target -> (Dom_html.keyboardEvent) Ev.kind -> t event
+  (** [for_target t k] is {!Ev.for_target}[ t k of_ev]. *)
 
-  val el_event :
-    ?capture:bool -> ?default:bool -> ?propagate:bool ->
-    (Dom_html.keyboardEvent) Ev.kind -> El.t -> t event
-  (** [el_event k (`El t)] is [event k t]. *)
+  val for_el :
+    ?capture:bool -> ?propagate:bool -> ?default:bool ->
+    El.t -> (Dom_html.keyboardEvent) Ev.kind -> t event
+  (** [for_el (`El t) k] is [event k t]. *)
 end
 
 (** Human factors. *)
