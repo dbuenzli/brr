@@ -4,9 +4,8 @@
 open Note
 open Brr
 
-(* This tests that nodes removed from the dom destroy their log.  If
-   they didn't they would never be gc'd. Because logs hold a reference
-   on count and vice-versa. *)
+(* This tests that nodes removed from the HTML DOM destroy their log.  If
+   they didn't they would never be garbage collected. *)
 
 let count, run_count =
   let v = ref 0 in
@@ -20,16 +19,20 @@ let count, run_count =
 let count_value count =
   (* Voluntarily silly. *)
   let span = El.span [] in
-  let render_count count = [El.txtf "%d" count] in
+  let render_count count = [El.txtf "Steps: %d" count] in
   let count = S.hold [] (E.map render_count count) in
   El.def_children span count;
   span
 
-let main () = match El.find ~id:(str "count") with
-| None -> Log.err (fun m -> m "No element with id 'count' found.")
-| Some c ->
-    let count_value = S.hold [] (E.map (fun c -> [count_value count]) count) in
-    El.def_children c count_value;
-    run_count ()
+let main () =
+  let h1 = El.(h1 [txt "Leak test"]) in
+  let info = El.(p [txt "Memory usage should be bounded and the step \
+                         counter below should not slow down."])
+  in
+  let step_count = S.hold [] (E.map (fun c -> [count_value count]) count) in
+  let steps = El.(p []) in
+  let () = El.def_children steps step_count in
+  El.set_children (El.document_body ()) [h1; info; steps];
+  run_count ()
 
 let () = Brr.App.run main

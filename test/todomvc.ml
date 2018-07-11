@@ -122,7 +122,7 @@ let load_state () = Store.get ~absent:Todos.empty state
 
 (* Rendering & interaction *)
 
-let el_rdef_display : El.t -> bool signal -> unit =
+let el_def_display : El.t -> bool signal -> unit =
   (* Would maybe be better to do this via CSS classes *)
   let none = Js.string "none" and show = Js.string "" in
   let bool_to_display = function true -> show | false -> none in
@@ -134,7 +134,7 @@ fun () ->
   let p = "What needs to be done ?" in
   let atts = Att.[type' "text"; klass "new-todo"; autofocus; placeholder p] in
   let i = El.input ~atts [] in
-  let return = E.filter (Key.equal `Return) Key.(for_el i down) in
+  let return = E.filter (Key.equal `Return) Ev.(for_el i keydown Key.of_ev) in
   let input = E.map Str.trim @@ El.rget_prop Prop.value i ~on:return in
   let todo v = if Str.is_empty v then None else Some (`Add_todo v) in
   let add_todo = E.filter_map todo input in
@@ -183,11 +183,10 @@ fun () ->
   let filter = S.hold init_filter (E.map parse_frag Loc.hashchange) in
   filter, El.ul ~atts:Att.[klass "filters"] [all; todo; done']
 
-let str_editor :
-  str -> on:'a event -> bool event * str event * [> El.t] =
+let str_editor : str -> on:'a event -> bool event * str event * [> El.t] =
 fun s ~on ->
   let ed = El.input ~atts:Att.[klass "edit"; v Name.value s] [] in
-  let keys = Key.(for_el ed down) in
+  let keys = Ev.(for_el ed keydown Key.of_ev) in
   let edited = E.filter (Key.equal `Return) keys in
   let undo = E.filter (Key.equal `Escape) keys in
   let start_edit = E.stamp true on in
@@ -196,7 +195,7 @@ fun s ~on ->
   let str = El.rget_prop Prop.value ed ~on:edited  in
   let () = El.rset_prop Prop.value ~on:(E.map (fun _ -> s) undo) ed in
   let () = El.rset_focus ~on:start_edit ed in
-  let () = El.(perform select_txt ~on:start_edit ed) in
+  let () = El.(call (fun _ e -> select_txt e) ~on:start_edit ed) in
   editing, str, ed
 
 let bool_editor : bool -> bool event * [> El.t ] =
@@ -258,13 +257,13 @@ let footer ~todos =
   let rem_done, rem_el =
     let atts = Att.[klass "clear-completed"] in
     let b = El.button ~atts [El.txt "Clear completed"] in
-    let () = el_rdef_display b has_done in
+    let () = el_def_display b has_done in
     let rem_done = Ev.(for_el b click @@ stamp `Rem_done) in
     rem_done, b
   in
   let foot = El.footer ~atts:Att.[klass "footer"] [left_el; fs_el; rem_el] in
   let display ts = not @@ Todos.is_empty ts in
-  let () = el_rdef_display foot (S.map display todos) in
+  let () = el_def_display foot (S.map display todos) in
   filter, rem_done, foot
 
 let main ~add_todo ~rem_done ~todos ~filter =
@@ -274,7 +273,7 @@ let main ~add_todo ~rem_done ~todos ~filter =
   let edit, items = todo_list todos ~filter in
   let sec = El.section ~atts:Att.[klass "main"] [toggle_el; items] in
   let display ts = not @@ Todos.is_empty ts in
-  let () = el_rdef_display sec (S.map display todos) in
+  let () = el_def_display sec (S.map display todos) in
   E.select [add_todo; rem_done; edit; toggle_all], sec
 
 let ui : todos:Todos.t -> (Todos.t signal * El.child list) =

@@ -20,7 +20,7 @@ let () =
   Pkg.describe ~build "brr" @@ fun c ->
   Ok [ Pkg.mllib "src/brr.mllib";
        Pkg.test "test/test";
-       Pkg.test ~run:false ~auto:false ("test/test.css");
+       jsoo_test "test/min";
        jsoo_test "test/play";
        jsoo_test "test/leak";
        jsoo_test "test/todomvc";

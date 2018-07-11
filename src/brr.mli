@@ -186,23 +186,34 @@ module Debug : sig
   val dump_obj : < .. > Js.t -> unit
   (** [dump_obj o] dumps object [o] on the browser console with level debug. *)
 
+  (** {1 Tracing} *)
+
+  val trace : ?pp:(Format.formatter -> 'a -> unit) -> string -> 'a -> 'a
+  (** [trace ~pp v] traces with {!Log.debug} the value of [v] with [pp]
+      (default is a no-op) and identifier [id]. The function returns [v]. *)
+
+  val tick : Format.formatter -> 'a -> unit
+  (** [tick] formats ["tick"] on any value. *)
+
   val trace_e :
-    ?obs:bool -> (Format.formatter -> 'a -> unit) -> string -> 'a event ->
+    ?obs:bool -> ?pp:(Format.formatter -> 'a -> unit) -> string -> 'a event ->
     'a event
-  (** [trace_e pp id e] traces [e]'s occurence with {!Log.debug}, [pp]
-      and identifier [id]. If [obs] is [true], the return value is [e]
-      itself and the tracing occurs through a logger, this will prevent
-      [e] from being gc'd. If [obs] is [false], the return value is
-      [e] mapped by a tracing identity. *)
+  (** [trace_e ~pp id e] traces [e]'s occurence with {!Log.debug},
+      [pp] (defaults to {!tick}) and identifier [id]. If [obs] is
+      [true], the return value is [e] itself and the tracing occurs
+      through a logger, this will prevent [e] from being garbage
+      collected. If [obs] is [false], the return value is [e] mapped
+      by a tracing identity. *)
 
   val trace_s :
-    ?obs:bool -> (Format.formatter -> 'a -> unit) -> string -> 'a signal ->
+    ?obs:bool -> ?pp:(Format.formatter -> 'a -> unit) -> string -> 'a signal ->
     'a signal
-  (** [trace_s pp id s] traces  [s]'s changes with {!Log.debug}, [pp]
+  (** [trace_s ~pp id s] traces [s]'s changes with {!Log.debug}, [pp]
       and identifier [id]. If [obs] is [true], the return value is [s]
-      itself and the tracing occurs through a logger, this will prevent
-      [s] from being gc'd. If [obs] is [false], the return value is
-      [s] mapped by a tracing identity and using [s]'s equality function. *)
+      itself and the tracing occurs through a logger, this will
+      prevent [s] from being gc'd. If [obs] is [false], the return
+      value is [s] mapped by a tracing identity and using [s]'s
+      equality function. *)
 end
 
 (** Monotonic time. *)
@@ -269,21 +280,24 @@ module Att : sig
   val v : name -> str -> t
   (** [v name v] is the attribute [name] with value [v]. *)
 
-  val vstr : name -> string -> t
-  (** [vstr name s] is [v name (str v)]. *)
-
-  val vstrf : name -> ('a, Format.formatter, unit, t) format4 -> 'a
-  (** [vstrf name fmt ...] is the attribute [name] with a formatted string
+  val vf : name -> ('a, Format.formatter, unit, t) format4 -> 'a
+  (** [vf name fmt ...] is the attribute [name] with a formatted string
       [fmt]. *)
 
-  val vtrue : name -> t
-  (** [vtrue name] is the attribute [name] with value [""]. This is
-      for boolean attributes whose presence denotes [true]. *)
+  val vstr : string -> string -> t
+  (** [vstr name s] is [v (str name) (str v)]. *)
+
+  val vstrf : name -> ('a, Format.formatter, unit, t) format4 -> 'a
+  (** [vstrf name fmt ...] is [vf (str name) fmt ...] *)
 
   val add_if : bool -> t -> t list -> t list
   (** [add_if b a l] adds [a] to [l] iff [b] is [true] *)
 
-  (** {1 Predefined attribute names and constructors} *)
+  (** {1 Predefined attribute names and constructors}
+
+      {b Convention.} Except for {!klass} whenever an attribute
+      name conflicts with an OCaml keyword we prime them, see
+      for example {!for'}. *)
 
   (** Attribute names. *)
   module Name : sig
@@ -291,6 +305,7 @@ module Att : sig
     val checked : name
     val disabled : name
     val for' : name
+    val height : name
     val href : name
     val id : name
     val klass : name
@@ -301,12 +316,14 @@ module Att : sig
     val title : name
     val type' : name
     val value : name
+    val width : name
   end
 
   val autofocus : t
   val checked : t
   val disabled : t
   val for' : string -> t
+  val height : int -> t
   val href : string -> t
   val id : string -> t
   val klass : string -> t
@@ -319,24 +336,23 @@ module Att : sig
   val title : string -> t
   val type' : string -> t
   val value : string -> t
+  val width : int -> t
 end
 
-(** DOM elements
+(** DOM elements.
 
     {b Warning.} Reactive DOM element mutators ({!rset_att},
-    {!rset_children}, etc.) and definers ({!def_att},
-    {!def_children}, etc.) use {{!Note.Logr}[Note] loggers}. To
-    prevent memory leaks, these loggers automatically get destroyed
-    whenever the element is removed from the {b body} of the
-    document which is watched for changes via a
-    {{:https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver}
-    MutationObserver}. *)
+    {!rset_children}, etc.) and definers ({!def_att}, {!def_children},
+    etc.) use {{!Note.Logr}[Note] loggers} to perform their action.
+    To prevent memory leaks, these loggers, and thus their action,
+    automatically get destroyed whenever the element is removed from
+    the HTML DOM. *)
 module El : sig
 
   (** {1:elements Elements} *)
 
-  type name
-  (** The type for element names, see {!Name}. *)
+  type name = str
+  (** The type for element names. *)
 
   type el = Dom_html.element Js.t
   (** The type for naked elements. *)
@@ -354,16 +370,20 @@ module El : sig
       the exception of {!Att.klass}, whose occurences accumulate to
       define the final value. *)
 
+  val el : t -> el
+  (** [el (`El e)] is [e]. *)
+
   val find : id:str -> [> t] option
   (** [find ~id] is the element with id [id] in the browser document
       (if any). *)
 
-  val document_body : unit -> [> t]
-  (** [document_body] is the current {!body} element of the browser
+  val document : unit -> [> t]
+  (** [document] is the document's element of the current browser
       document. *)
 
-  val el : t -> el
-  (** [el (`El e)] is [e]. *)
+  val document_body : unit -> [> t]
+  (** [document_body] is the {!body} element of the current browser
+      document. *)
 
   (** {1:children Children} *)
 
@@ -460,9 +480,6 @@ module El : sig
 
   (** {1:click Click simulation} *)
 
-  val perform : (t -> unit) -> on:'a event -> t -> unit
-  (** [perform f ~on e] performs [f] on [e] whenever [on] occurs. *)
-
   val click : t -> unit
   (** [click e] simulates a click on [e]. *)
 
@@ -470,34 +487,45 @@ module El : sig
   (** [select_txt e] selects the textual contents of [e]. If the DOM
       element [e] has no [select] method this does nothing. *)
 
-  (** {1:note Note loggers} *)
+  (** {1:life_cycle Life-cycle callbacks}
 
-  val hold_logr : t -> Logr.t -> unit
-  (** [hold_logr e l] lets [e] hold logger [l] and destroy it once [e]
-      is removed from the document body. *)
-
-  val may_hold_logr : t -> Logr.t option -> unit
-  (** [may_hold_logr e l] is like {!hold_logr} but does nothing
-      on [None]. *)
+      The browser document is watched for changes via a global
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver}
+      MutationObserver}. Whenever an element is added in the HTML DOM,
+      its {!on_add} callbacks get called and disposed. Whenever an
+      element is removed from the HTML DOM, {!on_rem} callbacks get
+      called and disposed. A element is deemed part of the HTML DOM if
+      its root node is the browser document. *)
 
   val on_add : (unit -> unit) -> t -> unit
   (** [on_add f e] references [f] until [e] is inserted in
-      the DOM, at which point [f ()] is invoked. *)
+      the HTML DOM, at which point [f ()] is invoked. *)
 
   val on_rem : (unit -> unit) -> t -> unit
   (** [on_rem f e] references [f] until [e] is removed from
-      the DOM, at which point [f ()] is invoked. *)
+      the HTML DOM, at which point [f ()] is invoked. *)
+
+  (** {1:note Note loggers} *)
+
+  val call : ('a -> t -> unit) -> on:'a event -> t -> unit
+  (** [call f ~on e] calls [f] on [e] with the value of [e] whenever
+      [on] occurs. The underlying logger is held by [e]. *)
+
+  val hold_logr : t -> Logr.t -> unit
+  (** [hold_logr e l] lets [e] hold logger [l] and destroy it via
+      {!on_rem} once [e] is removed from the document. *)
+
+  val may_hold_logr : t -> Logr.t option -> unit
+  (** [may_hold_logr e l] is like {!hold_logr} but does nothing on
+      [None]. *)
 
   (** {1:cons Element constructors}
 
-      Construtors only make element definition slightly more concise
-      than with {!v}. *)
+      {b Convention.} Whenever an element name conflicts with an OCaml
+      keyword we prime it, see for example {!object'}. *)
 
   (** Element names. *)
   module Name : sig
-    val v : string -> name
-    (** [v s] is an element name [s]. *)
-
     val a : name
     val abbr : name
     val address : name
@@ -902,7 +930,7 @@ module Ev : sig
       [capture] is [true] the event occurs during the capture phase
       (defaults to [false]). If [propagate] is [true] (default) the
       event is propagated. The default action is performed iff
-      [default] is [true] (defaults to the value of [propagate]. *)
+      [default] is [true] (defaults to the value of [propagate]). *)
 
   val for_targets :
     ?capture:bool -> ?propagate:bool -> ?default:bool -> 'a target list ->
@@ -997,6 +1025,7 @@ module Ev : sig
   val popstate : Dom_html.event kind
   val readystatechange : Dom_html.event kind
   val reset : Dom_html.event kind
+  val resize : Dom_html.event kind
   val submit : Dom_html.event kind
   val unload : Dom_html.event kind
 end
@@ -1008,9 +1037,9 @@ module Key : sig
 
   (** {1:keys Physical keys}
 
-      {b Warning.} Physical keys can be used when a keyboard is used
-      as a controller but they must not be used to derive text input:
-      they are unrelated to the user's keyboard layout for text entry. *)
+      {b Note.} Physical keys are for using the keyboard as a
+      controller. They must not be used to derive text input: they are
+      unrelated to the user's keyboard layout for text entry. *)
 
   type code = int
   (** The type for physical key codes. *)
@@ -1034,7 +1063,16 @@ module Key : sig
   | `Shift of [ `Left | `Right ]
   | `Spacebar
   | `Tab ]
-  (**  The type for physical keys. *)
+  (**  The type for physical keys.
+
+       {b Warning.} This type is overdefined for now. For example
+       except for [`Meta], [`Left] and [`Right] modifiers cannot be
+       distinguished; [`Left] is always returned. [`Enter] and
+       [`Return] cannot be distinguished, [`Return] is always
+       returned. *)
+
+  val of_ev : Dom_html.keyboardEvent Ev.t -> t
+  (** [of_ev e] is the physical key of keyboard event [e]. *)
 
   val equal : t -> t -> bool
   (** [equal k0 k1] is [true] iff [k0] and [k1] are equal. *)
@@ -1045,26 +1083,84 @@ module Key : sig
   val pp : Format.formatter -> t -> unit
   (** [pp] formats keys. *)
 
-  (** {1:ev Events} *)
+  (** {1:ev Keyboard events} *)
 
-  val of_ev : Dom_html.keyboardEvent Ev.t -> t
-  (** [of_ev e] is the physical key of [e]. *)
-
-  val down : Dom_html.keyboardEvent Ev.kind
-  (** [down] is {!Ev.keydown}. *)
-
-  val up : Dom_html.keyboardEvent Ev.kind
-  (** [up] is {!Ev.keyup}. *)
+  type events
+  (** The type for gathering keyboard events on a given target. *)
 
   val for_target :
-    ?capture:bool -> ?propagate:bool -> ?default:bool ->
-    'a Ev.target -> (Dom_html.keyboardEvent) Ev.kind -> t event
-  (** [for_target t k] is {!Ev.for_target}[ t k of_ev]. *)
+    ?capture:bool -> ?propagate:bool -> ?default:bool -> 'a Ev.target -> events
+  (** [for_target t] is keyboard events for target [t]. The other
+      parameters are those of {!Ev.for_target}. *)
 
   val for_el :
-    ?capture:bool -> ?propagate:bool -> ?default:bool ->
-    El.t -> (Dom_html.keyboardEvent) Ev.kind -> t event
-  (** [for_el (`El t) k] is [event k t]. *)
+    ?capture:bool -> ?propagate:bool -> ?default:bool -> El.t -> events
+  (** [for_el e] is like {!for_target} but for an element. *)
+
+  (** {1:kev Key events} *)
+
+  val any_down : events -> t event
+  (** [any_down evs] occurs whenever a key goes down on the target. *)
+
+  val any_up : events -> t event
+  (** [any_down evs] occurs whenever a key goes up on the target. *)
+
+  val any_holds : events -> bool signal
+  (** [any_holds evs] is [true] whenever any key is down. *)
+
+  val down : events -> t -> unit event
+  (** [down evs k] occurs whenever key [k] goes down on the target. *)
+
+  val up : events -> t -> unit event
+  (** [up evs k] occurs whenever key [k] goes up on the target. *)
+
+  val holds : events -> t -> bool signal
+  (** [holds evs k] is [true] whenever [k] is held down on the target. *)
+
+  (** {1:mods Modifiers signals} *)
+
+  val alt : events -> bool signal
+  (** [alt evs] is [true] whenver an alt key is down on the target.
+      Equivalent to:
+{[
+S.Bool.(holds evs (`Alt `Left) || holds evs (`Alt `Right))
+]} *)
+
+  val ctrl : events -> bool signal
+  (** [ctrl evs] is [true] whenver an ctrl key is down on the target.
+      Equivalent to:
+{[
+S.Bool.(holds evs (`Ctrl `Left) || holds evs (`Ctrl `Right))
+]} *)
+
+  val meta : events -> bool signal
+  (** [meta evs] is [true] whenver an meta key is down on the target.
+      Equivalent to:
+{[
+S.Bool.(holds evs (`Meta `Left) || holds evs (`Meta `Right))
+]} *)
+
+  val shift : events -> bool signal
+  (** [shift evs] is [true] whenver an shift key is down on the target.
+      Equivalent to:
+{[
+S.Bool.(holds evs (`Meta `Left) || holds evs (`Meta `Right))
+]} *)
+
+(** {1:semantics Semantic incoherences}
+
+    {!holds} and {!any_holds} may be initially set to [false] even
+    though they should be [true] if {!for_target} is invoked when the
+    corresponding keys are depressed. *)
+
+(** {1:repeat Key repeat events}
+
+    Key repeat events are not exposed. There are two main use cases
+    for key repeat. First during text input, but his should be handled
+    by text input events and is out of scope. Second for controlling
+    changes to a variable over time, e.g. scrolling with a keyboard.
+    In the latter case it is better to create a timing signal or event
+    with a known rate while the key is held. *)
 end
 
 (** User mouse.
@@ -1082,74 +1178,77 @@ module Mouse : sig
   val pt : float -> float -> float * float
   (** [pt x y] is [(x, y)]. *)
 
-  type 'a t
-  (** The type for representing mouse events on a given target using ['a] to
-      represent points. *)
+  type 'a events
+  (** The type for gathering mouse events on a given target and using
+      ['a] to represent points. *)
 
   val for_target :
     ?capture:bool -> ?propagate:bool -> ?default:bool -> ?normalize:bool ->
-    'b Ev.target -> (float -> float -> 'a) -> 'a t
+    'b Ev.target -> (float -> float -> 'a) -> 'a events
   (** [for_target t pt] is mouse events for target [t] using [pt] to
-      construct points. If [normalize] is [false] coordinates are
-      reported in pixels with the origin at the top-left of the
-      element (defaults to [false]). The other parameters are
-      described in {!Ev.for_target}. *)
+      construct points. If [normalize] is [true] (default) coordinates
+      are reported in target normalized coordinates (see above), if
+      [false] they are reported in pixels with the origin at the
+      top-left of the element. The other parameters are those from
+      {!Ev.for_target}. *)
 
   val for_el :
     ?capture:bool -> ?propagate: bool -> ?default:bool -> ?normalize:bool ->
-    El.t -> (float -> float -> 'a) -> 'a t
-  (** [for_el] is like {!for_target} but for an element. *)
+    El.t -> (float -> float -> 'a) -> 'a events
+  (** [for_el] is like {!for_target} but for an element. Note that
+      {!destroy} automatically gets called with the result whenever
+      the element is removed from the HTML DOM. *)
 
-  val destroy : 'a t -> unit
-  (** [destroy m] removes the callbacks registred by [m]. It's
-      important to perform this whenever you no longer
-      need the evetns as [m] needs to register callbacks with the
-      document to correctly capture mouse ups. *)
+  val destroy : 'a events -> unit
+  (** [destroy evs] removes the callbacks registred by [evs]. It's
+      important to perform this whenever you no longer need the events
+      as [evs] needs to register callbacks with the document to
+      correctly capture mouse ups. *)
 
   (** {1 Mouse position} *)
 
-  val pos : 'a t -> 'a signal
-  (** [pos m] is the current mouse position in the target. *)
+  val pos : 'a events -> 'a signal
+  (** [pos evs] is the current mouse position in the target. *)
 
-  val dpos : 'a t -> 'a event
-  (** [dpos m] occurs on mouse moves with current mouse position minus
+  val dpos : 'a events -> 'a event
+  (** [dpos evs] occurs on mouse moves with current mouse position minus
       the previous position. *)
 
-  val mem : 'a t -> bool signal
-  (** [mem m] is [true] whenever the mouse position is inside
+  val mem : 'a events -> bool signal
+  (** [mem evs] is [true] whenever the mouse position is inside
       the target. *)
 
   (** {1 Mouse buttons} *)
 
-  val left : 'a t -> bool signal
-  (** [left m] is [true] whenever the left mouse button went down in
+  val left : 'a events -> bool signal
+  (** [left evs] is [true] whenever the left mouse button went down in
       the target and did not go up yet. *)
 
-  val left_down : 'a t -> 'a event
-  (** [left_down m] has an occurence with the mouse position
+  val left_down : 'a events -> 'a event
+  (** [left_down evs] has an occurence with the mouse position
       whenever the button goes down in the target. *)
 
-  val left_up : 'a t -> 'a event
-  (** [left_up m] is [true] whenever the left mouse button went down
+  val left_up : 'a events -> 'a event
+  (** [left_up evs] is [true] whenever the left mouse button went down
       in the target and goes back up {e anywhere}. Note that the reported
       position might not be in the target. *)
 
-  val mid : 'a t -> bool signal
+  val mid : 'a events -> bool signal
   (** [mid] is like {!left} but the middle button. *)
 
-  val mid_down : 'a t -> 'a event
+  val mid_down : 'a events -> 'a event
   (** [mid_down]is like {!left_down} but for the middle button. *)
 
-  val mid_up :'a t -> 'a event
+  val mid_up :'a events -> 'a event
   (** [mid_up] is like {!left_up} but for the middle button. *)
 
-  val right : 'a t -> bool signal
+  val right : 'a events -> bool signal
   (** [right] is like {!left} but the right button. *)
 
-  val right_down : 'a t -> 'a event
+  val right_down : 'a events -> 'a event
   (** [right_down]is like {!left_down} but for the right button. *)
 
-  val right_up :'a t -> 'a event
+  val right_up :'a events -> 'a event
   (** [right_up] is like {!left_up} but for the right button. *)
 end
 
@@ -1231,6 +1330,22 @@ module App : sig
 end
 
 (** {1:browser Browser} *)
+
+(** Browser window. *)
+
+(** Browser window. *)
+module Win : sig
+  type t = Dom_html.window Js.t
+  (** The type for browser windows. *)
+
+  val dow : t
+  (** [dow] is the browser windows. *)
+
+  val device_pixel_ratio : unit -> float
+  (** [device_pixel_ratio ()] is the ratio between physical and CSS pixel
+      resolution. A value of [2.] indicates that two physical pixels are
+      used to draw a single CSS pixel. *)
+end
 
 (** Browser location
 

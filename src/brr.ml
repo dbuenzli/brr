@@ -158,15 +158,20 @@ module Debug = struct
 
   let dump_obj v = Firebug.console ## debug (v)
 
-  let trace_v pp id v = Log.debug (fun m -> m "%s: %a" id pp v)
-  let trace_v_ret pp id v = trace_v pp id v; v
-  let trace_e ?(obs = false) pp id e = match obs with
-  | true -> Logr.may_hold (E.log e (trace_v pp id)); e
-  | false -> E.map (trace_v_ret pp id) e
+  (* Tracing *)
 
-  let trace_s ?(obs = false) pp id s = match obs with
-  | true -> Logr.hold (S.log s (trace_v pp id)); s
-  | false -> S.map ~eq:(S.eq s) (trace_v_ret pp id) s
+  let nop ppf _ = ()
+  let tick ppf _ = Format.fprintf ppf "tick"
+  let trace ?(pp = nop) id v = Log.debug (fun m -> m "%s: %a" id pp v); v
+  let trace_v ?(pp = tick) id v = Log.debug (fun m -> m "%s: %a" id pp v)
+  let trace_v_ret ?pp id v = trace_v ?pp id v; v
+  let trace_e ?(obs = false) ?pp id e = match obs with
+  | true -> Logr.may_hold (E.log e (trace_v ?pp id)); e
+  | false -> E.map (trace_v_ret ?pp id) e
+
+  let trace_s ?(obs = false) ?pp id s = match obs with
+  | true -> Logr.hold (S.log s (trace_v ?pp id)); s
+  | false -> S.map ~eq:(S.eq s) (trace_v_ret ?pp id) s
 end
 
 module Time = struct
@@ -214,12 +219,12 @@ module Att = struct
   type name = str
   type t = name * str
   let v name v = (name, v)
-  let vstr name v = (name, str v)
-  let vstrf name fmt =
+  let vf name fmt =
     let k _ = (name, str (Format.flush_str_formatter ())) in
     Format.kfprintf k Format.str_formatter fmt
 
-  let vtrue name = (name, Str.empty)
+  let vstr name v = (str name, str v)
+  let vstrf name fmt = vf (name) fmt
   let add_if b att l = if b then att :: l else l
 
   module Name = struct
@@ -227,6 +232,7 @@ module Att = struct
     let checked = Js.string "checked"
     let disabled = Js.string "disabled"
     let for' = Js.string "for"
+    let height = Js.string "height"
     let href = Js.string "href"
     let id = Js.string "id"
     let klass = Js.string "class"
@@ -237,28 +243,34 @@ module Att = struct
     let title = Js.string "title"
     let type' = Js.string "type"
     let value = Js.string "value"
+    let width = Js.string "width"
   end
 
-  let autofocus = Name.autofocus, Str.empty
-  let checked = Name.checked, Str.empty
-  let disabled = Name.disabled, Str.empty
-  let for' = vstr Name.for'
-  let href = vstr Name.href
-  let id = vstr Name.id
-  let klass = vstr Name.klass
-  let name = vstr Name.name
-  let placeholder = vstr Name.placeholder
-  let src = vstr Name.src
-  let tabindex i = vstr Name.tabindex (string_of_int i)
-  let title = vstr Name.title
-  let type' = vstr Name.type'
-  let value = vstr Name.value
+  let int n i = (n, str (string_of_int i))
+  let bool n = n, Str.empty
+  let str n v = (n, str v)
+
+  let autofocus = bool Name.autofocus
+  let checked = bool Name.checked
+  let disabled = bool Name.disabled
+  let for' = str Name.for'
+  let height = int Name.height
+  let href = str Name.href
+  let id = str Name.id
+  let klass = str Name.klass
+  let name = str Name.name
+  let placeholder = str Name.placeholder
+  let src = str Name.src
+  let tabindex = int Name.tabindex
+  let title = str Name.title
+  let type' = str Name.type'
+  let value = str Name.value
+  let width = int Name.width
 end
 
 module El = struct
 
   type el = Dom_html.element Js.t
-  let _document_body () = Dom_html.document ##. body
 
   (* DOM garbage collection support. We observe HTML DOM additions and
      removals on body and invoke callback registered for the
@@ -306,7 +318,7 @@ module El = struct
         done
       in
       Js.some @@ MutationObserver.observe
-        ~node:(_document_body () :> Dom.node Js.t) ~f
+        ~node:(Dom_html.document ##. documentElement :> Dom.node Js.t) ~f
         ~child_list:true ~subtree:true ~attributes:false ~character_data:false
         ~attribute_old_value:false ~character_data_old_value:false ()
 
@@ -343,7 +355,8 @@ module El = struct
     | None -> None
     | Some e -> (Some (`El e))
 
-  let document_body () = `El (_document_body ())
+  let document () = `El (Dom_html.document ##. documentElement)
+  let document_body () = `El (Dom_html.document ##. body)
   let el (`El e) = e
 
   (* Children *)
@@ -414,20 +427,22 @@ module El = struct
 
   (* Click simulation *)
 
-  let perform f ~on (`El e as el) = may_add_logr e (E.log on (fun _ -> f el))
   let click (`El e) = e ## click
   let select_txt (`El e) =
     match Js.Optdef.test (Js.Unsafe.coerce e) ##. select with
     | true -> (Js.Unsafe.coerce e) ## select
     | false -> ()
 
-  (* Note loggers *)
-
-  let hold_logr (`El e) l = add_logr e l
-  let may_hold_logr (`El e) l = may_add_logr e l
+  (* Life-cycle callbacks *)
 
   let on_add f (`El e) = add_fun add_prop f e
   let on_rem f (`El e) = add_fun rem_prop f e
+
+  (* Note loggers *)
+
+  let call f ~on (`El e as el) = may_add_logr e (E.log on (fun v -> f v el))
+  let hold_logr (`El e) l = add_logr e l
+  let may_hold_logr (`El e) l = may_add_logr e l
 
   (* Element names *)
 
@@ -741,6 +756,7 @@ module Ev = struct
   let popstate = Dom.Event.make "popstate"
   let readystatechange = Dom.Event.make "readystatechange"
   let reset = Dom.Event.make "reset"
+  let resize = Dom.Event.make "resize"
   let submit = Dom.Event.make "submit"
   let unload = Dom.Event.make "unload"
 end
@@ -797,6 +813,7 @@ module Key = struct
   | 93 -> `Meta `Right
   | c -> `Key c
 
+  let of_ev e = of_keycode (e ##. keyCode)
   let equal k0 k1 = k0 = k1
   let compare k0 k1 = compare k0 k1
 
@@ -821,17 +838,122 @@ module Key = struct
   | `Page dir -> pf ppf "page_%s" (dir_to_string dir)
   | `Return -> pf ppf "return"
   | `Shift dir -> pf ppf "shift_%s" (dir_to_string dir)
-  | `Spacebar -> pf ppf "space"
+  | `Spacebar -> pf ppf "spacebar"
   | `Tab -> pf ppf "tab"
 
-  let of_ev e =  (of_keycode (e ##. keyCode) : t)
-  let down = Ev.keydown
-  let up = Ev.keyup
-  let for_target ?capture ?propagate ?default t k =
-    Ev.for_target ?capture ?propagate ?default t k of_ev
 
-  let for_el ?capture ?propagate ?default (`El t) k =
-    for_target ?capture ?propagate ?default t k
+  type events =
+    { propagate : bool; default : bool;
+      any_down : t event; send_any_down : ?step:Step.t -> t -> unit;
+      any_up : t event; send_any_up : ?step:Step.t -> t -> unit;
+      mutable down_count : int;
+      any_holds : bool signal; set_any_holds : ?step:Step.t -> bool -> unit;
+      down_event : (t, unit event * (?step:Step.t -> unit -> unit)) Hashtbl.t ;
+      up_event : (t, unit event * (?step:Step.t -> unit -> unit)) Hashtbl.t;
+      holds : (t, bool signal * (?step:Step.t -> bool -> unit)) Hashtbl.t;
+      alt : bool signal; ctrl : bool signal; meta : bool signal;
+      shift : bool signal; }
+
+  let def_event event k = try fst (Hashtbl.find event k) with
+  | Not_found -> let d = E.create () in Hashtbl.add event k d; fst d
+
+  let send_event ?step event k = try snd (Hashtbl.find event k) ?step () with
+  | Not_found -> ()
+
+  let def_holds holds k = try fst (Hashtbl.find holds k) with
+  | Not_found -> let d = S.create false in Hashtbl.add holds k d; fst d
+
+  let set_holds ?step holds k v = try snd (Hashtbl.find holds k) ?step v with
+  | Not_found -> ()
+
+  let add_modifiers holds =
+     let lalt = S.create false in
+     let ralt = S.create false in
+     let alt = S.Bool.(fst lalt || fst ralt) in
+     let lctrl = S.create false in
+     let rctrl = S.create false in
+     let ctrl = S.Bool.(fst lctrl || fst rctrl) in
+     let lmeta = S.create false in
+     let rmeta = S.create false in
+     let meta = S.Bool.(fst lmeta || fst rmeta) in
+     let lshift = S.create false in
+     let rshift = S.create false in
+     let shift = S.Bool.(fst lshift || fst rshift) in
+     Hashtbl.add holds (`Alt `Left) lalt;
+     Hashtbl.add holds (`Alt `Right) ralt;
+     Hashtbl.add holds (`Ctrl `Left) lctrl;
+     Hashtbl.add holds (`Ctrl `Right) rctrl;
+     Hashtbl.add holds (`Meta `Left) lmeta;
+     Hashtbl.add holds (`Meta `Right) rmeta;
+     Hashtbl.add holds (`Shift `Left) lshift;
+     Hashtbl.add holds (`Shift `Right) rshift;
+     alt, ctrl, meta, shift
+
+  let handle_down evs ~step k =
+    evs.down_count <- evs.down_count + 1 ;
+    evs.send_any_down ~step k;
+    evs.set_any_holds ~step true;
+    send_event ~step evs.down_event k;
+    set_holds ~step evs.holds k true;
+    ()
+
+  let handle_up evs ~step k =
+    evs.down_count <- evs.down_count - 1;
+    evs.send_any_up ~step k;
+    if evs.down_count <= 0 then
+      (evs.down_count <- 0; evs.set_any_holds ~step false);
+    send_event ~step evs.up_event k;
+    set_holds ~step evs.holds k false;
+    ()
+
+  (* Unclear how well that repeat works. Otherwise suppress
+     repeats like we did in Useri. *)
+  let down_cb evs _ e = match Js.(to_bool @@ (Unsafe.coerce e) ##. repeat) with
+  | true -> Ev.cb_ret ~propagate:evs.propagate ~default:evs.default e
+  | false ->
+      let step = Step.create () in
+      handle_down evs ~step (of_ev e);
+      Step.execute step;
+      Ev.cb_ret ~propagate:evs.propagate ~default:evs.default e
+
+  let up_cb evs _ e =
+    let step = Step.create () in
+    handle_up evs ~step (of_ev e);
+    Step.execute step;
+    Ev.cb_ret ~propagate:evs.propagate ~default:evs.default e
+
+  let for_target
+      ?(capture = false) ?(propagate = true) ?(default = propagate) t
+    =
+    let hsize = 47 in
+    let any_down, send_any_down = E.create () in
+    let any_up, send_any_up = E.create () in
+    let any_holds, set_any_holds = S.create false in
+    let down_event = Hashtbl.create hsize in
+    let up_event = Hashtbl.create hsize in
+    let holds = Hashtbl.create hsize in
+    let alt, ctrl, meta, shift = add_modifiers holds in
+    let evs = { propagate; default; any_down; send_any_down; any_up;
+                send_any_up; down_count = 0; any_holds; set_any_holds;
+                down_event; up_event; holds; alt; ctrl; meta; shift }
+    in
+    ignore @@ Ev.(add_cb ~capture t keydown (down_cb evs));
+    ignore @@ Ev.(add_cb ~capture t keyup (up_cb evs));
+    evs
+
+  let for_el ?capture ?propagate ?default (`El t) =
+    for_target ?capture ?propagate ?default t
+
+  let any_down evs = evs.any_down
+  let any_up evs = evs.any_up
+  let any_holds evs = evs.any_holds
+  let down evs k = def_event evs.down_event k
+  let up evs k = def_event evs.up_event k
+  let holds evs k = def_holds evs.holds k
+  let alt evs = evs.alt
+  let ctrl evs = evs.ctrl
+  let meta evs = evs.meta
+  let shift evs = evs.shift
 end
 
 module Mouse = struct
@@ -839,16 +961,13 @@ module Mouse = struct
   let warn_but () = Log.warn (fun m -> m "unexpected e.which")
   let pt x y = (x, y)
 
-  type 'a t =
+  type 'a events =
     { t : Dom_html.eventTarget Js.t ;
-      capture : bool; propagate : bool; default : bool;
+      propagate : bool; default : bool;
       normalize : bool;
       pt : float -> float -> 'a;
       mutable last_pos : float * float;
       mutable cbs : Ev.cb list; (* registered callbacks *)
-      (* This could be made mutable and stubbed with nops
-         until events are actually requested but let's keep it
-         simple for now. *)
       pos : 'a signal; set_pos : ?step:Step.t -> 'a -> unit;
       dpos : 'a event; send_dpos : ?step:Step.t -> 'a -> unit;
       mem : bool signal; set_mem : ?step:Step.t -> bool -> unit;
@@ -862,72 +981,77 @@ module Mouse = struct
       right_down : 'a event; send_right_down : ?step:Step.t -> 'a -> unit;
       right_up : 'a event; send_right_up : ?step:Step.t -> 'a -> unit; }
 
-  let event_mouse_pos pt m e =
+  let destroy evs = List.iter Ev.rem_cb evs.cbs
+
+  let event_mouse_pos pt evs e =
     let r =
-      ((Obj.magic m.t) :> Dom_html.element Js.t) ## getBoundingClientRect in
+      ((Obj.magic evs.t) :> Dom_html.element Js.t) ## getBoundingClientRect in
     let x = (float (e ##. clientX)) -. r ##. left in
     let y = (float (e ##. clientY)) -. r ##. top in
-    if not m.normalize then pt x y else
+    if not evs.normalize then pt x y else
     let nx = x /. (r ##. right -. r ##. left) in
     let ny = 1. -. (y /. (r ##. bottom -. r ##. top)) in
     pt nx ny
 
-  let set_mouse_pos ~step m e =
-    let x, y as l = event_mouse_pos pt m e in
-    let epos = m.pt x y in
-    let dx = x -. fst m.last_pos in
-    let dy = y -. snd m.last_pos in
-    m.send_dpos ~step (m.pt dx dy);
-    m.set_pos ~step epos;
-    m.last_pos <- l;
+  let set_mouse_pos ~step evs e =
+    let x, y as l = event_mouse_pos pt evs e in
+    let epos = evs.pt x y in
+    let dx = x -. fst evs.last_pos in
+    let dy = y -. snd evs.last_pos in
+    evs.send_dpos ~step (evs.pt dx dy);
+    evs.set_pos ~step epos;
+    evs.last_pos <- l;
     epos
 
-  let move_cb m _ e =
+  let move_cb evs _ e =
     let step = Step.create () in
-    let _ = set_mouse_pos ~step m e in
+    let _ = set_mouse_pos ~step evs e in
     Step.execute step;
-    Ev.cb_ret ~propagate:m.propagate ~default:m.default e
+    Ev.cb_ret ~propagate:evs.propagate ~default:evs.default e
 
-  let mem_cb mem m _ e =
+  let mem_cb mem evs _ e =
     let step = Step.create () in
-    let _ = set_mouse_pos ~step m e in
-    m.set_mem ~step mem;
+    let _ = set_mouse_pos ~step evs e in
+    evs.set_mem ~step mem;
     Step.execute step;
-    Ev.cb_ret ~propagate:m.propagate ~default:m.default e
+    Ev.cb_ret ~propagate:evs.propagate ~default:evs.default e
 
-  let down_cb m _ e =
+  let down_cb evs _ e =
     let step = Step.create () in
-    let epos = set_mouse_pos ~step m e in
+    let epos = set_mouse_pos ~step evs e in
     let set, send_down = match Js.Optdef.to_option (e ##. which) with
-    | Some Dom_html.Left_button -> m.set_left, m.send_left_down
-    | Some Dom_html.Middle_button -> m.set_mid, m.send_mid_down
-    | Some Dom_html.Right_button -> m.set_right, m.send_right_down
-    | None | Some Dom_html.No_button -> warn_but(); m.set_left, m.send_left_down
+    | Some Dom_html.Left_button -> evs.set_left, evs.send_left_down
+    | Some Dom_html.Middle_button -> evs.set_mid, evs.send_mid_down
+    | Some Dom_html.Right_button -> evs.set_right, evs.send_right_down
+    | None | Some Dom_html.No_button ->
+        warn_but(); evs.set_left, evs.send_left_down
     in
     set ~step true; send_down ~step epos;
     Step.execute step;
-    Ev.cb_ret ~propagate:m.propagate ~default:m.default e
+    Ev.cb_ret ~propagate:evs.propagate ~default:evs.default e
 
-  let up_cb m _ e =
+  let up_cb evs _ e =
     let step = Step.create () in
-    let epos = set_mouse_pos ~step m e in
+    let epos = set_mouse_pos ~step evs e in
     let set, send_up = match Js.Optdef.to_option (e ##. which) with
-    | Some Dom_html.Left_button -> m.set_left, m.send_left_up
-    | Some Dom_html.Middle_button -> m.set_mid, m.send_mid_up
-    | Some Dom_html.Right_button -> m.set_right, m.send_right_up
-    | None | Some Dom_html.No_button -> warn_but (); m.set_left, m.send_left_up
+    | Some Dom_html.Left_button -> evs.set_left, evs.send_left_up
+    | Some Dom_html.Middle_button -> evs.set_mid, evs.send_mid_up
+    | Some Dom_html.Right_button -> evs.set_right, evs.send_right_up
+    | None | Some Dom_html.No_button ->
+        warn_but (); evs.set_left, evs.send_left_up
     in
     set ~step false; send_up ~step epos;
     Step.execute step;
-    Ev.cb_ret ~propagate:m.propagate ~default:m.default e
+    Ev.cb_ret ~propagate:evs.propagate ~default:evs.default e
 
-  let doc_up_cb m t e =
+  let doc_up_cb evs t e =
     (* [up_cb] will not fire if the mouse is no longer in the target;
         but this destroys the semantics of [left], [mid], [right].
-       A callback attached to the document handles this. *)
-    if not (S.rough_value m.mem) &&
-       (S.rough_value m.left || S.rough_value m.mid || S.rough_value m.right)
-    then up_cb m t e else
+        A callback attached to the document handles this. *)
+    if not (S.rough_value evs.mem) &&
+       (S.rough_value evs.left || S.rough_value evs.mid ||
+        S.rough_value evs.right)
+    then up_cb evs t e else
     Ev.cb_ret e
 
   let for_target
@@ -947,8 +1071,8 @@ module Mouse = struct
     let right, set_right = S.create false in
     let right_down, send_right_down = E.create () in
     let right_up, send_right_up = E.create () in
-    let m =
-      { t; capture; propagate; default; normalize; pt; last_pos = (0., 0.);
+    let evs =
+      { t; propagate; default; normalize; pt; last_pos = (0., 0.);
         cbs = [];
         pos; set_pos;
         dpos; send_dpos;
@@ -958,31 +1082,32 @@ module Mouse = struct
         right; set_right; right_down; send_right_down; right_up; send_right_up}
     in
     let cbs =
-      [ Ev.(add_cb ~capture:m.capture m.t mousedown (down_cb m));
-        Ev.(add_cb ~capture:m.capture m.t mouseup (up_cb m));
-        Ev.(add_cb ~capture:m.capture m.t mousemove (move_cb m));
-        Ev.(add_cb ~capture:m.capture m.t mouseenter (mem_cb true m));
-        Ev.(add_cb ~capture:m.capture m.t mouseleave (mem_cb false m));
-        Ev.(add_cb Dom_html.document mouseup (doc_up_cb m)) ]
+      [ Ev.(add_cb ~capture evs.t mousedown (down_cb evs));
+        Ev.(add_cb ~capture evs.t mouseup (up_cb evs));
+        Ev.(add_cb ~capture evs.t mousemove (move_cb evs));
+        Ev.(add_cb ~capture evs.t mouseenter (mem_cb true evs));
+        Ev.(add_cb ~capture evs.t mouseleave (mem_cb false evs));
+        Ev.(add_cb Dom_html.document mouseup (doc_up_cb evs)) ]
     in
-    m.cbs <- cbs; m
+    evs.cbs <- cbs; evs
 
-  let for_el ?capture ?propagate ?default ?normalize (`El t) pt =
-    for_target ?capture ?propagate ?default ?normalize t pt
+  let for_el ?capture ?propagate ?default ?normalize (`El t as e) pt =
+    let evs = for_target ?capture ?propagate ?default ?normalize t pt in
+    El.on_rem (fun () -> destroy evs) e;
+    evs
 
-  let destroy m = List.iter Ev.rem_cb m.cbs
-  let pos m = m.pos
-  let dpos m = m.dpos
-  let mem m = m.mem
-  let left m = m.left
-  let left_down m = m.left_down
-  let left_up m = m.left_up
-  let mid m = m.mid
-  let mid_down m = m.mid_down
-  let mid_up m = m.mid_up
-  let right m = m.right
-  let right_down m = m.right_down
-  let right_up m = m.right_up
+  let pos evs = evs.pos
+  let dpos evs = evs.dpos
+  let mem evs = evs.mem
+  let left evs = evs.left
+  let left_down evs = evs.left_down
+  let left_up evs = evs.left_up
+  let mid evs = evs.mid
+  let mid_down evs = evs.mid_down
+  let mid_up evs = evs.mid_up
+  let right evs = evs.right
+  let right_down evs = evs.right_down
+  let right_up evs = evs.right_up
 end
 
 module Human = struct
@@ -1042,6 +1167,16 @@ module App = struct
 end
 
 (* Browser *)
+
+module Win = struct
+  type t = Dom_html.window Js.t
+
+  let dow = Dom_html.window
+  let device_pixel_ratio =
+    if Js.Optdef.test ((Js.Unsafe.coerce Dom_html.window) ##. devicePixelRatio)
+    then (fun () -> (Js.Unsafe.coerce Dom_html.window) ##. devicePixelRatio)
+    else (fun () -> 1.0)
+end
 
 module Loc = struct
 
