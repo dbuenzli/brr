@@ -834,6 +834,157 @@ module Key = struct
     for_target ?capture ?propagate ?default t k
 end
 
+module Mouse = struct
+
+  let warn_but () = Log.warn (fun m -> m "unexpected e.which")
+  let pt x y = (x, y)
+
+  type 'a t =
+    { t : Dom_html.eventTarget Js.t ;
+      capture : bool; propagate : bool; default : bool;
+      normalize : bool;
+      pt : float -> float -> 'a;
+      mutable last_pos : float * float;
+      mutable cbs : Ev.cb list; (* registered callbacks *)
+      (* This could be made mutable and stubbed with nops
+         until events are actually requested but let's keep it
+         simple for now. *)
+      pos : 'a signal; set_pos : ?step:Step.t -> 'a -> unit;
+      dpos : 'a event; send_dpos : ?step:Step.t -> 'a -> unit;
+      mem : bool signal; set_mem : ?step:Step.t -> bool -> unit;
+      left : bool signal; set_left : ?step:Step.t -> bool -> unit;
+      left_down : 'a event; send_left_down : ?step:Step.t -> 'a -> unit;
+      left_up : 'a event; send_left_up : ?step:Step.t -> 'a -> unit;
+      mid : bool signal; set_mid : ?step:Step.t -> bool -> unit;
+      mid_down : 'a event; send_mid_down : ?step:Step.t -> 'a -> unit;
+      mid_up : 'a event; send_mid_up : ?step:Step.t -> 'a -> unit;
+      right : bool signal; set_right : ?step:Step.t -> bool -> unit;
+      right_down : 'a event; send_right_down : ?step:Step.t -> 'a -> unit;
+      right_up : 'a event; send_right_up : ?step:Step.t -> 'a -> unit; }
+
+  let event_mouse_pos pt m e =
+    let r =
+      ((Obj.magic m.t) :> Dom_html.element Js.t) ## getBoundingClientRect in
+    let x = (float (e ##. clientX)) -. r ##. left in
+    let y = (float (e ##. clientY)) -. r ##. top in
+    if not m.normalize then pt x y else
+    let nx = x /. (r ##. right -. r ##. left) in
+    let ny = 1. -. (y /. (r ##. bottom -. r ##. top)) in
+    pt nx ny
+
+  let set_mouse_pos ~step m e =
+    let x, y as l = event_mouse_pos pt m e in
+    let epos = m.pt x y in
+    let dx = x -. fst m.last_pos in
+    let dy = y -. snd m.last_pos in
+    m.send_dpos ~step (m.pt dx dy);
+    m.set_pos ~step epos;
+    m.last_pos <- l;
+    epos
+
+  let move_cb m _ e =
+    let step = Step.create () in
+    let _ = set_mouse_pos ~step m e in
+    Step.execute step;
+    Ev.cb_ret ~propagate:m.propagate ~default:m.default e
+
+  let mem_cb mem m _ e =
+    let step = Step.create () in
+    let _ = set_mouse_pos ~step m e in
+    m.set_mem ~step mem;
+    Step.execute step;
+    Ev.cb_ret ~propagate:m.propagate ~default:m.default e
+
+  let down_cb m _ e =
+    let step = Step.create () in
+    let epos = set_mouse_pos ~step m e in
+    let set, send_down = match Js.Optdef.to_option (e ##. which) with
+    | Some Dom_html.Left_button -> m.set_left, m.send_left_down
+    | Some Dom_html.Middle_button -> m.set_mid, m.send_mid_down
+    | Some Dom_html.Right_button -> m.set_right, m.send_right_down
+    | None | Some Dom_html.No_button -> warn_but(); m.set_left, m.send_left_down
+    in
+    set ~step true; send_down ~step epos;
+    Step.execute step;
+    Ev.cb_ret ~propagate:m.propagate ~default:m.default e
+
+  let up_cb m _ e =
+    let step = Step.create () in
+    let epos = set_mouse_pos ~step m e in
+    let set, send_up = match Js.Optdef.to_option (e ##. which) with
+    | Some Dom_html.Left_button -> m.set_left, m.send_left_up
+    | Some Dom_html.Middle_button -> m.set_mid, m.send_mid_up
+    | Some Dom_html.Right_button -> m.set_right, m.send_right_up
+    | None | Some Dom_html.No_button -> warn_but (); m.set_left, m.send_left_up
+    in
+    set ~step false; send_up ~step epos;
+    Step.execute step;
+    Ev.cb_ret ~propagate:m.propagate ~default:m.default e
+
+  let doc_up_cb m t e =
+    (* [up_cb] will not fire if the mouse is no longer in the target;
+        but this destroys the semantics of [left], [mid], [right].
+       A callback attached to the document handles this. *)
+    if not (S.rough_value m.mem) &&
+       (S.rough_value m.left || S.rough_value m.mid || S.rough_value m.right)
+    then up_cb m t e else
+    Ev.cb_ret e
+
+  let for_target
+      ?(capture = false) ?(propagate = true) ?(default = propagate)
+      ?(normalize = true) (t : 'a Ev.target) pt
+    =
+    let t = Obj.magic t in
+    let pos, set_pos = S.create (pt 0. 0.) in
+    let dpos, send_dpos = E.create () in
+    let mem, set_mem = S.create false in
+    let left, set_left = S.create false in
+    let left_down, send_left_down = E.create () in
+    let left_up, send_left_up = E.create () in
+    let mid, set_mid = S.create false in
+    let mid_down, send_mid_down = E.create () in
+    let mid_up, send_mid_up = E.create () in
+    let right, set_right = S.create false in
+    let right_down, send_right_down = E.create () in
+    let right_up, send_right_up = E.create () in
+    let m =
+      { t; capture; propagate; default; normalize; pt; last_pos = (0., 0.);
+        cbs = [];
+        pos; set_pos;
+        dpos; send_dpos;
+        mem; set_mem;
+        left; set_left; left_down; send_left_down; left_up; send_left_up;
+        mid; set_mid; mid_down; send_mid_down; mid_up; send_mid_up;
+        right; set_right; right_down; send_right_down; right_up; send_right_up}
+    in
+    let cbs =
+      [ Ev.(add_cb ~capture:m.capture m.t mousedown (down_cb m));
+        Ev.(add_cb ~capture:m.capture m.t mouseup (up_cb m));
+        Ev.(add_cb ~capture:m.capture m.t mousemove (move_cb m));
+        Ev.(add_cb ~capture:m.capture m.t mouseenter (mem_cb true m));
+        Ev.(add_cb ~capture:m.capture m.t mouseleave (mem_cb false m));
+        Ev.(add_cb Dom_html.document mouseup (doc_up_cb m)) ]
+    in
+    m.cbs <- cbs; m
+
+  let for_el ?capture ?propagate ?default ?normalize (`El t) pt =
+    for_target ?capture ?propagate ?default ?normalize t pt
+
+  let destroy m = List.iter Ev.rem_cb m.cbs
+  let pos m = m.pos
+  let dpos m = m.dpos
+  let mem m = m.mem
+  let left m = m.left
+  let left_down m = m.left_down
+  let left_up m = m.left_up
+  let mid m = m.mid
+  let mid_down m = m.mid_down
+  let mid_up m = m.mid_up
+  let right m = m.right
+  let right_down m = m.right_down
+  let right_up m = m.right_up
+end
+
 module Human = struct
   let noticed = 0.1
   let interrupted = 1.

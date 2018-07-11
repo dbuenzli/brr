@@ -24,4 +24,5 @@ let () =
        jsoo_test "test/play";
        jsoo_test "test/leak";
        jsoo_test "test/todomvc";
-       jsoo_test "test/keys"; ]
+       jsoo_test "test/keys";
+       jsoo_test "test/mouse";]

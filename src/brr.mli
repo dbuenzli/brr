@@ -1003,7 +1003,7 @@ end
 
 (** {1:ui User interaction} *)
 
-(** Keyboard physical keys. *)
+(** User keyboard. *)
 module Key : sig
 
   (** {1:keys Physical keys}
@@ -1066,6 +1066,93 @@ module Key : sig
     El.t -> (Dom_html.keyboardEvent) Ev.kind -> t event
   (** [for_el (`El t) k] is [event k t]. *)
 end
+
+(** User mouse.
+
+    Excepts for mouse ups, mouse events are only reported whenever the
+    mouse is over the specified target.
+
+    By default coordinates are in target normalized coordinates with
+    (0, 0) corresponding to the bottom left corner and (1,1) to the
+    top right corner. *)
+module Mouse : sig
+
+  (** {1:mouse Mouse events} *)
+
+  val pt : float -> float -> float * float
+  (** [pt x y] is [(x, y)]. *)
+
+  type 'a t
+  (** The type for representing mouse events on a given target using ['a] to
+      represent points. *)
+
+  val for_target :
+    ?capture:bool -> ?propagate:bool -> ?default:bool -> ?normalize:bool ->
+    'b Ev.target -> (float -> float -> 'a) -> 'a t
+  (** [for_target t pt] is mouse events for target [t] using [pt] to
+      construct points. If [normalize] is [false] coordinates are
+      reported in pixels with the origin at the top-left of the
+      element (defaults to [false]). The other parameters are
+      described in {!Ev.for_target}. *)
+
+  val for_el :
+    ?capture:bool -> ?propagate: bool -> ?default:bool -> ?normalize:bool ->
+    El.t -> (float -> float -> 'a) -> 'a t
+  (** [for_el] is like {!for_target} but for an element. *)
+
+  val destroy : 'a t -> unit
+  (** [destroy m] removes the callbacks registred by [m]. It's
+      important to perform this whenever you no longer
+      need the evetns as [m] needs to register callbacks with the
+      document to correctly capture mouse ups. *)
+
+  (** {1 Mouse position} *)
+
+  val pos : 'a t -> 'a signal
+  (** [pos m] is the current mouse position in the target. *)
+
+  val dpos : 'a t -> 'a event
+  (** [dpos m] occurs on mouse moves with current mouse position minus
+      the previous position. *)
+
+  val mem : 'a t -> bool signal
+  (** [mem m] is [true] whenever the mouse position is inside
+      the target. *)
+
+  (** {1 Mouse buttons} *)
+
+  val left : 'a t -> bool signal
+  (** [left m] is [true] whenever the left mouse button went down in
+      the target and did not go up yet. *)
+
+  val left_down : 'a t -> 'a event
+  (** [left_down m] has an occurence with the mouse position
+      whenever the button goes down in the target. *)
+
+  val left_up : 'a t -> 'a event
+  (** [left_up m] is [true] whenever the left mouse button went down
+      in the target and goes back up {e anywhere}. Note that the reported
+      position might not be in the target. *)
+
+  val mid : 'a t -> bool signal
+  (** [mid] is like {!left} but the middle button. *)
+
+  val mid_down : 'a t -> 'a event
+  (** [mid_down]is like {!left_down} but for the middle button. *)
+
+  val mid_up :'a t -> 'a event
+  (** [mid_up] is like {!left_up} but for the middle button. *)
+
+  val right : 'a t -> bool signal
+  (** [right] is like {!left} but the right button. *)
+
+  val right_down : 'a t -> 'a event
+  (** [right_down]is like {!left_down} but for the right button. *)
+
+  val right_up :'a t -> 'a event
+  (** [right_up] is like {!left_up} but for the right button. *)
+end
+
 
 (** Human factors. *)
 module Human : sig
