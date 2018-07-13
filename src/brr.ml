@@ -81,7 +81,7 @@ module Prop = struct
     in
     loop o p.path
 
-  let rget p ~on o = E.map (fun _ -> get p o) on
+  let rget p ~on o = E.map on (fun _ -> get p o)
   let bool n = vstr ~undefined:false [n]
   let str n = vstr ~undefined:Str.empty [n]
   let checked = bool "checked"
@@ -167,11 +167,11 @@ module Debug = struct
   let trace_v_ret ?pp id v = trace_v ?pp id v; v
   let trace_e ?(obs = false) ?pp id e = match obs with
   | true -> Logr.may_hold (E.log e (trace_v ?pp id)); e
-  | false -> E.map (trace_v_ret ?pp id) e
+  | false -> E.map e (trace_v_ret ?pp id)
 
   let trace_s ?(obs = false) ?pp id s = match obs with
   | true -> Logr.hold (S.log s (trace_v ?pp id)); s
-  | false -> S.map ~eq:(S.eq s) (trace_v_ret ?pp id) s
+  | false -> S.map ~eq:(S.eq s) s (trace_v_ret ?pp id)
 end
 
 module Time = struct
@@ -387,7 +387,7 @@ module El = struct
   | None -> e ## removeAttribute a
   | Some v -> e ## setAttribute a v
 
-  let rget_att a ~on e = E.map (fun _ -> get_att a e) on
+  let rget_att a ~on e = E.map on (fun _ -> get_att a e)
   let rset_att a ~on e =
     may_add_logr (el e) (E.log on (fun v -> set_att a v e))
 
@@ -401,7 +401,7 @@ module El = struct
   | true -> e ##. classList ## add c
   | false -> e ##. classList ## remove c
 
-  let rget_class c ~on e = E.map (fun _ -> get_class c e) on
+  let rget_class c ~on e = E.map on (fun _ -> get_class c e)
   let rset_class c ~on e =
     may_add_logr (el e) (E.log on (fun v -> set_class c v e))
 

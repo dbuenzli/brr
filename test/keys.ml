@@ -5,7 +5,7 @@ open Brr
 
 let log_keys_to e =
   let key = Ev.(for_el (El.document_body ()) keydown Key.of_ev) in
-  let log = E.map (fun k -> [El.txtf "Last key down: %a" Key.pp k]) key in
+  let log = E.map key (fun k -> [El.txtf "Last key down: %a" Key.pp k]) in
   El.rset_children e ~on:log
 
 let pp_bool = Format.pp_print_bool
