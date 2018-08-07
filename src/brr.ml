@@ -230,12 +230,12 @@ module Att = struct
   module Name = struct
     let autofocus = Js.string "autofocus"
     let checked = Js.string "checked"
+    let class' = Js.string "class"
     let disabled = Js.string "disabled"
     let for' = Js.string "for"
     let height = Js.string "height"
     let href = Js.string "href"
     let id = Js.string "id"
-    let klass = Js.string "class"
     let name = Js.string "name"
     let placeholder = Js.string "placeholder"
     let src = Js.string "src"
@@ -252,12 +252,12 @@ module Att = struct
 
   let autofocus = bool Name.autofocus
   let checked = bool Name.checked
+  let class' = str Name.class'
   let disabled = bool Name.disabled
   let for' = str Name.for'
   let height = int Name.height
   let href = str Name.href
   let id = str Name.id
-  let klass = str Name.klass
   let name = str Name.name
   let placeholder = str Name.placeholder
   let src = str Name.src
@@ -340,7 +340,7 @@ module El = struct
     loop n children
 
   let v ?(atts = []) name cs =
-    let set_att e (a, v) = match Str.equal a Att.Name.klass with
+    let set_att e (a, v) = match Str.equal a Att.Name.class' with
     | true -> e ##. classList ## add (v)
     | false -> e ## setAttribute a v
     in

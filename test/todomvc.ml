@@ -132,7 +132,7 @@ let el_def_display : El.t -> bool signal -> unit =
 let add_todo : unit -> [> add_action] event * [> El.t] =
 fun () ->
   let p = "What needs to be done ?" in
-  let atts = Att.[type' "text"; klass "new-todo"; autofocus; placeholder p] in
+  let atts = Att.[type' "text"; class' "new-todo"; autofocus; placeholder p] in
   let i = El.input ~atts [] in
   let return = E.filter Ev.(for_el i keydown Key.of_ev) (Key.equal `Return) in
   let input = E.map (El.rget_prop Prop.value i ~on:return) Str.trim in
@@ -147,7 +147,7 @@ fun () ->
 let toggle_all : set:bool signal -> [> bulk_action ] event * [> El.t] =
 fun ~set ->
   let tid = "toggle-all" in
-  let i = El.input ~atts:Att.[type' "checkbox"; klass tid; id tid] [] in
+  let i = El.input ~atts:Att.[type' "checkbox"; class' tid; id tid] [] in
   let () = El.def_prop Prop.checked set i in
   let toggle = El.rget_prop Prop.checked i ~on:Ev.(for_el i click unit) in
   let toggle = E.map toggle @@ fun checked -> `All_done checked in
@@ -161,7 +161,7 @@ fun ~count ->
   | 1 -> El.txt "1 item left"
   | n -> El.txtf "%d items left" n
   in
-  let span = El.span ~atts:Att.[klass "todo-count"] [] in
+  let span = El.span ~atts:Att.[class' "todo-count"] [] in
   let () = El.def_children span (S.map count @@ fun c -> [count_msg c]) in
   span
 
@@ -183,11 +183,11 @@ fun () ->
   let todo = filter_li (str "#/active") "Active" in
   let done' = filter_li (str "#/completed") "Completed" in
   let filter = S.hold init_filter (E.map Loc.hashchange parse_frag) in
-  filter, El.ul ~atts:Att.[klass "filters"] [all; todo; done']
+  filter, El.ul ~atts:Att.[class' "filters"] [all; todo; done']
 
 let str_editor : str -> on:'a event -> bool event * str event * [> El.t] =
 fun s ~on ->
-  let ed = El.input ~atts:Att.[klass "edit"; v Name.value s] [] in
+  let ed = El.input ~atts:Att.[class' "edit"; v Name.value s] [] in
   let keys = Ev.(for_el ed keydown Key.of_ev) in
   let edited = E.filter keys (Key.equal `Return) in
   let undo = E.filter keys (Key.equal `Escape) in
@@ -202,7 +202,7 @@ fun s ~on ->
 
 let bool_editor : bool -> bool event * [> El.t ] =
 fun bool ->
-  let atts = Att.(add_if bool checked [type' "checkbox"; klass "toggle"]) in
+  let atts = Att.(add_if bool checked [type' "checkbox"; class' "toggle"]) in
   let el = El.input ~atts [] in
   let toggle = El.rget_prop Prop.checked el ~on:Ev.(for_el el click unit) in
   toggle, el
@@ -213,7 +213,7 @@ fun todo ->
   let task = Todo.task todo in
   let set_done, done_editor = bool_editor done' in
   let set_done = E.map set_done @@ fun d -> `Set_done (d, todo) in
-  let rem_but = El.button ~atts:Att.[klass "destroy"] [] in
+  let rem_but = El.button ~atts:Att.[class' "destroy"] [] in
   let rem = Ev.(for_el rem_but click @@ stamp (`Rem_todo todo)) in
   let label = El.label [`Txt task] in
   let editing, edited, ed =
@@ -224,8 +224,8 @@ fun todo ->
     if Str.is_empty v then Some (`Rem_todo todo) else
     if not (Str.equal v task) then Some (`Set_task (v, todo)) else None
   in
-  let div = El.div ~atts:Att.[klass "view"] [done_editor; label; rem_but] in
-  let li = El.li ~atts:Att.(add_if done' (klass "completed") []) [div; ed] in
+  let div = El.div ~atts:Att.[class' "view"] [done_editor; label; rem_but] in
+  let li = El.li ~atts:Att.(add_if done' (class' "completed") []) [div; ed] in
   let () = El.rset_class (str "editing") editing li in
   E.select [edit; rem; set_done], li
 
@@ -241,13 +241,13 @@ fun ts ~filter ->
   let items = S.l2 ~eq:( == ) add_todos ts filter in
   let act = E.swap @@ S.map ~eq:( == ) items @@ fun (evs, _) -> E.select evs in
   let items = S.map items snd in
-  let ul = El.ul ~atts:Att.[klass "todo-list"] [] in
+  let ul = El.ul ~atts:Att.[class' "todo-list"] [] in
   let () = El.def_children ul items in
   act, ul
 
 let header () =
   let add, field = add_todo () in
-  add, El.(header ~atts:Att.[klass "header"] [h1 [txt "todos"]; field])
+  add, El.(header ~atts:Att.[class' "header"] [h1 [txt "todos"]; field])
 
 let footer ~todos =
   let is_todo t = not (Todo.done' t) in
@@ -256,13 +256,13 @@ let footer ~todos =
   let left_el = items_left ~count:(S.map todos todo_left) in
   let filter, fs_el = filters () in
   let rem_done, rem_el =
-    let atts = Att.[klass "clear-completed"] in
+    let atts = Att.[class' "clear-completed"] in
     let b = El.button ~atts [El.txt "Clear completed"] in
     let () = el_def_display b has_done in
     let rem_done = Ev.(for_el b click @@ stamp `Rem_done) in
     rem_done, b
   in
-  let foot = El.footer ~atts:Att.[klass "footer"] [left_el; fs_el; rem_el] in
+  let foot = El.footer ~atts:Att.[class' "footer"] [left_el; fs_el; rem_el] in
   let display ts = not @@ Todos.is_empty ts in
   let () = el_def_display foot (S.map todos display) in
   filter, rem_done, foot
@@ -273,7 +273,7 @@ let main ~add_todo ~rem_done ~todos ~filter =
   in
   let toggle_all, toggle_el = toggle_all toggle_set in
   let edit, items = todo_list todos ~filter in
-  let sec = El.section ~atts:Att.[klass "main"] [toggle_el; items] in
+  let sec = El.section ~atts:Att.[class' "main"] [toggle_el; items] in
   let display ts = not @@ Todos.is_empty ts in
   let () = el_def_display sec (S.map todos display) in
   E.select [add_todo; rem_done; edit; toggle_all], sec

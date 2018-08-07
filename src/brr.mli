@@ -295,20 +295,19 @@ module Att : sig
 
   (** {1 Predefined attribute names and constructors}
 
-      {b Convention.} Except for {!klass} whenever an attribute
-      name conflicts with an OCaml keyword we prime them, see
-      for example {!for'}. *)
+      {b Convention.} Whenever an attribute name conflicts with an OCaml
+      keyword we prime them, see for example {!class'}. *)
 
   (** Attribute names. *)
   module Name : sig
     val autofocus : name
     val checked : name
+    val class' : name
     val disabled : name
     val for' : name
     val height : name
     val href : name
     val id : name
-    val klass : name
     val name : name
     val placeholder : name
     val src : name
@@ -321,14 +320,12 @@ module Att : sig
 
   val autofocus : t
   val checked : t
+  val class' : string -> t
   val disabled : t
   val for' : string -> t
   val height : int -> t
   val href : string -> t
   val id : string -> t
-  val klass : string -> t
-  (** [class] really. *)
-
   val name : string -> t
   val placeholder : string -> t
   val src : string -> t
