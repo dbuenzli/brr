@@ -639,266 +639,373 @@ module El : sig
 
   val a : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a}a} *)
+
   val abbr : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr}abbr} *)
+
   val address : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address}
       address} *)
+
   val area : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area}area} *)
+
   val article : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article}
       article} *)
+
   val aside : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside}
       aside} *)
+
   val audio : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio}
       audio} *)
+
   val b : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b}b} *)
+
   val base : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base}base} *)
+
   val bdi : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi}bdi} *)
+
   val bdo : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo}bdo} *)
+
   val blockquote : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote}
       blockquote} *)
+
   val body : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body}body} *)
+
   val br : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br}br} *)
+
   val button : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button}
       button} *)
+
   val canvas : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas}
       canvas} *)
+
   val caption : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption}
       caption} *)
+
   val cite : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite}cite} *)
+
   val code : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code}code} *)
+
   val col : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col}col} *)
+
   val colgroup : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup}
       colgroup} *)
+
   val command : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/command}
       command} *)
+
   val datalist : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist}
       datalist} *)
+
   val dd : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd}dd} *)
+
   val del : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del}del} *)
+
   val details : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details}
       details} *)
+
   val dfn : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn}dfn} *)
+
   val div : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div}div} *)
+
   val dl : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl}dl} *)
+
   val dt : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt}dt} *)
+
   val em : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em}em} *)
+
   val embed : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed}
       embed} *)
+
   val fieldset : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset}
       fieldset} *)
+
   val figcaption : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption}
       figcaption} *)
+
   val figure : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure}
       figure} *)
+
   val footer : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer}
       footer} *)
+
   val form : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form}form} *)
+
   val h1 : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1}h1} *)
+
   val h2 : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2}h2} *)
+
   val h3 : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3}h3} *)
+
   val h4 : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4}h4} *)
+
   val h5 : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5}h5} *)
+
   val h6 : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6}h6} *)
+
   val head : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head}head} *)
+
   val header : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header}
       header} *)
+
   val hgroup : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup}
       hgroup} *)
+
   val hr : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr}hr} *)
+
   val html : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html}html} *)
+
   val i : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i}i} *)
+
   val iframe : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe}
       iframe} *)
+
   val img : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img}img} *)
+
   val input : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input}
       input} *)
+
   val ins : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins}ins} *)
+
   val kbd : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd}kbd} *)
+
   val keygen : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen}
       keygen} *)
+
   val label : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label}
       label} *)
+
   val legend : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend}
       legend} *)
+
   val li : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li}li} *)
+
   val link : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link}link} *)
+
   val map : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map}map} *)
+
   val mark : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark}mark} *)
+
   val menu : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu}menu} *)
+
   val meta : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta}meta} *)
+
   val meter : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter}
       meter} *)
+
   val nav : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav}nav} *)
+
   val noscript : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript}
       noscript} *)
+
   val object' : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object}
       object} *)
+
   val ol : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol}ol} *)
+
   val optgroup : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup}
       optgroup} *)
+
   val option : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option}
       option} *)
+
   val output : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output}
       output} *)
+
   val p : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p}p} *)
+
   val param : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param}
       param} *)
+
   val pre : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre}pre} *)
+
   val progress : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress}
       progress} *)
+
   val q : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q}q} *)
+
   val rp : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp}rp} *)
+
   val rt : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt}rt} *)
+
   val ruby : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby}ruby} *)
+
   val s : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s}s} *)
+
   val samp : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp}samp} *)
+
   val script : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script}
       script} *)
+
   val section : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section}
       section} *)
+
   val select : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select}
       select} *)
+
   val small : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small}
       small} *)
+
   val source : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source}
       source} *)
+
   val span : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span}span} *)
+
   val strong : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong}
       strong} *)
+
   val style : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style}
       style} *)
+
   val sub : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub}sub} *)
+
   val summary : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary}
       summary} *)
+
   val sup : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup}sup} *)
+
   val table : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table}
       table} *)
+
   val tbody : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody}
       tbody} *)
+
   val td : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td}td} *)
+
   val textarea : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea}
       textarea} *)
+
   val tfoot : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot}
       tfoot} *)
+
   val th : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th}th} *)
+
   val thead : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead}
       thead} *)
+
   val time : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time}time} *)
+
   val title : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title}
       title} *)
+
   val tr : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr}tr} *)
+
   val track : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track}
       track} *)
+
   val u : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u}u} *)
+
   val ul : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul}ul} *)
+
   val var : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var}var} *)
+
   val video : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video}
       video} *)
+
   val wbr : 'a cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr}wbr} *)
 end
