@@ -224,7 +224,7 @@ module Att = struct
     Format.kfprintf k Format.str_formatter fmt
 
   let vstr name v = (str name, str v)
-  let vstrf name fmt = vf (name) fmt
+  let vstrf name fmt = vf (str name) fmt
   let add_if b att l = if b then att :: l else l
 
   module Name = struct

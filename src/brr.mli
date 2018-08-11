@@ -287,7 +287,7 @@ module Att : sig
   val vstr : string -> string -> t
   (** [vstr name s] is [v (str name) (str v)]. *)
 
-  val vstrf : name -> ('a, Format.formatter, unit, t) format4 -> 'a
+  val vstrf : string -> ('a, Format.formatter, unit, t) format4 -> 'a
   (** [vstrf name fmt ...] is [vf (str name) fmt ...] *)
 
   val add_if : bool -> t -> t list -> t list
