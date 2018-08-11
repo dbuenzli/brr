@@ -1170,6 +1170,7 @@ module Ev : sig
   val pagehide : Dom_html.event kind
   val pageshow : Dom_html.event kind
   val popstate : Dom_html.event kind
+  val progress : Dom_html.event kind
   val readystatechange : Dom_html.event kind
   val reset : Dom_html.event kind
   val resize : Dom_html.event kind
@@ -1673,6 +1674,74 @@ module Store : sig
   val force_version : ?scope:scope -> string -> unit
   (** [force_version v] checks that the version of the store is [v].  If
       it's not it {!clear}s the store and sets the version to [v]. *)
+end
+
+(** File system interaction. *)
+module File : sig
+
+  type t
+  (** The type for file objects. *)
+
+  val name : t -> str
+  (** [name f] is the file name of [f]. *)
+
+  val size : t -> int
+  (** [size f] is the file size of [f] *)
+
+  val last_modified_ms : t -> int
+  (** [last_modified_ms f] is the last modified time in ms from
+      the epoch. *)
+
+  val type' : t -> str
+  (** [type f] is the MIME type of [f]. *)
+
+  val list_of_el : El.t -> t list
+  (** [list_of_el e] is the file list of element [e]. *)
+
+  (** Reading files. *)
+  module Read : sig
+
+    (** {1:progress Read progress} *)
+
+    type progress
+    (** The type for read progress. *)
+
+    val bytes_read : progress -> int
+    (** [bytes_read p] is the number of bytes read so far. *)
+
+    val bytes_total : progress -> int option
+    (** [bytes_total p] is the total number of bytes to read. *)
+
+    (** {1:reads File reads} *)
+
+    type error =
+      [ `Aborted | `Security | `Not_readable | `Not_found | `Other of string ]
+    (** The type for file read errors. *)
+
+    val pp_error : Format.formatter -> error -> unit
+    (** [pp_error ppf e] prints an unspecified representation of [e]
+        on [ppf]. *)
+
+    type file = t
+    (** The type for files. *)
+
+    type 'a t
+    (** The type for file reads returning results of type ['a]. *)
+
+    val to_data_url : file -> str t
+    (** [to_data_url f] reads file [f] as as a
+        {{:https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs}data URL}. This doesn't start the read use {!read}. *)
+
+    val abort : 'a t -> unit
+    (** [abort r] aborts the file read [r]. *)
+
+    val result : 'a t -> (file * ('a, error) result) event
+    (** [result r] is an event that occurs only once with the read
+        result. *)
+
+    val progress : 'a t -> (file * progress) event
+    (** [progress r] is an event that occurs during the read of [r]. *)
+  end
 end
 
 (*---------------------------------------------------------------------------

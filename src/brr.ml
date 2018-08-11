@@ -774,6 +774,7 @@ module Ev = struct
   let pagehide = Dom.Event.make "pagehide"
   let pageshow = Dom.Event.make "pageshow"
   let popstate = Dom.Event.make "popstate"
+  let progress = Dom.Event.make "progress"
   let readystatechange = Dom.Event.make "readystatechange"
   let reset = Dom.Event.make "reset"
   let resize = Dom.Event.make "resize"
@@ -864,13 +865,13 @@ module Key = struct
 
   type events =
     { propagate : bool; default : bool;
-      any_down : t event; send_any_down : ?step:Step.t -> t -> unit;
-      any_up : t event; send_any_up : ?step:Step.t -> t -> unit;
+      any_down : t event; send_any_down : t E.send;
+      any_up : t event; send_any_up : t E.send;
       mutable down_count : int;
-      any_holds : bool signal; set_any_holds : ?step:Step.t -> bool -> unit;
-      down_event : (t, unit event * (?step:Step.t -> unit -> unit)) Hashtbl.t ;
-      up_event : (t, unit event * (?step:Step.t -> unit -> unit)) Hashtbl.t;
-      holds : (t, bool signal * (?step:Step.t -> bool -> unit)) Hashtbl.t;
+      any_holds : bool signal; set_any_holds : bool S.set;
+      down_event : (t, unit event * unit E.send) Hashtbl.t ;
+      up_event : (t, unit event * unit E.send) Hashtbl.t;
+      holds : (t, bool signal * bool S.set) Hashtbl.t;
       alt : bool signal; ctrl : bool signal; meta : bool signal;
       shift : bool signal; }
 
@@ -988,18 +989,18 @@ module Mouse = struct
       pt : float -> float -> 'a;
       mutable last_pos : float * float;
       mutable cbs : Ev.cb list; (* registered callbacks *)
-      pos : 'a signal; set_pos : ?step:Step.t -> 'a -> unit;
-      dpos : 'a event; send_dpos : ?step:Step.t -> 'a -> unit;
-      mem : bool signal; set_mem : ?step:Step.t -> bool -> unit;
-      left : bool signal; set_left : ?step:Step.t -> bool -> unit;
-      left_down : 'a event; send_left_down : ?step:Step.t -> 'a -> unit;
-      left_up : 'a event; send_left_up : ?step:Step.t -> 'a -> unit;
-      mid : bool signal; set_mid : ?step:Step.t -> bool -> unit;
-      mid_down : 'a event; send_mid_down : ?step:Step.t -> 'a -> unit;
-      mid_up : 'a event; send_mid_up : ?step:Step.t -> 'a -> unit;
-      right : bool signal; set_right : ?step:Step.t -> bool -> unit;
-      right_down : 'a event; send_right_down : ?step:Step.t -> 'a -> unit;
-      right_up : 'a event; send_right_up : ?step:Step.t -> 'a -> unit; }
+      pos : 'a signal; set_pos : 'a S.set;
+      dpos : 'a event; send_dpos : 'a E.send;
+      mem : bool signal; set_mem : bool S.set;
+      left : bool signal; set_left : bool S.set;
+      left_down : 'a event; send_left_down : 'a E.send;
+      left_up : 'a event; send_left_up : 'a E.send;
+      mid : bool signal; set_mid : bool S.set;
+      mid_down : 'a event; send_mid_down : 'a E.send;
+      mid_up : 'a event; send_mid_up : 'a E.send;
+      right : bool signal; set_right : bool S.set;
+      right_down : 'a event; send_right_down : 'a E.send;
+      right_up : 'a event; send_right_up : 'a E.send; }
 
   let destroy evs = List.iter Ev.rem_cb evs.cbs
 
@@ -1363,6 +1364,71 @@ module Store = struct
 
   let clear ?(scope = `Persist) () = match scope_store scope with
   | Some s -> s ## clear | None -> ()
+end
+
+module File = struct
+  type t = < > Js.t
+  let name f = (Js.Unsafe.coerce f) ##. name
+  let size f = (Js.Unsafe.coerce f) ##. size
+  let type' f = (Js.Unsafe.coerce f) ##. _type
+  let last_modified_ms f = (Js.Unsafe.coerce f) ##. lastModified
+  let list_of_el (`El e) = array_to_list @@ (Js.Unsafe.coerce e) ##. files
+
+  module Read = struct
+    type progress = Dom_html.event Js.t
+    let bytes_read p = (Js.Unsafe.coerce p) ##. loaded
+    let bytes_total p =
+      match Js.to_bool @@ (Js.Unsafe.coerce p) ##. lengthComputable with
+      | false -> None
+      | true -> Some (Js.Unsafe.coerce p) ##. total
+
+    type error =
+      [ `Aborted | `Security | `Not_readable | `Not_found | `Other of string ]
+
+    let pp_error ppf e = Format.pp_print_string ppf @@ match e with
+    | `Aborted -> "aborted" | `Security -> "security error"
+    | `Not_readable -> "not readable" | `Not_found -> "not found"
+    | `Other s -> s
+
+    let extract_error r =
+      let e = (Js.Unsafe.coerce r) ##. error in
+      match Js.to_string @@ (Js.Unsafe.coerce e) ## name with
+      | "SecurityError" -> `Security
+      | "AbortError" -> `Aborted
+      | "NotFoundError" -> `Not_found
+      | "NotReadableError" -> `Not_readable
+      | s -> `Other s
+
+    type file = t
+    type 'a t =
+      { r : < > Js.t;
+        result : (file * ('a, error) result) event;
+        progress : (file * progress) event; }
+
+    let to_xxx get start f =
+      let r = Js.Unsafe.new_obj (Js.Unsafe.global ##. _FileReader) [||] in
+      let result, send_result = E.create () in
+      let progress, send_progress = E.create () in
+      let progressing _ e = send_progress (f, e); Ev.cb_ret e in
+      let error r e =  send_result (f, Error (extract_error r)); Ev.cb_ret e in
+      let abort r e = send_result (f, Error `Aborted); Ev.cb_ret e in
+      let load r e = send_result (f, Ok (get r)); Ev.cb_ret e in
+      let () = ignore (Ev.add_cb r Ev.progress progressing) in
+      let () = ignore (Ev.add_cb r Ev.error error) in
+      let () = ignore (Ev.add_cb r Ev.abort abort) in
+      let () = ignore (Ev.add_cb r Ev.load load) in
+      let () = start r f in
+      { r; result; progress }
+
+    let to_data_url =
+      let get r : str = (Js.Unsafe.coerce r) ##. result in
+      let start r f = (Js.Unsafe.coerce r) ## readAsDataURL (f) in
+      to_xxx get start
+
+    let abort r = (Js.Unsafe.coerce r.r) ## abort
+    let result r = r.result
+    let progress r = r.progress
+  end
 end
 
 (*---------------------------------------------------------------------------
