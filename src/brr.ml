@@ -409,6 +409,8 @@ module El = struct
 
   (* Properties *)
 
+  let get_prop p (`El e) = Prop.get p e
+  let set_prop p v (`El e) = Prop.set p v e
   let rget_prop p ~on (`El e) = Prop.rget p ~on e
   let rset_prop p ~on (`El e) =
     may_add_logr e (E.log on (fun v -> Prop.set p v e))

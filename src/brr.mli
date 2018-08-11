@@ -113,7 +113,7 @@ module Prop : sig
 
   (** {1:predef Predefined properties}
 
-      These properties all have an undefined value, [Str.empty] for strings,
+      These properties all have an undefined value: [Str.empty] for strings,
       [false] for booleans. *)
 
   val checked : bool t
@@ -448,6 +448,13 @@ module El : sig
       the only entity interacting with that class. *)
 
   (** {1:properies Properties} *)
+
+  val get_prop : 'a Prop.t -> t -> 'a
+  (** [get_prop p e] is the property [p] of element [e] if defined and
+      [p]'s undefined value otherwise. *)
+
+  val set_prop : 'a Prop.t -> 'a -> t -> unit
+  (** [set_prop p v o] sets property [p] of element [e] to [v]. *)
 
   val rget_prop : 'a Prop.t -> on:'b event -> t -> 'a event
   (** {!rget_prop} is {!Prop.rget}. *)
