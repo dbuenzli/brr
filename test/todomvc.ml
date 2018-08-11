@@ -126,8 +126,7 @@ let el_def_display : El.t -> bool signal -> unit =
   (* Would maybe be better to do this via CSS classes *)
   let none = Js.string "none" and show = Js.string "" in
   let bool_to_display = function true -> show | false -> none in
-  let dprop : Brr.str Prop.t = Prop.vstr ~undefined:show ["style"; "display"] in
-  fun el bool -> El.def_prop dprop (S.map bool bool_to_display) el
+  fun el bool -> El.def_style El.Style.display (S.map bool bool_to_display) el
 
 let add_todo : unit -> [> add_action] event * [> El.t] =
 fun () ->

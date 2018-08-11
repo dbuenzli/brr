@@ -6,6 +6,9 @@
 
 (** Reactive browser interaction.
 
+    {b FIXME} consider removing [rget_*] functions those
+    are just [E.map].
+
     {e %%VERSION%% — {{:%%PKG_HOMEPAGE%% }homepage}} *)
 
 open Note
@@ -90,7 +93,7 @@ module Prop : sig
   (** The type for properties of type ['a]. *)
 
   val v : undefined:'a -> str list -> 'a t
-  (** [v p : prop_type t] is accesed via path [p] of type [prop_type].
+  (** [v p : prop_type t] is accessed via path [p] of type [prop_type].
       {b Warning.} Always constrain the type otherwise this is
       {!Obj.magic}. [p] must be non-empty. *)
 
@@ -464,7 +467,40 @@ module El : sig
       of [on] whenever it occurs. *)
 
   val def_prop : 'a Prop.t -> 'a signal -> t -> unit
-  (** [def_prop p v e] defines the property [p] of [e] over time
+  (** [def_prop p v e] defines the property [p] of [e] over time with
+      the value of [v]. {b Warning.} This assumes [v] is the only
+      entity interacting with that property. *)
+
+  (** {1:style Style} *)
+
+  (** Style property names. *)
+  module Style : sig
+    type prop = str
+    val background_color : prop
+    val color : prop
+    val display : prop
+    val height : prop
+    val visibility : prop
+    val width : prop
+  end
+
+  val get_computed_style : Style.prop -> t -> str
+  (** [get_computed_style p e] is the computed style property [p] of [e]. *)
+
+  val get_style : Style.prop -> t -> str
+  (** [get_style p e] is the inline style property [p] of [e]. *)
+
+  val set_style : ?important:bool -> Style.prop -> str -> t -> unit
+  (** [set_style ~important p v e] sets the inline style property [p] of
+      [e] to [v] with priority [important] (defaults to [false]). *)
+
+  val rset_style : ?important:bool -> Style.prop -> on:str event -> t -> unit
+  (** [rset_style ~important p ~on e] sets the inline style property [p]
+      of [e] to the value of [on] whenever it occurs with priority
+      [important] (defaults to [false]). *)
+
+  val def_style : ?important:bool -> Style.prop -> str signal -> t -> unit
+  (** [def_style p v e] sets the inline style property [p] of [e] over time
       with the value of [v]. {b Warning.} This assumes [v] is the only
       entity interacting with that property. *)
 

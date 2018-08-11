@@ -418,6 +418,38 @@ module El = struct
   let def_prop p vs (`El e) =
     add_logr e (S.log vs (fun v -> Prop.set p v e))
 
+  (* Style *)
+
+  module Style = struct
+    type prop = str
+    let background_color = str "background-color"
+    let color = str "color"
+    let display = str "display"
+    let height = str "height"
+    let visibility = str "visibility"
+    let width = str "width"
+  end
+
+  let get_computed_style p (`El e) =
+    let style = Dom_html.window ## getComputedStyle (e) in
+    match Js.Optdef.to_option (Js.Unsafe.get style p) with
+    | None -> Str.empty | Some v -> v
+
+  let get_style p (`El e) =
+    match Js.Optdef.to_option (Js.Unsafe.get (Js.Unsafe.get e "style") p) with
+    | None -> Str.empty | Some v -> v
+
+  let important_str = str "important"
+  let set_style ?(important = false) p v (`El e) =
+    let important = if important then important_str else Str.empty in
+    (Js.Unsafe.get e "style") ## setProperty (p, v, important)
+
+  let rset_style ?important p ~on (`El e as el) =
+    may_add_logr e (E.log on (fun v -> set_style ?important p v el))
+
+  let def_style ?important p vs (`El e as el) =
+    add_logr e (S.log vs (fun v -> set_style ?important p v el))
+
   (* Focus *)
 
   let set_focus b (`El e) = if b then (e ## focus) else (e ## blur)
