@@ -354,8 +354,8 @@ module El : sig
   type name = str
   (** The type for element names. *)
 
-  type el = Dom_html.element Js.t
-  (** The type for naked elements. *)
+  type el
+  (** The type for elements. *)
 
   type t = [ `El of el ]
   (** The type for elements. *)
@@ -370,7 +370,7 @@ module El : sig
       the exception of {!Att.klass}, whose occurences accumulate to
       define the final value. *)
 
-  val el : t -> el
+  val el : t -> Dom_html.element Js.t
   (** [el (`El e)] is [e]. *)
 
   val find : id:str -> [> t] option

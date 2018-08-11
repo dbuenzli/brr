@@ -279,16 +279,14 @@ module El = struct
 
   let add_prop : (unit -> unit) list Prop.t = Prop.vstr ~undefined:[]["brr_add"]
   let rem_prop : (unit -> unit) list Prop.t = Prop.vstr ~undefined:[]["brr_rem"]
-  let add_fun prop f (e : el) = Prop.set prop (f :: Prop.get prop e) e
-  let invoke_funs prop e =
-    let funs = Prop.get prop e in
+  let add_fun prop f (`El e) = Prop.set prop (f :: Prop.get prop e) e
+  let invoke_funs prop eraw =
+    let funs = Prop.get prop eraw in
     List.iter (fun f -> f ()) funs;
-    Prop.set prop [] e
+    Prop.set prop [] eraw
 
-  let add_logr (e : el) l =
-    add_fun rem_prop (fun () -> Logr.destroy l) e
-
-  let may_add_logr (e : el) = function None -> () | Some l -> add_logr e l
+  let add_logr e l = add_fun rem_prop (fun () -> Logr.destroy l) e
+  let may_add_logr e = function None -> () | Some l -> add_logr e l
 
   let in_html_dom n =
     (Js.Unsafe.meth_call n "getRootNode" [||] :> #Dom.node Js.t) ==
@@ -325,7 +323,7 @@ module El = struct
   (* Elements *)
 
   type name = Js.js_string Js.t
-  type t = [ `El of el ]
+  type t = [ `El of Dom_html.element Js.t ]
   type child = [ t | `Txt of str ]
 
   let add_children (`El n) children =
@@ -375,10 +373,9 @@ module El = struct
 
   let set_children e cs = rem_children e; add_children e cs
   let rset_children e ~on =
-    may_add_logr (el e) (E.log on (fun cs -> set_children e cs))
+    may_add_logr e (E.log on (fun cs -> set_children e cs))
 
-  let def_children e cs =
-    add_logr (el e) (S.log cs (fun cs -> set_children e cs))
+  let def_children e cs = add_logr e (S.log cs (fun cs -> set_children e cs))
 
   (* Attributes *)
 
@@ -388,11 +385,8 @@ module El = struct
   | Some v -> e ## setAttribute a v
 
   let rget_att a ~on e = E.map on (fun _ -> get_att a e)
-  let rset_att a ~on e =
-    may_add_logr (el e) (E.log on (fun v -> set_att a v e))
-
-  let def_att a vs e =
-    add_logr (el e) (S.log vs (fun v -> set_att a v e))
+  let rset_att a ~on e = may_add_logr e (E.log on (fun v -> set_att a v e))
+  let def_att a vs e = add_logr e (S.log vs (fun v -> set_att a v e))
 
   (* Classes *)
 
@@ -402,21 +396,16 @@ module El = struct
   | false -> e ##. classList ## remove c
 
   let rget_class c ~on e = E.map on (fun _ -> get_class c e)
-  let rset_class c ~on e =
-    may_add_logr (el e) (E.log on (fun v -> set_class c v e))
-
-  let def_class c bs e = add_logr (el e) (S.log bs (fun b -> set_class c b e))
+  let rset_class c ~on e = may_add_logr e (E.log on (fun v -> set_class c v e))
+  let def_class c bs e = add_logr e (S.log bs (fun b -> set_class c b e))
 
   (* Properties *)
 
   let get_prop p (`El e) = Prop.get p e
   let set_prop p v (`El e) = Prop.set p v e
   let rget_prop p ~on (`El e) = Prop.rget p ~on e
-  let rset_prop p ~on (`El e) =
-    may_add_logr e (E.log on (fun v -> Prop.set p v e))
-
-  let def_prop p vs (`El e) =
-    add_logr e (S.log vs (fun v -> Prop.set p v e))
+  let rset_prop p ~on e = may_add_logr e (E.log on (fun v -> set_prop p v e))
+  let def_prop p vs e = add_logr e (S.log vs (fun v -> set_prop p v e))
 
   (* Style *)
 
@@ -431,7 +420,7 @@ module El = struct
   end
 
   let get_computed_style p (`El e) =
-    let style = Dom_html.window ## getComputedStyle (e) in
+    let style = Dom_html.window ## getComputedStyle e in
     match Js.Optdef.to_option (Js.Unsafe.get style p) with
     | None -> Str.empty | Some v -> v
 
@@ -442,22 +431,19 @@ module El = struct
   let important_str = str "important"
   let set_style ?(important = false) p v (`El e) =
     let important = if important then important_str else Str.empty in
-    (Js.Unsafe.get e "style") ## setProperty (p, v, important)
+    (Js.Unsafe.get e "style") ## setProperty p v important
 
-  let rset_style ?important p ~on (`El e as el) =
-    may_add_logr e (E.log on (fun v -> set_style ?important p v el))
+  let rset_style ?important p ~on e =
+    may_add_logr e (E.log on (fun v -> set_style ?important p v e))
 
-  let def_style ?important p vs (`El e as el) =
-    add_logr e (S.log vs (fun v -> set_style ?important p v el))
+  let def_style ?important p vs e =
+    add_logr e (S.log vs (fun v -> set_style ?important p v e))
 
   (* Focus *)
 
   let set_focus b (`El e) = if b then (e ## focus) else (e ## blur)
-  let rset_focus ~on (`El e as el) =
-    may_add_logr e (E.log on (fun v -> set_focus v el))
-
-  let def_focus b (`El e as el) =
-    add_logr e (S.log b (fun b -> set_focus b el))
+  let rset_focus ~on e = may_add_logr e (E.log on (fun v -> set_focus v e))
+  let def_focus b e = add_logr e (S.log b (fun b -> set_focus b e))
 
   (* Click simulation *)
 
@@ -469,14 +455,14 @@ module El = struct
 
   (* Life-cycle callbacks *)
 
-  let on_add f (`El e) = add_fun add_prop f e
-  let on_rem f (`El e) = add_fun rem_prop f e
+  let on_add f e = add_fun add_prop f e
+  let on_rem f e = add_fun rem_prop f e
 
   (* Note loggers *)
 
-  let call f ~on (`El e as el) = may_add_logr e (E.log on (fun v -> f v el))
-  let hold_logr (`El e) l = add_logr e l
-  let may_hold_logr (`El e) l = may_add_logr e l
+  let call f ~on e = may_add_logr e (E.log on (fun v -> f v e))
+  let hold_logr e l = add_logr e l
+  let may_hold_logr e l = may_add_logr e l
 
   (* Element names *)
 
@@ -1125,8 +1111,8 @@ module Mouse = struct
     in
     evs.cbs <- cbs; evs
 
-  let for_el ?capture ?propagate ?default ?normalize (`El t as e) pt =
-    let evs = for_target ?capture ?propagate ?default ?normalize t pt in
+  let for_el ?capture ?propagate ?default ?normalize e pt =
+    let evs = for_target ?capture ?propagate ?default ?normalize (El.el e) pt in
     El.on_rem (fun () -> destroy evs) e;
     evs
 
