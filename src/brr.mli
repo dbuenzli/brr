@@ -6,9 +6,6 @@
 
 (** Reactive browser interaction.
 
-    {b FIXME} consider removing [rget_*] functions those
-    are just [E.map].
-
     {e %%VERSION%% — {{:%%PKG_HOMEPAGE%% }homepage}} *)
 
 open Note
@@ -100,16 +97,9 @@ module Prop : sig
   val vstr : undefined:'a -> string list -> 'a t
   (** [vstr p] is [v (List.map str p)]. *)
 
-  (** {1:get Getting properties} *)
-
   val get : 'a t -> _ Js.t -> 'a
   (** [get p o] is the property [p] of object [o] if defined and
       [p]'s undefined value otherwise. *)
-
-  val rget : 'a t -> on:'b event -> _ Js.t -> 'a event
-  (** [rget p ~on o] is the property [p] of [o] when [on] occurs. *)
-
-  (** {1:set Setting properties} *)
 
   val set : 'a t -> 'a -> _ Js.t -> unit
   (** [set p v o] sets property [p] of object [o] to [v]. *)
@@ -414,10 +404,6 @@ module El : sig
   (** [set_att a v e] sets the value of attribute [a] of [e] to [v].
       If [v] is [None] this removes the attribute. *)
 
-  val rget_att :  Att.name -> on:'a event -> t -> str option event
-  (** [rget_att a ~on e] is the value of attribute [a] of [e] whenever
-      [e] occurs. *)
-
   val rset_att : Att.name -> on:str option event -> t -> unit
   (** [rset_att a ~on e] sets attribute [a] of [e] with the value
       of [e] whenever it occurs. If the value is [None] this removes
@@ -438,9 +424,6 @@ module El : sig
   (** [set_class c b e] sets the membership of [e] to class [c]
       according to [b]. *)
 
-  val rget_class : str -> on:'a event -> t -> bool event
-  (** [rget_class a ~on e] is the membership of [e] to class [c]. *)
-
   val rset_class : str -> on:bool event -> t -> unit
   (** [rset_class a ~on e] sets the membership of [e] to class [e]
       with the value of [on] whenever it occurs. *)
@@ -458,9 +441,6 @@ module El : sig
 
   val set_prop : 'a Prop.t -> 'a -> t -> unit
   (** [set_prop p v o] sets property [p] of element [e] to [v]. *)
-
-  val rget_prop : 'a Prop.t -> on:'b event -> t -> 'a event
-  (** {!rget_prop} is {!Prop.rget}. *)
 
   val rset_prop : 'a Prop.t -> on:'a event -> t -> unit
   (** [rset_prop p ~on e] sets property [p] of [e] to the value

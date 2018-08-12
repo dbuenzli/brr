@@ -81,7 +81,8 @@ module Prop = struct
     in
     loop o p.path
 
-  let rget p ~on o = E.map on (fun _ -> get p o)
+  (* Predefined *)
+
   let bool n = vstr ~undefined:false [n]
   let str n = vstr ~undefined:Str.empty [n]
   let checked = bool "checked"
@@ -384,7 +385,6 @@ module El = struct
   | None -> e ## removeAttribute a
   | Some v -> e ## setAttribute a v
 
-  let rget_att a ~on e = E.map on (fun _ -> get_att a e)
   let rset_att a ~on e = may_add_logr e (E.log on (fun v -> set_att a v e))
   let def_att a vs e = add_logr e (S.log vs (fun v -> set_att a v e))
 
@@ -395,7 +395,6 @@ module El = struct
   | true -> e ##. classList ## add c
   | false -> e ##. classList ## remove c
 
-  let rget_class c ~on e = E.map on (fun _ -> get_class c e)
   let rset_class c ~on e = may_add_logr e (E.log on (fun v -> set_class c v e))
   let def_class c bs e = add_logr e (S.log bs (fun b -> set_class c b e))
 
@@ -403,7 +402,6 @@ module El = struct
 
   let get_prop p (`El e) = Prop.get p e
   let set_prop p v (`El e) = Prop.set p v e
-  let rget_prop p ~on (`El e) = Prop.rget p ~on e
   let rset_prop p ~on e = may_add_logr e (E.log on (fun v -> set_prop p v e))
   let def_prop p vs e = add_logr e (S.log vs (fun v -> set_prop p v e))
 

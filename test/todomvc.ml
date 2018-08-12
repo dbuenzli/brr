@@ -134,7 +134,7 @@ fun () ->
   let atts = Att.[type' "text"; class' "new-todo"; autofocus; placeholder p] in
   let i = El.input ~atts [] in
   let return = E.filter Ev.(for_el i keydown Key.of_ev) (Key.equal `Return) in
-  let input = E.map (El.rget_prop Prop.value i ~on:return) Str.trim in
+  let input = E.map return @@ fun _ -> Str.trim @@ El.get_prop Prop.value i in
   let add_todo = E.filter_map input @@ fun v -> match Str.is_empty v with
   | true -> None
   | false -> Some (`Add_todo v)
@@ -148,8 +148,8 @@ fun ~set ->
   let tid = "toggle-all" in
   let i = El.input ~atts:Att.[type' "checkbox"; class' tid; id tid] [] in
   let () = El.def_prop Prop.checked set i in
-  let toggle = El.rget_prop Prop.checked i ~on:Ev.(for_el i click unit) in
-  let toggle = E.map toggle @@ fun checked -> `All_done checked in
+  let click = Ev.(for_el i click unit) in
+  let toggle = E.map click @@ fun _ -> `All_done (El.get_prop Prop.checked i) in
   let label = El.(label ~atts:Att.[for' tid] [txt "Mark all as complete"]) in
   toggle, El.div [i; label]
 
@@ -193,7 +193,7 @@ fun s ~on ->
   let start_edit = E.stamp on true in
   let stop_edit = E.stamp (E.select [edited; undo]) false in
   let editing = E.select [start_edit; stop_edit] in
-  let str = El.rget_prop Prop.value ed ~on:edited  in
+  let str = E.map edited (fun _ -> El.get_prop Prop.value ed) in
   let () = El.rset_prop Prop.value ~on:(E.map undo @@ fun _ -> s) ed in
   let () = El.rset_focus ~on:start_edit ed in
   let () = El.(call (fun _ e -> select_txt e) ~on:start_edit ed) in
@@ -203,7 +203,8 @@ let bool_editor : bool -> bool event * [> El.t ] =
 fun bool ->
   let atts = Att.(add_if bool checked [type' "checkbox"; class' "toggle"]) in
   let el = El.input ~atts [] in
-  let toggle = El.rget_prop Prop.checked el ~on:Ev.(for_el el click unit) in
+  let click = Ev.(for_el el click unit) in
+  let toggle = E.map click (fun () -> El.get_prop Prop.checked el) in
   toggle, el
 
 let todo_item : Todo.t -> [> edit_action ] event * [> El.t] =
