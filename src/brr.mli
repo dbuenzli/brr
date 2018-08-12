@@ -284,7 +284,10 @@ module Att : sig
   (** [vstrf name fmt ...] is [vf (str name) fmt ...] *)
 
   val add_if : bool -> t -> t list -> t list
-  (** [add_if b a l] adds [a] to [l] iff [b] is [true] *)
+  (** [add_if b a l] is [a :: l] if [b] is [true] and [l] otherwise *)
+
+  val add_some : name -> str option -> t list -> t list
+  (** [add_some n o l] is [v n a :: l] if [o] is [Some a] and [l] otherwise. *)
 
   (** {1 Predefined attribute names and constructors}
 

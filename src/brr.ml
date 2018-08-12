@@ -227,6 +227,7 @@ module Att = struct
   let vstr name v = (str name, str v)
   let vstrf name fmt = vf (str name) fmt
   let add_if b att l = if b then att :: l else l
+  let add_some name o l = match o with None -> l | Some a -> (name, a) :: l
 
   module Name = struct
     let autofocus = Js.string "autofocus"
