@@ -208,6 +208,10 @@ module Time = struct
     ignore (Dom_html.window ## setTimeout (Js.wrap_callback action) ms);
     e
 
+  let delay span f =
+    let ms = span *. 1000. in
+    ignore (Dom_html.window ## (setTimeout (Js.wrap_callback f) ms))
+
   let pp_s ppf s = Format.fprintf ppf "%gs" s
   let pp_ms ppf s = Format.fprintf ppf "%gms" (s *. 1e3)
   let pp_mus ppf s = Format.fprintf ppf "%gμs" (s *. 1e6)

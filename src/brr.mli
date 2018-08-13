@@ -212,7 +212,7 @@ module Time : sig
   (** {1 Time span} *)
 
   type span = float
-  (** The type for time spans, in seconds. *)
+  (** The type for time spans, in seconds. FIXME move to ms. *)
 
   (** {1 Passing time} *)
 
@@ -230,6 +230,9 @@ module Time : sig
       {b Note.} Since the system may introduce delays you cannot
       assume that two different calls to {!tick} will necessarily
       yield two non-simultaneous events. *)
+
+  val delay : span -> (unit -> unit) -> unit
+  (** [delay span f] calls [f] after [span] seconds. *)
 
   (** {1 Counters} *)
 
