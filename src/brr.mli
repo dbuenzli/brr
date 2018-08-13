@@ -94,9 +94,6 @@ module Prop : sig
       {b Warning.} Always constrain the type otherwise this is
       {!Obj.magic}. [p] must be non-empty. *)
 
-  val vstr : undefined:'a -> string list -> 'a t
-  (** [vstr p] is [v (List.map str p)]. *)
-
   val get : 'a t -> _ Js.t -> 'a
   (** [get p o] is the property [p] of object [o] if defined and
       [p]'s undefined value otherwise. *)

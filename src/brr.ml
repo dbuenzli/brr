@@ -61,7 +61,6 @@ end
 module Prop = struct
   type 'a t = { path : str list ; undefined : 'a }
   let v ~undefined path = { path; undefined }
-  let vstr ~undefined path = { path = List.map str path; undefined }
   let set p v o =
     let rec loop o = function
     | n :: [] -> Js.Unsafe.set o n v
@@ -83,8 +82,8 @@ module Prop = struct
 
   (* Predefined *)
 
-  let bool n = vstr ~undefined:false [n]
-  let str n = vstr ~undefined:Str.empty [n]
+  let bool n = v ~undefined:false [str n]
+  let str n = v ~undefined:Str.empty [str n]
   let checked = bool "checked"
   let id = str "id"
   let name = str "name"
@@ -279,8 +278,12 @@ module El = struct
      appropriate life cycle event. In particular Note loggers from
      nodes that are removed from the HTML DOM are destroyed. *)
 
-  let add_prop : (unit -> unit) list Prop.t = Prop.vstr ~undefined:[]["brr_add"]
-  let rem_prop : (unit -> unit) list Prop.t = Prop.vstr ~undefined:[]["brr_rem"]
+  let add_prop : (unit -> unit) list Prop.t =
+    Prop.v ~undefined:[] [str "brr_add"]
+
+  let rem_prop : (unit -> unit) list Prop.t =
+    Prop.v ~undefined:[] [str "brr_rem"]
+
   let add_fun prop f (`El e) = Prop.set prop (f :: Prop.get prop e) e
   let invoke_funs prop eraw =
     let funs = Prop.get prop eraw in
