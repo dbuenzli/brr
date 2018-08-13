@@ -267,26 +267,13 @@ module Att : sig
   type t = name * str
   (** The type for attributes. *)
 
-  val v : name -> str -> t
-  (** [v name v] is the attribute [name] with value [v]. *)
-
-  val vf : name -> ('a, Format.formatter, unit, t) format4 -> 'a
-  (** [vf name fmt ...] is the attribute [name] with a formatted string
-      [fmt]. *)
-
-  val vstr : string -> string -> t
-  (** [vstr name s] is [v (str name) (str v)]. *)
-
-  val vstrf : string -> ('a, Format.formatter, unit, t) format4 -> 'a
-  (** [vstrf name fmt ...] is [vf (str name) fmt ...] *)
-
   val add_if : bool -> t -> t list -> t list
   (** [add_if b a l] is [a :: l] if [b] is [true] and [l] otherwise *)
 
   val add_some : name -> str option -> t list -> t list
   (** [add_some n o l] is [v n a :: l] if [o] is [Some a] and [l] otherwise. *)
 
-  (** {1 Predefined attribute names and constructors}
+  (** {1 Predefined attribute constructors and names}
 
       {b Convention.} Whenever an attribute name conflicts with an OCaml
       keyword we prime them, see for example {!class'}. *)
@@ -313,19 +300,19 @@ module Att : sig
 
   val autofocus : t
   val checked : t
-  val class' : string -> t
+  val class' : str -> t
   val disabled : t
-  val for' : string -> t
+  val for' : str -> t
   val height : int -> t
-  val href : string -> t
-  val id : string -> t
-  val name : string -> t
-  val placeholder : string -> t
-  val src : string -> t
+  val href : str -> t
+  val id : str -> t
+  val name : str -> t
+  val placeholder : str -> t
+  val src : str -> t
   val tabindex : int -> t
-  val title : string -> t
-  val type' : string -> t
-  val value : string -> t
+  val title : str -> t
+  val type' : str -> t
+  val value : str -> t
   val width : int -> t
 end
 

@@ -218,55 +218,47 @@ end
 module Att = struct
   type name = str
   type t = name * str
-  let v name v = (name, v)
-  let vf name fmt =
-    let k _ = (name, str (Format.flush_str_formatter ())) in
-    Format.kfprintf k Format.str_formatter fmt
-
-  let vstr name v = (str name, str v)
-  let vstrf name fmt = vf (str name) fmt
   let add_if b att l = if b then att :: l else l
   let add_some name o l = match o with None -> l | Some a -> (name, a) :: l
 
   module Name = struct
-    let autofocus = Js.string "autofocus"
-    let checked = Js.string "checked"
-    let class' = Js.string "class"
-    let disabled = Js.string "disabled"
-    let for' = Js.string "for"
-    let height = Js.string "height"
-    let href = Js.string "href"
-    let id = Js.string "id"
-    let name = Js.string "name"
-    let placeholder = Js.string "placeholder"
-    let src = Js.string "src"
-    let tabindex = Js.string "tabindex"
-    let title = Js.string "title"
-    let type' = Js.string "type"
     let value = Js.string "value"
     let width = Js.string "width"
+    let type' = Js.string "type"
+    let title = Js.string "title"
+    let tabindex = Js.string "tabindex"
+    let src = Js.string "src"
+    let placeholder = Js.string "placeholder"
+    let name = Js.string "name"
+    let id = Js.string "id"
+    let href = Js.string "href"
+    let height = Js.string "height"
+    let for' = Js.string "for"
+    let disabled = Js.string "disabled"
+    let class' = Js.string "class"
+    let checked = Js.string "checked"
+    let autofocus = Js.string "autofocus"
   end
 
-  let int n i = (n, str (string_of_int i))
   let bool n = n, Str.empty
-  let str n v = (n, str v)
-
+  let int n i = (n, str (string_of_int i))
+  let str n v = (n, v)
   let autofocus = bool Name.autofocus
   let checked = bool Name.checked
-  let class' = str Name.class'
+  let class' s = str Name.class' s
   let disabled = bool Name.disabled
-  let for' = str Name.for'
-  let height = int Name.height
-  let href = str Name.href
-  let id = str Name.id
-  let name = str Name.name
-  let placeholder = str Name.placeholder
-  let src = str Name.src
-  let tabindex = int Name.tabindex
-  let title = str Name.title
-  let type' = str Name.type'
-  let value = str Name.value
-  let width = int Name.width
+  let for' s = str Name.for' s
+  let height i = int Name.height i
+  let href s = str Name.href s
+  let id s = str Name.id s
+  let name s = str Name.name s
+  let placeholder s = str Name.placeholder s
+  let src s = str Name.src s
+  let tabindex i = int Name.tabindex i
+  let title s = str Name.title s
+  let type' s = str Name.type' s
+  let value s = str Name.value s
+  let width i = int Name.width i
 end
 
 module El = struct
