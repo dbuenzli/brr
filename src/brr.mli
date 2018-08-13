@@ -364,12 +364,6 @@ module El : sig
 
   (** {1:children Children} *)
 
-  val txt : string -> [> `Txt of str ]
-  (** [txt s] is [`Txt (str s)] *)
-
-  val txtf : ('a, Format.formatter, unit, child) format4 -> 'a
-  (** [txtf fmt ...] is a text child formatted according to [txtf]. *)
-
   val set_children : t -> child list -> unit
   (** [set_children e children] sets [e]'s children to [children] *)
 

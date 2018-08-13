@@ -152,18 +152,20 @@ fun ~set ->
   let () = El.def_prop Prop.checked set i in
   let click = Ev.(for_el i click unit) in
   let toggle = E.map click @@ fun _ -> `All_done (El.get_prop Prop.checked i) in
-  let label = El.(label ~atts:Att.[for' tid] [txt "Mark all as complete"]) in
+  let label = [`Txt (str "Mark all as complete")] in
+  let label = El.label ~atts:Att.[for' tid] label in
   toggle, El.div [i; label]
 
 let items_left : count:int signal -> [> El.t] =
 fun ~count ->
   let count_msg = function
-  | 0 -> El.txt "0 items left"
-  | 1 -> El.txt "1 item left"
-  | n -> El.txtf "%d items left" n
+  | 0 -> str "0 items left"
+  | 1 -> str "1 item left"
+  | n -> strf "%d items left" n
   in
   let span = El.span ~atts:Att.[class' (str "todo-count")] [] in
-  let () = El.def_children span (S.map count @@ fun c -> [count_msg c]) in
+  let msg = S.map count (fun c -> [`Txt (count_msg c)]) in
+  let () = El.def_children span msg in
   span
 
 type filter = [ `All | `Todo | `Done ]
@@ -174,7 +176,7 @@ fun () ->
   in
   let init_filter = parse_frag (Loc.fragment ()) in
   let filter_li frag name =
-    let a = El.(a ~atts:Att.[href frag] [txt name]) in
+    let a = El.(a ~atts:Att.[href frag] [`Txt (str name)]) in
     let sel = parse_frag frag = init_filter in
     let selected = S.hold sel (E.map Loc.hashchange (Str.equal frag)) in
     let () = El.def_class (str "selected") selected a in
@@ -252,7 +254,8 @@ fun ts ~filter ->
 
 let header () =
   let add, field = add_todo () in
-  add, El.(header ~atts:Att.[class'(str "header")] [h1 [txt "todos"]; field])
+  let atts = Att.[class' (str "header")] in
+  add, El.(header ~atts [h1 [`Txt (str "todos")]; field])
 
 let footer ~todos =
   let is_todo t = not (Todo.done' t) in
@@ -262,7 +265,7 @@ let footer ~todos =
   let filter, fs_el = filters () in
   let rem_done, rem_el =
     let atts = Att.[class' (str "clear-completed")] in
-    let b = El.button ~atts [El.txt "Clear completed"] in
+    let b = El.button ~atts [`Txt (str "Clear completed")] in
     let () = el_def_display b has_done in
     let rem_done = Ev.(for_el b click @@ stamp `Rem_done) in
     rem_done, b

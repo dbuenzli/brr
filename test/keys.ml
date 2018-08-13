@@ -5,14 +5,14 @@ open Brr
 
 let log_keys_to e =
   let key = Ev.(for_el (El.document_body ()) keydown Key.of_ev) in
-  let log = E.map key (fun k -> [El.txtf "Last key down: %a" Key.pp k]) in
+  let log = E.map key (fun k -> [`Txt (strf "Last key down: %a" Key.pp k)]) in
   El.rset_children e ~on:log
 
 let pp_bool = Format.pp_print_bool
 
 let main () =
-  let h1 = El.(h1 [txt "Keyboard test"]) in
-  let info = El.(p [txt "Hit the keyboard and see the browser console."]) in
+  let h1 = El.h1 [`Txt (str "Keyboard test")] in
+  let info = El.p [`Txt (str "Hit the keyboard and see the browser console.")]in
   El.set_children (El.document_body ()) [h1; info];
   let k = Key.(for_el (El.document_body ())) in
   ignore @@ Debug.trace_e ~obs:true ~pp:Key.pp "any_down" (Key.any_down k);

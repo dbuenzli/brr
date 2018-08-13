@@ -6,13 +6,14 @@ open Brr
 
 let pp_pt ppf (x, y) = Format.fprintf ppf "(%g %g)" x y
 let pp_bool = Format.pp_print_bool
+let txt s = `Txt (str s)
 
 let main () =
   let module M = Brr.Mouse in
-  let h1 = El.(h1 [txt "Mouse test"]) in
-  let p = El.(p [txt "Mouess with the area and see the browser console."]) in
+  let h1 = El.h1 [txt  "Mouse test"] in
+  let p = El.p [txt "Mouse with the area and see the browser console."] in
   let div = El.div [] in
-  let but = El.(button [txt "Destroy events"]) in
+  let but = El.button [txt "Destroy events"] in
   let but_click = Ev.(for_el but click unit) in
   let m = M.(for_el ~propagate:true div pt) in
   let but_eff = E.log but_click (fun () -> M.destroy m) in
