@@ -1430,6 +1430,20 @@ module App : sig
       query string of [window.location] for the first matching
       [var=value] pair. *)
 
+  (** {1:fullscreen Fullscreen} *)
+
+  val fullscreen_available : bool
+  (** [fullscreen_enabled] is [true] [iff] fullscreen is available. *)
+
+  val request_fullscreen : El.t -> unit
+  (** [request_fullscreen e] requests [e] to take up the entire screen. *)
+
+  val exit_fullscreen : unit -> unit
+  (** [exit_fullscreen ()] exits fullscreen mode. *)
+
+  val is_fullscreen : bool signal
+  (** [is_fullscreen] is [true] iff the application is in fullcreen mode. *)
+
   (** {1:userquit User requested quit} *)
 
   val quit : unit event

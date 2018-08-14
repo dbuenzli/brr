@@ -1175,6 +1175,50 @@ module App = struct
 
   let quit, send_quit = E.create ()
 
+  (* Fullscreen *)
+
+  let
+    request_fullscreen, exit_fullscreen, _is_fullscreen,
+    fullscreen_available, fullscreenchange
+    =
+    let u = Js.Unsafe.coerce in
+    match Dom_html.document with
+    | d when Js.Optdef.test (u d) ##. exitFullscreen ->
+        (fun (`El e) -> (u e) ## requestFullscreen),
+        (fun () -> (u Dom_html.document) ## exitFullscreen),
+        (fun () ->
+           Js.Opt.test (u Dom_html.document) ##. fullscreenElement),
+        Js.to_bool (u Dom_html.document) ##. fullscreenEnabled,
+        Some (Dom.Event.make "fullscreenchange")
+    | d when Js.Optdef.test (u d) ##. mozCancelFullScreen ->
+        (fun (`El e) -> (u e) ## mozRequestFullScreen),
+        (fun () -> (u Dom_html.document) ## mozCancelFullScreen),
+        (fun () -> Js.Opt.test (u Dom_html.document) ##. mozFullScreenElement),
+        Js.to_bool (u Dom_html.document) ##. mozFullScreenEnabled,
+        Some (Dom.Event.make "mozfullscreenchange")
+    | d when Js.Optdef.test (u d) ##. webkitCancelFullScreen ->
+        (fun (`El e) -> (u e) ## webkitRequestFullScreen),
+        (fun () -> (u Dom_html.document) ## webkitCancelFullScreen),
+        (fun () ->
+           Js.Opt.test
+             (u Dom_html.document) ##. webkitCurrentFullScreenElement),
+        Js.to_bool (u Dom_html.document) ##. webkitFullscreenEnabled,
+        Some (Dom.Event.make "webkitfullscreenchange")
+    | d when Js.Optdef.test (u d) ##. msExitFullscreen ->
+        (fun (`El e) -> (u e) ## msRequestFullscreen),
+        (fun () -> (u Dom_html.document) ## msExitFullscreen),
+        (fun () -> Js.Opt.test (u Dom_html.document) ##. msFullscreenElement),
+        Js.to_bool (u Dom_html.document) ##. msFullscreenEnabled,
+        Some (Dom.Event.make "msfullscreenchange")
+    | d -> (fun e -> ()), (fun () -> ()), (fun () -> false), false, None
+
+  let is_fullscreen, set_fullscreen = S.create (_is_fullscreen ())
+  let () = match fullscreenchange with
+  | None -> ()
+  | Some fullscreenchange ->
+      let change _ e = set_fullscreen (_is_fullscreen ()); Ev.cb_ret e in
+      ignore (Ev.add_cb Dom_html.document fullscreenchange change)
+
   (* run *)
 
   let run ?name main =
