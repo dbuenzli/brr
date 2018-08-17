@@ -349,13 +349,22 @@ module El = struct
     add_children el cs;
     el
 
-  let find ~id =
+  let find_id id =
     match Js.Opt.to_option (Dom_html.document ## getElementById id) with
     | None -> None
     | Some e -> (Some (`El e))
 
+  let find_class cl =
+    array_to_list (Dom_html.document ## getElementsByClassName cl)
+
+  let tag_name (`El e) = e ##. tagName
   let document () = `El (Dom_html.document ##. documentElement)
   let document_body () = `El (Dom_html.document ##. body)
+  let document_active () =
+    match Js.Opt.to_option (Dom_html.document ##. activeElement) with
+    | None -> None
+    | Some e -> (Some (`El e))
+
   let el (`El e) = e
 
   (* Children *)

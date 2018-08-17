@@ -353,9 +353,18 @@ module El : sig
   val el : t -> Dom_html.element Js.t
   (** [el (`El e)] is [e]. *)
 
-  val find : id:str -> [> t] option
-  (** [find ~id] is the element with id [id] in the browser document
+  val tag_name : t -> str
+  (** [tag_name e] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/tagName}
+      tag name} of the element. *)
+
+  val find_id : str -> [> t] option
+  (** [find_id id] is the element with id [id] in the browser document
       (if any). *)
+
+  val find_class : str -> [> t] list
+  (** [find_class cl] are the element with class [cs] in the browser
+      document. *)
 
   val document : unit -> [> t]
   (** [document] is the document's element of the current browser
@@ -364,6 +373,10 @@ module El : sig
   val document_body : unit -> [> t]
   (** [document_body] is the {!body} element of the current browser
       document. *)
+
+  val document_active : unit -> [> t] option
+  (** [document_active] is the element of the DOM that currently
+      has focus (if any). *)
 
   (** {1:children Children} *)
 

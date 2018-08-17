@@ -300,7 +300,7 @@ fun ~todos ->
 
 let main () =
   let id = str "app" in
-  match El.find ~id with
+  match El.find_id id with
   | None -> Log.err (fun m -> m  "No element with id '%a' found" Str.pp id)
   | Some el ->
       let todos, children = ui ~todos:(load_state ()) in
