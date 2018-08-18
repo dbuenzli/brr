@@ -19,18 +19,18 @@ let main () =
   let but_eff = E.log but_click (fun () -> M.destroy m) in
   El.set_children (El.document_body ()) [h1; p; div; El.p [but];];
   Logr.(may_hold but_eff);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_pt "pos" (M.pos m);
-  ignore @@ Debug.trace_e ~obs:true ~pp:pp_pt "dpos" (M.dpos m);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "mem" (M.mem m);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "left" (M.left m);
-  ignore @@ Debug.trace_e ~obs:true ~pp:pp_pt "left_up" (M.left_up m);
-  ignore @@ Debug.trace_e ~obs:true ~pp:pp_pt "left_down" (M.left_down m);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "mid" (M.mid m);
-  ignore @@ Debug.trace_e ~obs:true ~pp:pp_pt "mid_up" (M.mid_up m);
-  ignore @@ Debug.trace_e ~obs:true ~pp:pp_pt "mid_down" (M.mid_down m);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "right" (M.right m);
-  ignore @@ Debug.trace_e ~obs:true ~pp:pp_pt "right_up" (M.right_up m);
-  ignore @@ Debug.trace_e ~obs:true ~pp:pp_pt "right_down" (M.right_down m);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_pt "pos" (M.pos m);
+  ignore @@ Debug.etrace ~obs:true ~pp:pp_pt "dpos" (M.dpos m);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "mem" (M.mem m);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "left" (M.left m);
+  ignore @@ Debug.etrace ~obs:true ~pp:pp_pt "left_up" (M.left_up m);
+  ignore @@ Debug.etrace ~obs:true ~pp:pp_pt "left_down" (M.left_down m);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "mid" (M.mid m);
+  ignore @@ Debug.etrace ~obs:true ~pp:pp_pt "mid_up" (M.mid_up m);
+  ignore @@ Debug.etrace ~obs:true ~pp:pp_pt "mid_down" (M.mid_down m);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "right" (M.right m);
+  ignore @@ Debug.etrace ~obs:true ~pp:pp_pt "right_up" (M.right_up m);
+  ignore @@ Debug.etrace ~obs:true ~pp:pp_pt "right_down" (M.right_down m);
   ()
 
 let () = Brr.App.run main

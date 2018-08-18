@@ -15,19 +15,19 @@ let main () =
   let info = El.p [`Txt (str "Hit the keyboard and see the browser console.")]in
   El.set_children (El.document_body ()) [h1; info];
   let k = Key.(for_el (El.document_body ())) in
-  ignore @@ Debug.trace_e ~obs:true ~pp:Key.pp "any_down" (Key.any_down k);
-  ignore @@ Debug.trace_e ~obs:true ~pp:Key.pp "any_up" (Key.any_up k);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "any_holds" (Key.any_holds k);
-  ignore @@ Debug.trace_e ~obs:true ~pp:Debug.tick "down (spacebar)"
+  ignore @@ Debug.etrace ~obs:true ~pp:Key.pp "any_down" (Key.any_down k);
+  ignore @@ Debug.etrace ~obs:true ~pp:Key.pp "any_up" (Key.any_up k);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "any_holds" (Key.any_holds k);
+  ignore @@ Debug.etrace ~obs:true ~pp:Debug.tick "down (spacebar)"
     (Key.down k `Spacebar);
-  ignore @@ Debug.trace_e ~obs:true ~pp:Debug.tick "up (spacebar) "
+  ignore @@ Debug.etrace ~obs:true ~pp:Debug.tick "up (spacebar) "
     (Key.up k `Spacebar);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "holds (spacebar)"
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "holds (spacebar)"
     (Key.holds k `Spacebar);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "alt" (Key.alt k);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "ctrl" (Key.ctrl k);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "meta" (Key.meta k);
-  ignore @@ Debug.trace_s ~obs:true ~pp:pp_bool "shift" (Key.shift k);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "alt" (Key.alt k);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "ctrl" (Key.ctrl k);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "meta" (Key.meta k);
+  ignore @@ Debug.strace ~obs:true ~pp:pp_bool "shift" (Key.shift k);
   ()
 
 let () = Brr.App.run main

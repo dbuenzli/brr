@@ -178,27 +178,32 @@ module Debug : sig
 
   (** {1 Tracing} *)
 
-  val trace : ?pp:(Format.formatter -> 'a -> unit) -> string -> 'a -> 'a
-  (** [trace ~pp v] traces with {!Log.debug} the value of [v] with [pp]
-      (default is a no-op) and identifier [id]. The function returns [v]. *)
-
   val tick : Format.formatter -> 'a -> unit
   (** [tick] formats ["tick"] on any value. *)
 
-  val trace_e :
+  val pr : ('a, Format.formatter, unit) Pervasives.format -> 'a
+  (** [pr fmt ...] unconditionally outputs on the browser console with
+      level Debug. Use {!Log.debug} for level-based conditional output. *)
+
+  val trace : ?pp:(Format.formatter -> 'a -> unit) -> string -> 'a -> 'a
+  (** [trace ~pp v] traces with {!Log.debug} the value of [v] with
+      [pp] (defaults to {!tick}) and identifier [id]. The function
+      returns [v]. *)
+
+  val etrace :
     ?obs:bool -> ?pp:(Format.formatter -> 'a -> unit) -> string -> 'a event ->
     'a event
-  (** [trace_e ~pp id e] traces [e]'s occurence with {!Log.debug},
-      [pp] (defaults to {!tick}) and identifier [id]. If [obs] is
-      [true], the return value is [e] itself and the tracing occurs
-      through a logger, this will prevent [e] from being garbage
-      collected. If [obs] is [false], the return value is [e] mapped
-      by a tracing identity. *)
+  (** [etrace ~pp id e] traces [e]'s occurence with {!Log.debug}, [pp]
+      (defaults to {!tick}) and identifier [id]. If [obs] is [true],
+      the return value is [e] itself and the tracing occurs through a
+      logger, this will prevent [e] from being garbage collected. If
+      [obs] is [false], the return value is [e] mapped by a tracing
+      identity. *)
 
-  val trace_s :
+  val strace :
     ?obs:bool -> ?pp:(Format.formatter -> 'a -> unit) -> string -> 'a signal ->
     'a signal
-  (** [trace_s ~pp id s] traces [s]'s changes with {!Log.debug}, [pp]
+  (** [strace ~pp id s] traces [s]'s changes with {!Log.debug}, [pp]
       and identifier [id]. If [obs] is [true], the return value is [s]
       itself and the tracing occurs through a logger, this will
       prevent [s] from being gc'd. If [obs] is [false], the return

@@ -160,18 +160,21 @@ module Debug = struct
 
   (* Tracing *)
 
-  let nop ppf _ = ()
   let tick ppf _ = Format.fprintf ppf "tick"
-  let trace ?(pp = nop) id v = Log.debug (fun m -> m "%s: %a" id pp v); v
-  let trace_v ?(pp = tick) id v = Log.debug (fun m -> m "%s: %a" id pp v)
-  let trace_v_ret ?pp id v = trace_v ?pp id v; v
-  let trace_e ?(obs = false) ?pp id e = match obs with
-  | true -> Logr.may_hold (E.log e (trace_v ?pp id)); e
-  | false -> E.map e (trace_v_ret ?pp id)
 
-  let trace_s ?(obs = false) ?pp id s = match obs with
-  | true -> Logr.hold (S.log s (trace_v ?pp id)); s
-  | false -> S.map ~eq:(S.eq s) s (trace_v_ret ?pp id)
+  let pr fmt =
+    let k str = Log.console Log.Debug str in
+    Format.kasprintf k (fmt ^^ "@.")
+
+  let trace_unit ?(pp = tick) id v = Log.debug (fun m -> m "%s: %a" id pp v)
+  let trace ?pp id v = trace_unit ?pp id v; v
+  let etrace ?(obs = false) ?pp id e = match obs with
+  | true -> Logr.may_hold (E.log e (trace_unit ?pp id)); e
+  | false -> E.map e (trace ?pp id)
+
+  let strace ?(obs = false) ?pp id s = match obs with
+  | true -> Logr.hold (S.log s (trace_unit ?pp id)); s
+  | false -> S.map ~eq:(S.eq s) s (trace ?pp id)
 end
 
 module Time = struct
