@@ -170,11 +170,11 @@ module Debug = struct
   let trace ?pp id v = trace_unit ?pp id v; v
   let etrace ?(obs = false) ?pp id e = match obs with
   | true -> Logr.may_hold (E.log e (trace_unit ?pp id)); e
-  | false -> E.map e (trace ?pp id)
+  | false -> E.map (trace ?pp id) e
 
   let strace ?(obs = false) ?pp id s = match obs with
   | true -> Logr.hold (S.log s (trace_unit ?pp id)); s
-  | false -> S.map ~eq:(S.eq s) s (trace ?pp id)
+  | false -> S.map ~eq:(S.eq s) (trace ?pp id) s
 end
 
 module Time = struct

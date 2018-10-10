@@ -19,7 +19,7 @@ let count, run_count =
 let count_value count =
   (* Voluntarily silly. *)
   let span = El.span [] in
-  let count = S.hold [] (E.map count (fun c -> [`Txt (strf "Steps: %d" c)])) in
+  let count = S.hold [] (E.map (fun c -> [`Txt (strf "Steps: %d" c)]) count) in
   El.def_children span count;
   span
 
@@ -28,7 +28,7 @@ let main () =
   let info = El.p [`Txt (str "Memory usage should be bounded and the step \
                               counter below should not slow down.")]
   in
-  let step_count = S.hold [] (E.map count (fun c -> [count_value count])) in
+  let step_count = S.hold [] (E.map (fun c -> [count_value count]) count) in
   let steps = El.(p []) in
   let () = El.def_children steps step_count in
   El.set_children (El.document_body ()) [h1; info; steps];
