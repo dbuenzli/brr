@@ -460,6 +460,7 @@ module El : sig
     type prop = str
     val background_color : prop
     val color : prop
+    val cursor : prop
     val display : prop
     val height : prop
     val visibility : prop

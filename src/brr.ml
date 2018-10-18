@@ -423,6 +423,7 @@ module El = struct
     type prop = str
     let background_color = str "background-color"
     let color = str "color"
+    let cursor = str "cursor"
     let display = str "display"
     let height = str "height"
     let visibility = str "visibility"
