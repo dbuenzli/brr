@@ -18,11 +18,18 @@ let count, run_count =
 
 let count_value count =
   (* Voluntarily silly. *)
-  let span = El.span [] in
+  let p = El.p [] in
   let count_txt c = [`Txt (Jstring.vf "Steps: %d" c)] in
   let count = S.hold [] (E.map count_txt count) in
-  El.def_children span count;
-  span
+  El.def_children p count;
+  p
+
+let count_value_nest count =
+  let p = El.p [] in
+  let count_txt c = [`Txt (Jstring.vf "Steps (nest): %d" c)] in
+  let count = S.hold [] (E.map count_txt count) in
+  El.def_children p count;
+  El.p [p]
 
 let main () =
   let h1 = El.h1 [`Txt (Jstring.v "Leak test")] in
@@ -30,7 +37,10 @@ let main () =
                            "Memory usage should be bounded and the step \
                             counter below should not slow down.")]
   in
-  let step_count = S.hold [] (E.map (fun c -> [count_value count]) count) in
+  let step_count =
+    let counts c = [count_value count; count_value_nest count] in
+    S.hold [] (E.map counts count)
+  in
   let steps = El.(p []) in
   let () = El.def_children steps step_count in
   El.set_children (El.document_body ()) [h1; info; steps];

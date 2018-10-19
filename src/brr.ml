@@ -271,6 +271,16 @@ end
 
 module El = struct
 
+  let in_html_dom n =
+    (Js.Unsafe.meth_call n "getRootNode" [||] :> #Dom.node Js.t) ==
+    Dom_html.document
+
+  let descendents =
+    let star = Js.Unsafe.inject @@ Jstring.v "*" in
+    fun n ->
+    ((Js.Unsafe.meth_call n "querySelectorAll" [|star|]) :>
+       Dom.element Js.t Dom.nodeList Js.t)
+
   type el = Dom_html.element Js.t
 
   (* DOM garbage collection support. We observe HTML DOM additions and
@@ -285,17 +295,27 @@ module El = struct
     Prop.v ~undefined:[] [Jstring.v "brr_rem"]
 
   let add_fun prop f (`El e) = Prop.set prop (f :: Prop.get prop e) e
-  let invoke_funs prop eraw =
-    let funs = Prop.get prop eraw in
-    List.iter (fun f -> f ()) funs;
-    Prop.set prop [] eraw
+
+  let invoke_funs prop node =
+    begin match (node ##. nodeType) with
+    | Dom.ELEMENT ->
+        let invoke_node_funs n =
+          let funs = Prop.get prop n in
+          List.iter (fun f -> f ()) funs;
+          Prop.set prop [] n
+        in
+        let ns = descendents node in
+        for i = 0 to ns ##. length - 1 do
+          match Js.Opt.to_option (ns ## item i) with
+          | None -> ()
+          | Some o -> invoke_node_funs o;
+        done;
+        invoke_node_funs node
+    | _ -> ()
+    end
 
   let add_logr e l = add_fun rem_prop (fun () -> Logr.destroy l) e
   let may_add_logr e = function None -> () | Some l -> add_logr e l
-
-  let in_html_dom n =
-    (Js.Unsafe.meth_call n "getRootNode" [||] :> #Dom.node Js.t) ==
-    Dom_html.document
 
   let obs = match MutationObserver.is_supported () with
   | false ->
