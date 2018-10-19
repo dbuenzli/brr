@@ -19,14 +19,16 @@ let count, run_count =
 let count_value count =
   (* Voluntarily silly. *)
   let span = El.span [] in
-  let count = S.hold [] (E.map (fun c -> [`Txt (strf "Steps: %d" c)]) count) in
+  let count_txt c = [`Txt (Jstring.vf "Steps: %d" c)] in
+  let count = S.hold [] (E.map count_txt count) in
   El.def_children span count;
   span
 
 let main () =
-  let h1 = El.h1 [`Txt (str "Leak test")] in
-  let info = El.p [`Txt (str "Memory usage should be bounded and the step \
-                              counter below should not slow down.")]
+  let h1 = El.h1 [`Txt (Jstring.v "Leak test")] in
+  let info = El.p [`Txt (Jstring.v
+                           "Memory usage should be bounded and the step \
+                            counter below should not slow down.")]
   in
   let step_count = S.hold [] (E.map (fun c -> [count_value count]) count) in
   let steps = El.(p []) in

@@ -15,19 +15,18 @@ open Note
 type jstring = Js.js_string Js.t
 (** The type for JavaScript strings. *)
 
-val str : string -> jstring
-(** [str s] is [s] as a JavaScript string. *)
-
-val strf : ('a, Format.formatter, unit, jstring) format4 -> 'a
-(** [strf fmt ...] is a formatted Javascript string. *)
-
-(** JavaScript strings. *)
 module Jstring : sig
 
   (** {1:jstring Strings} *)
 
   type t = Js.js_string Js.t
   (** The type for JavaScript strings. *)
+
+  val v : string -> t
+  (** [v s] is the string [s] as a javascript string. *)
+
+  val vf : ('a, Format.formatter, unit, jstring) format4 -> 'a
+  (** [vf fmt ...] is a Javascript string formatted according to [fmt]. *)
 
   val empty : jstring
   (** [empty] is an empty string. *)

@@ -117,7 +117,7 @@ let do_action : action -> Todos.t -> Todos.t = function
 (* Persisting *)
 
 let () = Store.force_version "0"
-let state : Todos.t Store.key = Store.key ~ns:(str "todos-brr") ()
+let state : Todos.t Store.key = Store.key ~ns:(Jstring.v "todos-brr") ()
 let save_state ts = Store.add state ts
 let load_state () = Store.get ~absent:Todos.empty state
 
@@ -131,9 +131,10 @@ let el_def_display : El.t -> bool signal -> unit =
 
 let add_todo : unit -> [> add_action] event * [> El.t] =
 fun () ->
-  let p = str "What needs to be done ?" in
+  let p = Jstring.v "What needs to be done ?" in
   let atts =
-    Att.[type' (str "text"); class' (str "new-todo"); autofocus; placeholder p]
+    Att.[type' (Jstring.v "text"); class' (Jstring.v "new-todo");
+         autofocus; placeholder p]
   in
   let i = El.input ~atts [] in
   let return = E.filter (Key.equal `Return) Ev.(for_el i keydown Key.of_ev) in
@@ -150,23 +151,24 @@ fun () ->
 
 let toggle_all : set:bool signal -> [> bulk_action ] event * [> El.t] =
 fun ~set ->
-  let tid = str "toggle-all" in
-  let i = El.input ~atts:Att.[type' (str "checkbox"); class' tid; id tid] [] in
+  let tid = Jstring.v "toggle-all" in
+  let typ = Att.type' (Jstring.v "checkbox") in
+  let i = El.input ~atts:Att.[typ; class' tid; id tid] [] in
   let () = El.def_prop Prop.checked set i in
   let click = Ev.(for_el i click unit) in
   let toggle = E.map (fun _ -> `All_done (El.get_prop Prop.checked i)) click in
-  let label = [`Txt (str "Mark all as complete")] in
+  let label = [`Txt (Jstring.v "Mark all as complete")] in
   let label = El.label ~atts:Att.[for' tid] label in
   toggle, El.div [i; label]
 
 let items_left : count:int signal -> [> El.t] =
 fun ~count ->
   let count_msg = function
-  | 0 -> str "0 items left"
-  | 1 -> str "1 item left"
-  | n -> strf "%d items left" n
+  | 0 -> Jstring.v "0 items left"
+  | 1 -> Jstring.v "1 item left"
+  | n -> Jstring.vf "%d items left" n
   in
-  let span = El.span ~atts:Att.[class' (str "todo-count")] [] in
+  let span = El.span ~atts:Att.[class' (Jstring.v "todo-count")] [] in
   let msg = S.map (fun c -> [`Txt (count_msg c)]) count in
   let () = El.def_children span msg in
   span
@@ -179,22 +181,22 @@ fun () ->
   in
   let init_filter = parse_frag (Loc.fragment ()) in
   let filter_li frag name =
-    let a = El.(a ~atts:Att.[href frag] [`Txt (str name)]) in
+    let a = El.(a ~atts:Att.[href frag] [`Txt (Jstring.v name)]) in
     let sel = parse_frag frag = init_filter in
     let selected = S.hold sel (E.map (Jstring.equal frag) Loc.hashchange) in
-    let () = El.def_class (str "selected") selected a in
+    let () = El.def_class (Jstring.v "selected") selected a in
     El.li [a]
   in
-  let all = filter_li (str "#/") "All" in
-  let todo = filter_li (str "#/active") "Active" in
-  let done' = filter_li (str "#/completed") "Completed" in
+  let all = filter_li (Jstring.v "#/") "All" in
+  let todo = filter_li (Jstring.v "#/active") "Active" in
+  let done' = filter_li (Jstring.v "#/completed") "Completed" in
   let filter = S.hold init_filter (E.map parse_frag Loc.hashchange) in
-  filter, El.ul ~atts:Att.[class' (str "filters")] [all; todo; done']
+  filter, El.ul ~atts:Att.[class' (Jstring.v "filters")] [all; todo; done']
 
 let string_editor :
   jstring -> on:'a event -> bool event * jstring event * [> El.t] =
 fun s ~on ->
-  let ed = El.input ~atts:Att.[class' (str "edit"); value s] [] in
+  let ed = El.input ~atts:Att.[class' (Jstring.v "edit"); value s] [] in
   let keys = Ev.(for_el ed keydown Key.of_ev) in
   let edited = E.filter (Key.equal `Return) keys in
   let undo = E.filter (Key.equal `Escape) keys in
@@ -209,7 +211,7 @@ fun s ~on ->
 
 let bool_editor : bool -> bool event * [> El.t ] =
 fun b ->
-  let atts = Att.[type' (str "checkbox"); class' (str "toggle")] in
+  let atts = Att.[type' (Jstring.v "checkbox"); class' (Jstring.v "toggle")] in
   let atts = Att.(add_if b checked atts) in
   let el = El.input ~atts [] in
   let click = Ev.(for_el el click unit) in
@@ -222,7 +224,7 @@ fun todo ->
   let task = Todo.task todo in
   let set_done, done_editor = bool_editor done' in
   let set_done = E.map (fun d -> `Set_done (d, todo)) set_done in
-  let rem_but = El.button ~atts:Att.[class' (str "destroy")] [] in
+  let rem_but = El.button ~atts:Att.[class' (Jstring.v "destroy")] [] in
   let rem = Ev.(for_el rem_but click @@ stamp (`Rem_todo todo)) in
   let label = El.label [`Txt task] in
   let editing, edited, ed =
@@ -233,11 +235,11 @@ fun todo ->
     if Jstring.is_empty v then Some (`Rem_todo todo) else
     if not (Jstring.equal v task) then Some (`Set_task (v, todo)) else None
   in
-  let div_atts = Att.[class' (str "view")] in
+  let div_atts = Att.[class' (Jstring.v "view")] in
   let div = El.div ~atts:div_atts [done_editor; label; rem_but] in
-  let li_atts = Att.(add_if done' (class' (str "completed")) []) in
+  let li_atts = Att.(add_if done' (class' (Jstring.v "completed")) []) in
   let li = El.li ~atts:li_atts [div; ed] in
-  let () = El.rset_class (str "editing") editing li in
+  let () = El.rset_class (Jstring.v "editing") editing li in
   E.select [edit; rem; set_done], li
 
 let todo_list :
@@ -252,14 +254,14 @@ fun ts ~filter ->
   let items = S.l2 ~eq:( == ) add_todos ts filter in
   let act = E.swap @@ S.map ~eq:( == ) (fun (evs, _) -> E.select evs) items in
   let items = S.map snd items in
-  let ul = El.ul ~atts:Att.[class' (str "todo-list")] [] in
+  let ul = El.ul ~atts:Att.[class' (Jstring.v "todo-list")] [] in
   let () = El.def_children ul items in
   act, ul
 
 let header () =
   let add, field = add_todo () in
-  let atts = Att.[class' (str "header")] in
-  add, El.(header ~atts [h1 [`Txt (str "todos")]; field])
+  let atts = Att.[class' (Jstring.v "header")] in
+  add, El.(header ~atts [h1 [`Txt (Jstring.v "todos")]; field])
 
 let footer ~todos =
   let is_todo t = not (Todo.done' t) in
@@ -268,13 +270,14 @@ let footer ~todos =
   let left_el = items_left ~count:(S.map todo_left todos) in
   let filter, fs_el = filters () in
   let rem_done, rem_el =
-    let atts = Att.[class' (str "clear-completed")] in
-    let b = El.button ~atts [`Txt (str "Clear completed")] in
+    let atts = Att.[class' (Jstring.v "clear-completed")] in
+    let b = El.button ~atts [`Txt (Jstring.v "Clear completed")] in
     let () = el_def_display b has_done in
     let rem_done = Ev.(for_el b click @@ stamp `Rem_done) in
     rem_done, b
   in
-  let ft = El.footer ~atts:Att.[class' (str "footer")] [left_el;fs_el;rem_el] in
+  let atts = Att.[class' (Jstring.v "footer")] in
+  let ft = El.footer ~atts [left_el;fs_el;rem_el] in
   let display ts = not @@ Todos.is_empty ts in
   let () = el_def_display ft (S.map display todos) in
   filter, rem_done, ft
@@ -285,7 +288,8 @@ let main ~add_todo ~rem_done ~todos ~filter =
   in
   let toggle_all, toggle_el = toggle_all toggle_set in
   let edit, items = todo_list todos ~filter in
-  let sec = El.section ~atts:Att.[class' (str "main")] [toggle_el; items] in
+  let atts = Att.[class' (Jstring.v "main")] in
+  let sec = El.section ~atts [toggle_el; items] in
   let display ts = not @@ Todos.is_empty ts in
   let () = el_def_display sec (S.map display todos) in
   E.select [add_todo; rem_done; edit; toggle_all], sec
@@ -303,7 +307,7 @@ fun ~todos ->
   S.fix todos def
 
 let main () =
-  let id = str "app" in
+  let id = Jstring.v "app" in
   match El.find_id id with
   | None -> Log.err (fun m -> m  "No element with id '%a' found" Jstring.pp id)
   | Some el ->

@@ -23,14 +23,15 @@ let array_of_list l =
 (* JavaScript strings *)
 
 type jstring = Js.js_string Js.t
-let str = Js.string
-let strf fmt =
-  let k _ = str (Format.flush_str_formatter ()) in
-  Format.kfprintf k Format.str_formatter fmt
 
 module Jstring = struct
   type t = jstring
-  let empty = str ""
+  let v = Js.string
+  let vf fmt =
+    let k _ = v (Format.flush_str_formatter ()) in
+    Format.kfprintf k Format.str_formatter fmt
+
+  let empty = v ""
   let is_empty s = s ##. length = 0
   let append s0 s1 = s0 ## concat (s1)
   let cuts ~sep s = array_to_list (Js.str_array (s ## split sep))
@@ -82,8 +83,8 @@ module Prop = struct
 
   (* Predefined *)
 
-  let bool n = v ~undefined:false [str n]
-  let str n = v ~undefined:Jstring.empty [str n]
+  let bool n = v ~undefined:false [Jstring.v n]
+  let str n = v ~undefined:Jstring.empty [Jstring.v n]
   let checked = bool "checked"
   let id = str "id"
   let name = str "name"
@@ -248,7 +249,7 @@ module Att = struct
   end
 
   let bool n = n, Jstring.empty
-  let int n i = (n, str (string_of_int i))
+  let int n i = (n, Jstring.v (string_of_int i))
   let str n v = (n, v)
   let autofocus = bool Name.autofocus
   let checked = bool Name.checked
@@ -278,10 +279,10 @@ module El = struct
      nodes that are removed from the HTML DOM are destroyed. *)
 
   let add_prop : (unit -> unit) list Prop.t =
-    Prop.v ~undefined:[] [str "brr_add"]
+    Prop.v ~undefined:[] [Jstring.v "brr_add"]
 
   let rem_prop : (unit -> unit) list Prop.t =
-    Prop.v ~undefined:[] [str "brr_rem"]
+    Prop.v ~undefined:[] [Jstring.v "brr_rem"]
 
   let add_fun prop f (`El e) = Prop.set prop (f :: Prop.get prop e) e
   let invoke_funs prop eraw =
@@ -372,11 +373,6 @@ module El = struct
 
   (* Children *)
 
-  let txt s = (`Txt (str s))
-  let txtf fmt =
-    let k _ = `Txt (str (Format.flush_str_formatter ())) in
-    Format.kfprintf k Format.str_formatter fmt
-
   let rec rem_children (`El n) =
     let rec loop n = match Js.Opt.to_option (n ##. firstChild) with
     | None -> ()
@@ -421,13 +417,13 @@ module El = struct
 
   module Style = struct
     type prop = jstring
-    let background_color = str "background-color"
-    let color = str "color"
-    let cursor = str "cursor"
-    let display = str "display"
-    let height = str "height"
-    let visibility = str "visibility"
-    let width = str "width"
+    let background_color = Jstring.v "background-color"
+    let color = Jstring.v "color"
+    let cursor = Jstring.v "cursor"
+    let display = Jstring.v "display"
+    let height = Jstring.v "height"
+    let visibility = Jstring.v "visibility"
+    let width = Jstring.v "width"
   end
 
   let get_computed_style p (`El e) =
@@ -439,7 +435,7 @@ module El = struct
     match Js.Optdef.to_option (Js.Unsafe.get (Js.Unsafe.get e "style") p) with
     | None -> Jstring.empty | Some v -> v
 
-  let important_str = str "important"
+  let important_str = Jstring.v "important"
   let set_style ?(important = false) p v (`El e) =
     let important = if important then important_str else Jstring.empty in
     (Js.Unsafe.get e "style") ## setProperty p v important
@@ -1352,7 +1348,7 @@ module Info = struct
     | None ->
         match Js.Optdef.to_option (Dom_html.window ##. navigator ##. language)
         with
-        | None -> [str "en"]
+        | None -> [Jstring.v "en"]
         | Some l -> [l]
 end
 
@@ -1376,9 +1372,10 @@ module Store = struct
       let id = Js.string (string_of_int !id) in
       match ns with
       | None -> Jstring.append key_prefix id
-      | Some ns -> Jstring.(append (append ns (str "-")) (append key_prefix id))
+      | Some ns ->
+          Jstring.(append (append ns (Jstring.v "-")) (append key_prefix id))
 
-  let version = key ~ns:(str "brr") ()
+  let version = key ~ns:(Jstring.v "brr") ()
 
   let mem ?(scope = `Persist) k = match scope_store scope with
   | Some s -> Js.Opt.test (s ## getItem (k))

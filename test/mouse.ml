@@ -6,7 +6,7 @@ open Brr
 
 let pp_pt ppf (x, y) = Format.fprintf ppf "(%g %g)" x y
 let pp_bool = Format.pp_print_bool
-let txt s = `Txt (str s)
+let txt s = `Txt (Jstring.v s)
 
 let main () =
   let module M = Brr.Mouse in
