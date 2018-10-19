@@ -22,14 +22,14 @@ let array_of_list l =
 
 (* JavaScript strings *)
 
-type str = Js.js_string Js.t
+type jstring = Js.js_string Js.t
 let str = Js.string
 let strf fmt =
   let k _ = str (Format.flush_str_formatter ()) in
   Format.kfprintf k Format.str_formatter fmt
 
-module Str = struct
-  type t = str
+module Jstring = struct
+  type t = jstring
   let empty = str ""
   let is_empty s = s ##. length = 0
   let append s0 s1 = s0 ## concat (s1)
@@ -59,7 +59,7 @@ module Str = struct
 end
 
 module Prop = struct
-  type 'a t = { path : str list ; undefined : 'a }
+  type 'a t = { path : jstring list ; undefined : 'a }
   let v ~undefined path = { path; undefined }
   let set p v o =
     let rec loop o = function
@@ -83,7 +83,7 @@ module Prop = struct
   (* Predefined *)
 
   let bool n = v ~undefined:false [str n]
-  let str n = v ~undefined:Str.empty [str n]
+  let str n = v ~undefined:Jstring.empty [str n]
   let checked = bool "checked"
   let id = str "id"
   let name = str "name"
@@ -223,8 +223,8 @@ end
 (* DOM *)
 
 module Att = struct
-  type name = str
-  type t = name * str
+  type name = jstring
+  type t = name * jstring
   let add_if b att l = if b then att :: l else l
   let add_some name o l = match o with None -> l | Some a -> (name, a) :: l
 
@@ -247,7 +247,7 @@ module Att = struct
     let autofocus = Js.string "autofocus"
   end
 
-  let bool n = n, Str.empty
+  let bool n = n, Jstring.empty
   let int n i = (n, str (string_of_int i))
   let str n v = (n, v)
   let autofocus = bool Name.autofocus
@@ -328,7 +328,7 @@ module El = struct
 
   type name = Js.js_string Js.t
   type t = [ `El of Dom_html.element Js.t ]
-  type child = [ t | `Txt of str ]
+  type child = [ t | `Txt of jstring ]
 
   let add_children (`El n) children =
     let rec loop n = function
@@ -342,7 +342,7 @@ module El = struct
     loop n children
 
   let v ?(atts = []) name cs =
-    let set_att e (a, v) = match Str.equal a Att.Name.class' with
+    let set_att e (a, v) = match Jstring.equal a Att.Name.class' with
     | true -> e ##. classList ## add (v)
     | false -> e ## setAttribute a v
     in
@@ -420,7 +420,7 @@ module El = struct
   (* Style *)
 
   module Style = struct
-    type prop = str
+    type prop = jstring
     let background_color = str "background-color"
     let color = str "color"
     let cursor = str "cursor"
@@ -433,15 +433,15 @@ module El = struct
   let get_computed_style p (`El e) =
     let style = Dom_html.window ## getComputedStyle e in
     match Js.Optdef.to_option (Js.Unsafe.get style p) with
-    | None -> Str.empty | Some v -> v
+    | None -> Jstring.empty | Some v -> v
 
   let get_style p (`El e) =
     match Js.Optdef.to_option (Js.Unsafe.get (Js.Unsafe.get e "style") p) with
-    | None -> Str.empty | Some v -> v
+    | None -> Jstring.empty | Some v -> v
 
   let important_str = str "important"
   let set_style ?(important = false) p v (`El e) =
-    let important = if important then important_str else Str.empty in
+    let important = if important then important_str else Jstring.empty in
     (Js.Unsafe.get e "style") ## setProperty p v important
 
   let rset_style ?important p ~on e =
@@ -1267,7 +1267,7 @@ module Loc = struct
   let port () =
     let p = Dom_html.window ##. location ##. port in
     if p ##. length = 0 then None else
-    let p = Str.to_string p in
+    let p = Jstring.to_string p in
     try Some (int_of_string p) with Failure _ -> None
 
   let query () =
@@ -1327,7 +1327,7 @@ module History = struct
 
   (* History state *)
 
-  type 'a state = str * 'a
+  type 'a state = jstring * 'a
   let create_state ~version s = (version, s)
   let state ~version ~default () =
     match Js.Opt.to_option (Obj.magic (history ##. state)) with
@@ -1375,8 +1375,8 @@ module Store = struct
       id := !id + 1;
       let id = Js.string (string_of_int !id) in
       match ns with
-      | None -> Str.append key_prefix id
-      | Some ns -> Str.(append (append ns (str "-")) (append key_prefix id))
+      | None -> Jstring.append key_prefix id
+      | Some ns -> Jstring.(append (append ns (str "-")) (append key_prefix id))
 
   let version = key ~ns:(str "brr") ()
 
@@ -1476,7 +1476,7 @@ module File = struct
       { r; result; progress }
 
     let to_data_url =
-      let get r : str = (Js.Unsafe.coerce r) ##. result in
+      let get r : jstring = (Js.Unsafe.coerce r) ##. result in
       let start r f = (Js.Unsafe.coerce r) ## readAsDataURL (f) in
       to_xxx get start
 

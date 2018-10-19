@@ -12,42 +12,42 @@ open Note
 
 (** {1:std Preliminaries} *)
 
-type str = Js.js_string Js.t
+type jstring = Js.js_string Js.t
 (** The type for JavaScript strings. *)
 
-val str : string -> str
+val str : string -> jstring
 (** [str s] is [s] as a JavaScript string. *)
 
-val strf : ('a, Format.formatter, unit, str) format4 -> 'a
+val strf : ('a, Format.formatter, unit, jstring) format4 -> 'a
 (** [strf fmt ...] is a formatted Javascript string. *)
 
 (** JavaScript strings. *)
-module Str : sig
+module Jstring : sig
 
-  (** {1:str Strings} *)
+  (** {1:jstring Strings} *)
 
-  type t = str
+  type t = Js.js_string Js.t
   (** The type for JavaScript strings. *)
 
-  val empty : str
+  val empty : jstring
   (** [empty] is an empty string. *)
 
-  val is_empty : str -> bool
+  val is_empty : jstring -> bool
   (** [is_empty s] is [true] iff [s] is an empty string. *)
 
-  val append : str -> str -> str
+  val append : jstring -> jstring -> jstring
   (** [append s0 s1] appends [s1] to [s0]. *)
 
-  val cuts : sep:str -> str -> str list
+  val cuts : sep:jstring -> jstring -> jstring list
   (** [cuts sep s] is the list of all (possibly empty) substrings of
       [s] that are delimited by matches of the non empty separator
       string [sep]. *)
 
-  val concat : sep:str -> str list -> str
+  val concat : sep:jstring -> jstring list -> jstring
   (** [concat sep ss] is the concatenates the list of strings [ss]
       inserting [sep] between each of them. *)
 
-  val slice : ?start:int -> ?stop:int -> str -> str
+  val slice : ?start:int -> ?stop:int -> jstring -> jstring
   (** [slice ~start ~stop s] is the string s.[start], s.[start+1], ...
       s.[stop - 1]. [start] defaults to [0] and [stop] to
       [String.length s].
@@ -56,31 +56,31 @@ module Str : sig
       [String.length s]. This means that [-1] denotes the last
       character of the string. *)
 
-  val trim : str -> str
+  val trim : jstring -> jstring
   (** [trim s] is [s] without whitespace from the beginning and end of
       the string. *)
 
-  val chop : prefix:str -> str -> str option
+  val chop : prefix:jstring -> jstring -> jstring option
   (** [chop prefix s] is [s] without the prefix [prefix] or [None] if
       [prefix] is not a prefix of [s]. *)
 
-  val rchop : suffix:str -> str -> str option
+  val rchop : suffix:jstring -> jstring -> jstring option
   (** [rchop suffix s] is [s] without the suffix [suffix] or [None] if
       [suffix] is not a suffix of [s]. *)
 
-  val to_string : str -> string
+  val to_string : jstring -> string
   (** [to_string s] is [s] as an OCaml string. *)
 
-  val of_string : string -> str
+  val of_string : string -> jstring
   (** [of_string s] is the OCaml string [s] as a JavaScript string. *)
 
-  val equal : str -> str -> bool
+  val equal : jstring -> jstring -> bool
   (** [equal s0 s1] is [true] iff [s0] and [s1] are equal. *)
 
-  val compare : str -> str -> int
+  val compare : jstring -> jstring -> int
   (** [compare s0 s1] is a total order on strings compatible with {!equal}. *)
 
-  val pp : Format.formatter -> str -> unit
+  val pp : Format.formatter -> jstring -> unit
   (** [pp ppf s] prints [s] on [ppf]. *)
 end
 
@@ -89,7 +89,7 @@ module Prop : sig
   type 'a t
   (** The type for properties of type ['a]. *)
 
-  val v : undefined:'a -> str list -> 'a t
+  val v : undefined:'a -> jstring list -> 'a t
   (** [v p : prop_type t] is accessed via path [p] of type [prop_type].
       {b Warning.} Always constrain the type otherwise this is
       {!Obj.magic}. [p] must be non-empty. *)
@@ -103,14 +103,14 @@ module Prop : sig
 
   (** {1:predef Predefined properties}
 
-      These properties all have an undefined value: [Str.empty] for strings,
+      These properties all have an undefined value: [Jstr.empty] for strings,
       [false] for booleans. *)
 
   val checked : bool t
-  val id : str t
-  val name : str t
-  val title : str t
-  val value : str t
+  val id : jstring t
+  val name : jstring t
+  val title : jstring t
+  val value : jstring t
 end
 
 (** Console logging.
@@ -269,16 +269,16 @@ module Att : sig
 
   (** {1:atts Attributes} *)
 
-  type name = str
+  type name = jstring
   (** The type for attribute names. *)
 
-  type t = name * str
+  type t = name * jstring
   (** The type for attributes. *)
 
   val add_if : bool -> t -> t list -> t list
   (** [add_if b a l] is [a :: l] if [b] is [true] and [l] otherwise *)
 
-  val add_some : name -> str option -> t list -> t list
+  val add_some : name -> jstring option -> t list -> t list
   (** [add_some n o l] is [v n a :: l] if [o] is [Some a] and [l] otherwise. *)
 
   (** {1 Predefined attribute constructors and names}
@@ -308,19 +308,19 @@ module Att : sig
 
   val autofocus : t
   val checked : t
-  val class' : str -> t
+  val class' : jstring -> t
   val disabled : t
-  val for' : str -> t
+  val for' : jstring -> t
   val height : int -> t
-  val href : str -> t
-  val id : str -> t
-  val name : str -> t
-  val placeholder : str -> t
-  val src : str -> t
+  val href : jstring -> t
+  val id : jstring -> t
+  val name : jstring -> t
+  val placeholder : jstring -> t
+  val src : jstring -> t
   val tabindex : int -> t
-  val title : str -> t
-  val type' : str -> t
-  val value : str -> t
+  val title : jstring -> t
+  val type' : jstring -> t
+  val value : jstring -> t
   val width : int -> t
 end
 
@@ -336,7 +336,7 @@ module El : sig
 
   (** {1:elements Elements} *)
 
-  type name = str
+  type name = jstring
   (** The type for element names. *)
 
   type el
@@ -345,7 +345,7 @@ module El : sig
   type t = [ `El of el ]
   (** The type for elements. *)
 
-  type child = [ t | `Txt of str ]
+  type child = [ t | `Txt of jstring ]
   (** The type for element children. *)
 
   val v : ?atts:Att.t list -> name -> child list -> [> t]
@@ -358,16 +358,16 @@ module El : sig
   val el : t -> Dom_html.element Js.t
   (** [el (`El e)] is [e]. *)
 
-  val tag_name : t -> str
+  val tag_name : t -> jstring
   (** [tag_name e] is the
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/tagName}
       tag name} of the element. *)
 
-  val find_id : str -> [> t] option
+  val find_id : jstring -> [> t] option
   (** [find_id id] is the element with id [id] in the browser document
       (if any). *)
 
-  val find_class : str -> [> t] list
+  val find_class : jstring -> [> t] list
   (** [find_class cl] are the element with class [cs] in the browser
       document. *)
 
@@ -399,19 +399,19 @@ module El : sig
 
   (** {1:atts Attributes} *)
 
-  val get_att : Att.name -> t -> str option
+  val get_att : Att.name -> t -> jstring option
   (** [get_att a e] is the value of the attribute [a] of [e] (if any). *)
 
-  val set_att : Att.name -> str option -> t -> unit
+  val set_att : Att.name -> jstring option -> t -> unit
   (** [set_att a v e] sets the value of attribute [a] of [e] to [v].
       If [v] is [None] this removes the attribute. *)
 
-  val rset_att : Att.name -> on:str option event -> t -> unit
+  val rset_att : Att.name -> on:jstring option event -> t -> unit
   (** [rset_att a ~on e] sets attribute [a] of [e] with the value
       of [e] whenever it occurs. If the value is [None] this removes
       the attribute. *)
 
-  val def_att : Att.name -> str option signal -> t -> unit
+  val def_att : Att.name -> jstring option signal -> t -> unit
   (** [def_att a v e] defines the attribute [a] of [e] over time
       with the value of [v]. Whenever the signal value is [None],
       the attribute is removed. {b Warning.} This assumes [v] is the
@@ -419,18 +419,18 @@ module El : sig
 
   (** {1:classes Classes} *)
 
-  val get_class : str -> t -> bool
+  val get_class : jstring -> t -> bool
   (** [get_class c e] is the membership of [e] to class [c]. *)
 
-  val set_class : str -> bool -> t ->  unit
+  val set_class : jstring -> bool -> t ->  unit
   (** [set_class c b e] sets the membership of [e] to class [c]
       according to [b]. *)
 
-  val rset_class : str -> on:bool event -> t -> unit
+  val rset_class : jstring -> on:bool event -> t -> unit
   (** [rset_class a ~on e] sets the membership of [e] to class [e]
       with the value of [on] whenever it occurs. *)
 
-  val def_class : str -> bool signal -> t -> unit
+  val def_class : jstring -> bool signal -> t -> unit
   (** [rdef_class a b e] defines the membership of [e] to class [e]
       over time with the value of [b]. {b Warning.} This assumes [b] is
       the only entity interacting with that class. *)
@@ -457,7 +457,7 @@ module El : sig
 
   (** Style property names. *)
   module Style : sig
-    type prop = str
+    type prop = jstring
     val background_color : prop
     val color : prop
     val cursor : prop
@@ -467,22 +467,23 @@ module El : sig
     val width : prop
   end
 
-  val get_computed_style : Style.prop -> t -> str
+  val get_computed_style : Style.prop -> t -> jstring
   (** [get_computed_style p e] is the computed style property [p] of [e]. *)
 
-  val get_style : Style.prop -> t -> str
+  val get_style : Style.prop -> t -> jstring
   (** [get_style p e] is the inline style property [p] of [e]. *)
 
-  val set_style : ?important:bool -> Style.prop -> str -> t -> unit
+  val set_style : ?important:bool -> Style.prop -> jstring -> t -> unit
   (** [set_style ~important p v e] sets the inline style property [p] of
       [e] to [v] with priority [important] (defaults to [false]). *)
 
-  val rset_style : ?important:bool -> Style.prop -> on:str event -> t -> unit
+  val rset_style :
+    ?important:bool -> Style.prop -> on:jstring event -> t -> unit
   (** [rset_style ~important p ~on e] sets the inline style property [p]
       of [e] to the value of [on] whenever it occurs with priority
       [important] (defaults to [false]). *)
 
-  val def_style : ?important:bool -> Style.prop -> str signal -> t -> unit
+  val def_style : ?important:bool -> Style.prop -> jstring signal -> t -> unit
   (** [def_style p v e] sets the inline style property [p] of [e] over time
       with the value of [v]. {b Warning.} This assumes [v] is the only
       entity interacting with that property. *)
@@ -1503,44 +1504,45 @@ module Loc : sig
 
   (** {1:info Location URI} *)
 
-  val uri : unit -> str
+  val uri : unit -> jstring
   (** [uri ()] is the browser's location full URI. *)
 
-  val scheme : unit -> str
+  val scheme : unit -> jstring
   (** [scheme ()] is the scheme of {!uri}[ ()]. *)
 
-  val host : unit -> str
+  val host : unit -> jstring
   (** [host ()] is the host of {!uri}[ ()]. *)
 
   val port : unit -> int option
   (** [port ()] is the port of {!uri}[ ()]. *)
 
-  val path : unit -> str
+  val path : unit -> jstring
   (** [path ()] is the path of {!uri}[ ()]. *)
 
-  val query : unit -> str
+  val query : unit -> jstring
   (** [query ()] is the query of {!uri}[ ()]. *)
 
-  val fragment : unit -> str
+  val fragment : unit -> jstring
   (** [fragment ()] is fragment of {!uri}[ ()] with the hash. *)
 
-  val set_fragment : str -> unit
+  val set_fragment : jstring -> unit
   (** [set_fragment frag] sets the fragment of {!uri}[ ()] to [frag].
       This does not reload the page but triggers the {!Ev.hashchange}
       event. *)
 
-  val update : ?scheme:str -> ?host:str -> ?port:int option -> ?path:str ->
-    ?query:str -> ?fragment:str -> unit -> unit
+  val update :
+    ?scheme:jstring -> ?host:jstring -> ?port:int option -> ?path:jstring ->
+    ?query:jstring -> ?fragment:jstring -> unit -> unit
   (** [update ~scheme ~hostname ~port ~path ~query ~fragment ()] updates the
       corresponding parts of the location's URI. *)
 
   (** {1:info Location changes} *)
 
-  val hashchange : str event
+  val hashchange : jstring event
   (** [hashchange] occurs whenever the window's fragment changes with
       the new value of [fragment ()]. *)
 
-  val set : ?replace:bool -> str -> unit
+  val set : ?replace:bool -> jstring -> unit
   (** [set replace uri] sets to browser location to [uri], if
       [replace] is [true] the current location is removed from the
       session history (defaults to [false]). *)
@@ -1579,17 +1581,18 @@ module History : sig
   type 'a state
   (** The type for state. *)
 
-  val create_state : version:str -> 'a -> 'a state
+  val create_state : version:jstring -> 'a -> 'a state
   (** [create_state version v] is state [v] with version [version]. *)
 
-  val state : version:str -> default:'a -> unit -> 'a
+  val state : version:jstring -> default:'a -> unit -> 'a
   (** [state version deafult ()] is the current state if it matches
       [version]. If it doesn't match or there is no state [default] is
       returned. *)
 
   (** {1 Making history} *)
 
-  val push : ?replace:bool -> ?state:'a state -> title:str -> str -> unit
+  val push :
+    ?replace:bool -> ?state:'a state -> title:jstring -> jstring -> unit
   (** [push ~replace ~state ~title uri] changes the browser location to
       [uri] but doesn't load the URI. [title] is a human title for the
       location to which we are moving and [state] is a possible value
@@ -1601,7 +1604,7 @@ end
 (** Browser information *)
 module Info : sig
 
-  val languages : unit -> str list
+  val languages : unit -> jstring list
   (** [languages ()] is the user's preferred languages as BCP 47 language
       tags.
 
@@ -1630,7 +1633,7 @@ module Store : sig
   type 'a key
   (** The type for keys whose lookup value is 'a *)
 
-  val key : ?ns:str -> unit -> 'a key
+  val key : ?ns:jstring -> unit -> 'a key
   (** [key ~ns ()] is a new storage key in namespace [ns]. If [ns]
       is unspecified, the key lives in a global namespace.
 
@@ -1679,7 +1682,7 @@ module File : sig
   type t
   (** The type for file objects. *)
 
-  val name : t -> str
+  val name : t -> jstring
   (** [name f] is the file name of [f]. *)
 
   val size : t -> int
@@ -1689,7 +1692,7 @@ module File : sig
   (** [last_modified_ms f] is the last modified time in ms from
       the epoch. *)
 
-  val type' : t -> str
+  val type' : t -> jstring
   (** [type f] is the MIME type of [f]. *)
 
   val list_of_el : El.t -> t list
@@ -1725,7 +1728,7 @@ module File : sig
     type 'a t
     (** The type for file reads returning results of type ['a]. *)
 
-    val to_data_url : file -> str t
+    val to_data_url : file -> jstring t
     (** [to_data_url f] reads file [f] as as a
         {{:https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs}data URL}. This doesn't start the read use {!read}. *)
 
