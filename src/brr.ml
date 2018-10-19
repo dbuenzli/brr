@@ -296,23 +296,21 @@ module El = struct
 
   let add_fun prop f (`El e) = Prop.set prop (f :: Prop.get prop e) e
 
-  let invoke_funs prop node =
-    begin match (node ##. nodeType) with
-    | Dom.ELEMENT ->
-        let invoke_node_funs n =
-          let funs = Prop.get prop n in
-          List.iter (fun f -> f ()) funs;
-          Prop.set prop [] n
-        in
-        let ns = descendents node in
-        for i = 0 to ns ##. length - 1 do
-          match Js.Opt.to_option (ns ## item i) with
-          | None -> ()
-          | Some o -> invoke_node_funs o;
-        done;
-        invoke_node_funs node
-    | _ -> ()
-    end
+  let invoke_funs prop node = match (node ##. nodeType) with
+  | Dom.ELEMENT ->
+      let invoke_node_funs n =
+        let funs = Prop.get prop n in
+        List.iter (fun f -> f ()) funs;
+        Prop.set prop [] n
+      in
+      let ns = descendents node in
+      for i = 0 to ns ##. length - 1 do
+        match Js.Opt.to_option (ns ## item i) with
+        | None -> ()
+        | Some o -> invoke_node_funs o;
+      done;
+      invoke_node_funs node
+  | _ -> ()
 
   let add_logr e l = add_fun rem_prop (fun () -> Logr.destroy l) e
   let may_add_logr e = function None -> () | Some l -> add_logr e l

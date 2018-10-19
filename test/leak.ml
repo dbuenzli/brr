@@ -29,7 +29,7 @@ let count_value_nest count =
   let count_txt c = [`Txt (Jstring.vf "Steps (nest): %d" c)] in
   let count = S.hold [] (E.map count_txt count) in
   El.def_children p count;
-  El.p [p]
+  El.div [p]
 
 let main () =
   let h1 = El.h1 [`Txt (Jstring.v "Leak test")] in
