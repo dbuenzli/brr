@@ -6,6 +6,12 @@
 
 (** Reactive browser interaction.
 
+    {b TODO.}
+    {ul
+    {- It would be nice to get rid of Js.t types. We need to
+       make a type to represent eventTarget and have [to_event_target]
+       functions (e.g. on [Win.t])}}
+
     {e %%VERSION%% — {{:%%PKG_HOMEPAGE%% }homepage}} *)
 
 open Note
@@ -1484,12 +1490,15 @@ module Win : sig
   (** The type for browser windows. *)
 
   val dow : t
-  (** [dow] is the browser windows. *)
+  (** [dow] is the browser window. *)
 
-  val device_pixel_ratio : unit -> float
-  (** [device_pixel_ratio ()] is the ratio between physical and CSS pixel
+  val device_pixel_ratio : t -> float
+  (** [device_pixel_ratio w] is the ratio between physical and CSS pixel
       resolution. A value of [2.] indicates that two physical pixels are
       used to draw a single CSS pixel. *)
+
+  val print : t -> unit
+  (** [print w] opens the print dialog to print the current document. *)
 end
 
 (** Browser location

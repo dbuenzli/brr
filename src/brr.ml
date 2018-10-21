@@ -1260,12 +1260,9 @@ end
 
 module Win = struct
   type t = Dom_html.window Js.t
-
   let dow = Dom_html.window
-  let device_pixel_ratio =
-    if Js.Optdef.test ((Js.Unsafe.coerce Dom_html.window) ##. devicePixelRatio)
-    then (fun () -> (Js.Unsafe.coerce Dom_html.window) ##. devicePixelRatio)
-    else (fun () -> 1.0)
+  let device_pixel_ratio w = (Js.Unsafe.coerce w) ##. devicePixelRatio
+  let print w = w ## print
 end
 
 module Loc = struct
