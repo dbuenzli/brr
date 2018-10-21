@@ -22,10 +22,8 @@ let array_of_list l =
 
 (* JavaScript strings *)
 
-type jstring = Js.js_string Js.t
-
-module Jstring = struct
-  type t = jstring
+module Jstr = struct
+  type t = Js.js_string Js.t
   let v = Js.string
   let vf fmt =
     let k _ = v (Format.flush_str_formatter ()) in
@@ -60,7 +58,7 @@ module Jstring = struct
 end
 
 module Prop = struct
-  type 'a t = { path : jstring list ; undefined : 'a }
+  type 'a t = { path : Jstr.t list ; undefined : 'a }
   let v ~undefined path = { path; undefined }
   let set p v o =
     let rec loop o = function
@@ -83,8 +81,8 @@ module Prop = struct
 
   (* Predefined *)
 
-  let bool n = v ~undefined:false [Jstring.v n]
-  let str n = v ~undefined:Jstring.empty [Jstring.v n]
+  let bool n = v ~undefined:false [Jstr.v n]
+  let str n = v ~undefined:Jstr.empty [Jstr.v n]
   let checked = bool "checked"
   let id = str "id"
   let name = str "name"
@@ -224,8 +222,8 @@ end
 (* DOM *)
 
 module Att = struct
-  type name = jstring
-  type t = name * jstring
+  type name = Jstr.t
+  type t = name * Jstr.t
   let add_if b att l = if b then att :: l else l
   let add_some name o l = match o with None -> l | Some a -> (name, a) :: l
 
@@ -248,8 +246,8 @@ module Att = struct
     let autofocus = Js.string "autofocus"
   end
 
-  let bool n = n, Jstring.empty
-  let int n i = (n, Jstring.v (string_of_int i))
+  let bool n = n, Jstr.empty
+  let int n i = (n, Jstr.v (string_of_int i))
   let str n v = (n, v)
   let autofocus = bool Name.autofocus
   let checked = bool Name.checked
@@ -276,7 +274,7 @@ module El = struct
     Dom_html.document
 
   let descendents =
-    let star = Js.Unsafe.inject @@ Jstring.v "*" in
+    let star = Js.Unsafe.inject @@ Jstr.v "*" in
     fun n ->
     ((Js.Unsafe.meth_call n "querySelectorAll" [|star|]) :>
        Dom.element Js.t Dom.nodeList Js.t)
@@ -289,10 +287,10 @@ module El = struct
      nodes that are removed from the HTML DOM are destroyed. *)
 
   let add_prop : (unit -> unit) list Prop.t =
-    Prop.v ~undefined:[] [Jstring.v "brr_add"]
+    Prop.v ~undefined:[] [Jstr.v "brr_add"]
 
   let rem_prop : (unit -> unit) list Prop.t =
-    Prop.v ~undefined:[] [Jstring.v "brr_rem"]
+    Prop.v ~undefined:[] [Jstr.v "brr_rem"]
 
   let add_fun prop f (`El e) = Prop.set prop (f :: Prop.get prop e) e
 
@@ -347,7 +345,7 @@ module El = struct
 
   type name = Js.js_string Js.t
   type t = [ `El of Dom_html.element Js.t ]
-  type child = [ t | `Txt of jstring ]
+  type child = [ t | `Txt of Jstr.t ]
 
   let add_children (`El n) children =
     let rec loop n = function
@@ -361,7 +359,7 @@ module El = struct
     loop n children
 
   let v ?(atts = []) name cs =
-    let set_att e (a, v) = match Jstring.equal a Att.Name.class' with
+    let set_att e (a, v) = match Jstr.equal a Att.Name.class' with
     | true -> e ##. classList ## add (v)
     | false -> e ## setAttribute a v
     in
@@ -434,28 +432,28 @@ module El = struct
   (* Style *)
 
   module Style = struct
-    type prop = jstring
-    let background_color = Jstring.v "background-color"
-    let color = Jstring.v "color"
-    let cursor = Jstring.v "cursor"
-    let display = Jstring.v "display"
-    let height = Jstring.v "height"
-    let visibility = Jstring.v "visibility"
-    let width = Jstring.v "width"
+    type prop = Jstr.t
+    let background_color = Jstr.v "background-color"
+    let color = Jstr.v "color"
+    let cursor = Jstr.v "cursor"
+    let display = Jstr.v "display"
+    let height = Jstr.v "height"
+    let visibility = Jstr.v "visibility"
+    let width = Jstr.v "width"
   end
 
   let get_computed_style p (`El e) =
     let style = Dom_html.window ## getComputedStyle e in
     match Js.Optdef.to_option (Js.Unsafe.get style p) with
-    | None -> Jstring.empty | Some v -> v
+    | None -> Jstr.empty | Some v -> v
 
   let get_style p (`El e) =
     match Js.Optdef.to_option (Js.Unsafe.get (Js.Unsafe.get e "style") p) with
-    | None -> Jstring.empty | Some v -> v
+    | None -> Jstr.empty | Some v -> v
 
-  let important_str = Jstring.v "important"
+  let important_str = Jstr.v "important"
   let set_style ?(important = false) p v (`El e) =
-    let important = if important then important_str else Jstring.empty in
+    let important = if important then important_str else Jstr.empty in
     (Js.Unsafe.get e "style") ## setProperty p v important
 
   let rset_style ?important p ~on e =
@@ -1278,7 +1276,7 @@ module Loc = struct
   let port () =
     let p = Dom_html.window ##. location ##. port in
     if p ##. length = 0 then None else
-    let p = Jstring.to_string p in
+    let p = Jstr.to_string p in
     try Some (int_of_string p) with Failure _ -> None
 
   let query () =
@@ -1338,7 +1336,7 @@ module History = struct
 
   (* History state *)
 
-  type 'a state = jstring * 'a
+  type 'a state = Jstr.t * 'a
   let create_state ~version s = (version, s)
   let state ~version ~default () =
     match Js.Opt.to_option (Obj.magic (history ##. state)) with
@@ -1363,7 +1361,7 @@ module Info = struct
     | None ->
         match Js.Optdef.to_option (Dom_html.window ##. navigator ##. language)
         with
-        | None -> [Jstring.v "en"]
+        | None -> [Jstr.v "en"]
         | Some l -> [l]
 end
 
@@ -1386,11 +1384,11 @@ module Store = struct
       id := !id + 1;
       let id = Js.string (string_of_int !id) in
       match ns with
-      | None -> Jstring.append key_prefix id
+      | None -> Jstr.append key_prefix id
       | Some ns ->
-          Jstring.(append (append ns (Jstring.v "-")) (append key_prefix id))
+          Jstr.(append (append ns (Jstr.v "-")) (append key_prefix id))
 
-  let version = key ~ns:(Jstring.v "brr") ()
+  let version = key ~ns:(Jstr.v "brr") ()
 
   let mem ?(scope = `Persist) k = match scope_store scope with
   | Some s -> Js.Opt.test (s ## getItem (k))
@@ -1488,7 +1486,7 @@ module File = struct
       { r; result; progress }
 
     let to_data_url =
-      let get r : jstring = (Js.Unsafe.coerce r) ##. result in
+      let get r : Jstr.t = (Js.Unsafe.coerce r) ##. result in
       let start r f = (Js.Unsafe.coerce r) ## readAsDataURL (f) in
       to_xxx get start
 

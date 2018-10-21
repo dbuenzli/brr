@@ -37,21 +37,21 @@ let pf = Format.fprintf
 
 module Todo : sig
   type t
-  val v : jstring -> t
-  val task : t -> jstring
+  val v : Jstr.t -> t
+  val task : t -> Jstr.t
   val done' : t -> bool
-  val with_task : jstring -> t -> t
+  val with_task : Jstr.t -> t -> t
   val with_done : bool -> t -> t
   val pp : Format.formatter -> t -> unit
 end = struct
-  type t = { task : jstring; done' : bool }
+  type t = { task : Jstr.t; done' : bool }
   let v task = { task; done' = false }
   let task t = t.task
   let done' t = t.done'
   let with_task task t = { t with task }
   let with_done done' t = { t with done' }
   let pp ppf t =
-    pf ppf "[%c] %a" (if t.done' then 'x' else ' ') Jstring.pp t.task
+    pf ppf "[%c] %a" (if t.done' then 'x' else ' ') Jstr.pp t.task
 end
 
 module Todos : sig
@@ -97,10 +97,10 @@ end
 
 (* Model actions *)
 
-type add_action = [ `Add_todo of jstring ]
+type add_action = [ `Add_todo of Jstr.t ]
 type bulk_action = [ `All_done of bool | `Rem_done ]
 type edit_action =
-[ `Set_task of jstring * Todo.t
+[ `Set_task of Jstr.t * Todo.t
 | `Set_done of bool * Todo.t
 | `Rem_todo of Todo.t ]
 
@@ -117,7 +117,7 @@ let do_action : action -> Todos.t -> Todos.t = function
 (* Persisting *)
 
 let () = Store.force_version "0"
-let state : Todos.t Store.key = Store.key ~ns:(Jstring.v "todos-brr") ()
+let state : Todos.t Store.key = Store.key ~ns:(Jstr.v "todos-brr") ()
 let save_state ts = Store.add state ts
 let load_state () = Store.get ~absent:Todos.empty state
 
@@ -125,50 +125,50 @@ let load_state () = Store.get ~absent:Todos.empty state
 
 let el_def_display : El.t -> bool signal -> unit =
   (* Would maybe be better to do this via CSS classes *)
-  let none = Js.string "none" and show = Js.string "" in
+  let none = Jstr.v "none" and show = Jstr.empty in
   let bool_to_display = function true -> show | false -> none in
   fun el bool -> El.def_style El.Style.display (S.map bool_to_display bool) el
 
 let add_todo : unit -> [> add_action] event * [> El.t] =
 fun () ->
-  let p = Jstring.v "What needs to be done ?" in
+  let p = Jstr.v "What needs to be done ?" in
   let atts =
-    Att.[type' (Jstring.v "text"); class' (Jstring.v "new-todo");
+    Att.[type' (Jstr.v "text"); class' (Jstr.v "new-todo");
          autofocus; placeholder p]
   in
   let i = El.input ~atts [] in
   let return = E.filter (Key.equal `Return) Ev.(for_el i keydown Key.of_ev) in
   let input =
-    E.map (fun _ -> Jstring.trim @@ El.get_prop Prop.value i) return
+    E.map (fun _ -> Jstr.trim @@ El.get_prop Prop.value i) return
   in
-  let add_todo = input |> E.filter_map @@ fun v -> match Jstring.is_empty v with
+  let add_todo = input |> E.filter_map @@ fun v -> match Jstr.is_empty v with
   | true -> None
   | false -> Some (`Add_todo v)
   in
-  let clear = E.stamp add_todo Jstring.empty in
+  let clear = E.stamp add_todo Jstr.empty in
   let () = El.rset_prop Prop.value i ~on:clear in
   add_todo, i
 
 let toggle_all : set:bool signal -> [> bulk_action ] event * [> El.t] =
 fun ~set ->
-  let tid = Jstring.v "toggle-all" in
-  let typ = Att.type' (Jstring.v "checkbox") in
+  let tid = Jstr.v "toggle-all" in
+  let typ = Att.type' (Jstr.v "checkbox") in
   let i = El.input ~atts:Att.[typ; class' tid; id tid] [] in
   let () = El.def_prop Prop.checked set i in
   let click = Ev.(for_el i click unit) in
   let toggle = E.map (fun _ -> `All_done (El.get_prop Prop.checked i)) click in
-  let label = [`Txt (Jstring.v "Mark all as complete")] in
+  let label = [`Txt (Jstr.v "Mark all as complete")] in
   let label = El.label ~atts:Att.[for' tid] label in
   toggle, El.div [i; label]
 
 let items_left : count:int signal -> [> El.t] =
 fun ~count ->
   let count_msg = function
-  | 0 -> Jstring.v "0 items left"
-  | 1 -> Jstring.v "1 item left"
-  | n -> Jstring.vf "%d items left" n
+  | 0 -> Jstr.v "0 items left"
+  | 1 -> Jstr.v "1 item left"
+  | n -> Jstr.vf "%d items left" n
   in
-  let span = El.span ~atts:Att.[class' (Jstring.v "todo-count")] [] in
+  let span = El.span ~atts:Att.[class' (Jstr.v "todo-count")] [] in
   let msg = S.map (fun c -> [`Txt (count_msg c)]) count in
   let () = El.def_children span msg in
   span
@@ -176,27 +176,27 @@ fun ~count ->
 type filter = [ `All | `Todo | `Done ]
 let filters : unit -> filter signal * [> El.t] =
 fun () ->
-  let parse_frag frag = match Jstring.to_string frag with
+  let parse_frag frag = match Jstr.to_string frag with
   | "#/active" -> `Todo | "#/completed" -> `Done | v -> `All
   in
   let init_filter = parse_frag (Loc.fragment ()) in
   let filter_li frag name =
-    let a = El.(a ~atts:Att.[href frag] [`Txt (Jstring.v name)]) in
+    let a = El.(a ~atts:Att.[href frag] [`Txt (Jstr.v name)]) in
     let sel = parse_frag frag = init_filter in
-    let selected = S.hold sel (E.map (Jstring.equal frag) Loc.hashchange) in
-    let () = El.def_class (Jstring.v "selected") selected a in
+    let selected = S.hold sel (E.map (Jstr.equal frag) Loc.hashchange) in
+    let () = El.def_class (Jstr.v "selected") selected a in
     El.li [a]
   in
-  let all = filter_li (Jstring.v "#/") "All" in
-  let todo = filter_li (Jstring.v "#/active") "Active" in
-  let done' = filter_li (Jstring.v "#/completed") "Completed" in
+  let all = filter_li (Jstr.v "#/") "All" in
+  let todo = filter_li (Jstr.v "#/active") "Active" in
+  let done' = filter_li (Jstr.v "#/completed") "Completed" in
   let filter = S.hold init_filter (E.map parse_frag Loc.hashchange) in
-  filter, El.ul ~atts:Att.[class' (Jstring.v "filters")] [all; todo; done']
+  filter, El.ul ~atts:Att.[class' (Jstr.v "filters")] [all; todo; done']
 
 let string_editor :
-  jstring -> on:'a event -> bool event * jstring event * [> El.t] =
+  Jstr.t -> on:'a event -> bool event * Jstr.t event * [> El.t] =
 fun s ~on ->
-  let ed = El.input ~atts:Att.[class' (Jstring.v "edit"); value s] [] in
+  let ed = El.input ~atts:Att.[class' (Jstr.v "edit"); value s] [] in
   let keys = Ev.(for_el ed keydown Key.of_ev) in
   let edited = E.filter (Key.equal `Return) keys in
   let undo = E.filter (Key.equal `Escape) keys in
@@ -211,7 +211,7 @@ fun s ~on ->
 
 let bool_editor : bool -> bool event * [> El.t ] =
 fun b ->
-  let atts = Att.[type' (Jstring.v "checkbox"); class' (Jstring.v "toggle")] in
+  let atts = Att.[type' (Jstr.v "checkbox"); class' (Jstr.v "toggle")] in
   let atts = Att.(add_if b checked atts) in
   let el = El.input ~atts [] in
   let click = Ev.(for_el el click unit) in
@@ -224,22 +224,22 @@ fun todo ->
   let task = Todo.task todo in
   let set_done, done_editor = bool_editor done' in
   let set_done = E.map (fun d -> `Set_done (d, todo)) set_done in
-  let rem_but = El.button ~atts:Att.[class' (Jstring.v "destroy")] [] in
+  let rem_but = El.button ~atts:Att.[class' (Jstr.v "destroy")] [] in
   let rem = Ev.(for_el rem_but click @@ stamp (`Rem_todo todo)) in
   let label = El.label [`Txt task] in
   let editing, edited, ed =
     string_editor task ~on:Ev.(for_el label dblclick unit)
   in
   let edit = edited |> E.filter_map @@ fun v ->
-    let v = Jstring.trim v in
-    if Jstring.is_empty v then Some (`Rem_todo todo) else
-    if not (Jstring.equal v task) then Some (`Set_task (v, todo)) else None
+    let v = Jstr.trim v in
+    if Jstr.is_empty v then Some (`Rem_todo todo) else
+    if not (Jstr.equal v task) then Some (`Set_task (v, todo)) else None
   in
-  let div_atts = Att.[class' (Jstring.v "view")] in
+  let div_atts = Att.[class' (Jstr.v "view")] in
   let div = El.div ~atts:div_atts [done_editor; label; rem_but] in
-  let li_atts = Att.(add_if done' (class' (Jstring.v "completed")) []) in
+  let li_atts = Att.(add_if done' (class' (Jstr.v "completed")) []) in
   let li = El.li ~atts:li_atts [div; ed] in
-  let () = El.rset_class (Jstring.v "editing") editing li in
+  let () = El.rset_class (Jstr.v "editing") editing li in
   E.select [edit; rem; set_done], li
 
 let todo_list :
@@ -254,14 +254,14 @@ fun ts ~filter ->
   let items = S.l2 ~eq:( == ) add_todos ts filter in
   let act = E.swap @@ S.map ~eq:( == ) (fun (evs, _) -> E.select evs) items in
   let items = S.map snd items in
-  let ul = El.ul ~atts:Att.[class' (Jstring.v "todo-list")] [] in
+  let ul = El.ul ~atts:Att.[class' (Jstr.v "todo-list")] [] in
   let () = El.def_children ul items in
   act, ul
 
 let header () =
   let add, field = add_todo () in
-  let atts = Att.[class' (Jstring.v "header")] in
-  add, El.(header ~atts [h1 [`Txt (Jstring.v "todos")]; field])
+  let atts = Att.[class' (Jstr.v "header")] in
+  add, El.(header ~atts [h1 [`Txt (Jstr.v "todos")]; field])
 
 let footer ~todos =
   let is_todo t = not (Todo.done' t) in
@@ -270,13 +270,13 @@ let footer ~todos =
   let left_el = items_left ~count:(S.map todo_left todos) in
   let filter, fs_el = filters () in
   let rem_done, rem_el =
-    let atts = Att.[class' (Jstring.v "clear-completed")] in
-    let b = El.button ~atts [`Txt (Jstring.v "Clear completed")] in
+    let atts = Att.[class' (Jstr.v "clear-completed")] in
+    let b = El.button ~atts [`Txt (Jstr.v "Clear completed")] in
     let () = el_def_display b has_done in
     let rem_done = Ev.(for_el b click @@ stamp `Rem_done) in
     rem_done, b
   in
-  let atts = Att.[class' (Jstring.v "footer")] in
+  let atts = Att.[class' (Jstr.v "footer")] in
   let ft = El.footer ~atts [left_el;fs_el;rem_el] in
   let display ts = not @@ Todos.is_empty ts in
   let () = el_def_display ft (S.map display todos) in
@@ -288,7 +288,7 @@ let main ~add_todo ~rem_done ~todos ~filter =
   in
   let toggle_all, toggle_el = toggle_all toggle_set in
   let edit, items = todo_list todos ~filter in
-  let atts = Att.[class' (Jstring.v "main")] in
+  let atts = Att.[class' (Jstr.v "main")] in
   let sec = El.section ~atts [toggle_el; items] in
   let display ts = not @@ Todos.is_empty ts in
   let () = el_def_display sec (S.map display todos) in
@@ -307,9 +307,9 @@ fun ~todos ->
   S.fix todos def
 
 let main () =
-  let id = Jstring.v "app" in
+  let id = Jstr.v "app" in
   match El.find_id id with
-  | None -> Log.err (fun m -> m  "No element with id '%a' found" Jstring.pp id)
+  | None -> Log.err (fun m -> m  "No element with id '%a' found" Jstr.pp id)
   | Some el ->
       let todos, children = ui ~todos:(load_state ()) in
       Logr.(hold @@ S.log todos save_state);

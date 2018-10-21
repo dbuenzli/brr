@@ -19,21 +19,21 @@ let count, run_count =
 let count_value count =
   (* Voluntarily silly. *)
   let p = El.p [] in
-  let count_txt c = [`Txt (Jstring.vf "Steps: %d" c)] in
+  let count_txt c = [`Txt (Jstr.vf "Steps: %d" c)] in
   let count = S.hold [] (E.map count_txt count) in
   El.def_children p count;
   p
 
 let count_value_nest count =
   let p = El.p [] in
-  let count_txt c = [`Txt (Jstring.vf "Steps (nest): %d" c)] in
+  let count_txt c = [`Txt (Jstr.vf "Steps (nest): %d" c)] in
   let count = S.hold [] (E.map count_txt count) in
   El.def_children p count;
   El.div [p]
 
 let main () =
-  let h1 = El.h1 [`Txt (Jstring.v "Leak test")] in
-  let info = El.p [`Txt (Jstring.v
+  let h1 = El.h1 [`Txt (Jstr.v "Leak test")] in
+  let info = El.p [`Txt (Jstr.v
                            "Memory usage should be bounded and the step \
                             counter below should not slow down.")]
   in

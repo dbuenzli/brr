@@ -4,7 +4,7 @@ open Note
 open Brr
 
 let main () =
-  let hello = El.p [`Txt (Jstring.v "Hello horrible world !")] in
+  let hello = El.p [`Txt (Jstr.v "Hello horrible world !")] in
   El.set_children (El.document_body ()) [hello]
 
-let () = Brr.App.run main
+let () = App.run main
