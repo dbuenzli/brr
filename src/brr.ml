@@ -52,6 +52,11 @@ module Jstr = struct
 
   let to_string = Js.to_string
   let of_string = Js.string
+  let to_int s = match int_of_string (Js.to_string s) with
+  | exception Failure _ -> None
+  | v -> Some v
+
+  let of_int i = Js.string (string_of_int i)
   let equal = ( = )
   let compare = Pervasives.compare
   let pp ppf s = Format.pp_print_string ppf (Js.to_string s)
@@ -153,7 +158,7 @@ module Debug = struct
   external enter : unit -> unit = "debugger"
   let pp_obj ppf v =
     let s = (Js.Unsafe.coerce v) ## toString () in
-    Format.pp_print_string ppf (Js.to_string s)
+    Format.pp_print_string ppf (Jstr.to_string s)
 
   let dump_obj v = Firebug.console ## debug (v)
 
@@ -228,26 +233,26 @@ module Att = struct
   let add_some name o l = match o with None -> l | Some a -> (name, a) :: l
 
   module Name = struct
-    let value = Js.string "value"
-    let width = Js.string "width"
-    let type' = Js.string "type"
-    let title = Js.string "title"
-    let tabindex = Js.string "tabindex"
-    let src = Js.string "src"
-    let placeholder = Js.string "placeholder"
-    let name = Js.string "name"
-    let id = Js.string "id"
-    let href = Js.string "href"
-    let height = Js.string "height"
-    let for' = Js.string "for"
-    let disabled = Js.string "disabled"
-    let class' = Js.string "class"
-    let checked = Js.string "checked"
-    let autofocus = Js.string "autofocus"
+    let value = Jstr.of_string "value"
+    let width = Jstr.of_string "width"
+    let type' = Jstr.of_string "type"
+    let title = Jstr.of_string "title"
+    let tabindex = Jstr.of_string "tabindex"
+    let src = Jstr.of_string "src"
+    let placeholder = Jstr.of_string "placeholder"
+    let name = Jstr.of_string "name"
+    let id = Jstr.of_string "id"
+    let href = Jstr.of_string "href"
+    let height = Jstr.of_string "height"
+    let for' = Jstr.of_string "for"
+    let disabled = Jstr.of_string "disabled"
+    let class' = Jstr.of_string "class"
+    let checked = Jstr.of_string "checked"
+    let autofocus = Jstr.of_string "autofocus"
   end
 
   let bool n = n, Jstr.empty
-  let int n i = (n, Jstr.v (string_of_int i))
+  let int n i = (n, Jstr.of_int i)
   let str n v = (n, v)
   let autofocus = bool Name.autofocus
   let checked = bool Name.checked
@@ -490,7 +495,7 @@ module El = struct
   (* Element names *)
 
   module Name = struct
-    let v s = Js.string s
+    let v s = Jstr.of_string s
     let a = v "a"
     let abbr = v "abbr"
     let address = v "address"
@@ -1275,9 +1280,7 @@ module Loc = struct
   let host () = Dom_html.window ##. location ##. hostname
   let port () =
     let p = Dom_html.window ##. location ##. port in
-    if p ##. length = 0 then None else
-    let p = Jstr.to_string p in
-    try Some (int_of_string p) with Failure _ -> None
+    if p ##. length = 0 then None else Jstr.to_int p
 
   let query () =
     let q = Dom_html.window ##. location ##. search in
@@ -1305,7 +1308,7 @@ module Loc = struct
      | Some p ->
          match p with
          | None -> ()
-         | Some p -> l ##. port := (Js.string (string_of_int p)));
+         | Some p -> l ##. port := Jstr.of_int p);
     (match path with None -> () | Some p -> l ##. pathname := p);
     (match query with None -> () | Some q -> l ##. search := q);
     (match fragment with None -> () | Some f -> l ##. hash := f);
@@ -1382,7 +1385,7 @@ module Store = struct
     let id = ref (-1) in
     fun ?ns () ->
       id := !id + 1;
-      let id = Js.string (string_of_int !id) in
+      let id = Jstr.of_int !id in
       match ns with
       | None -> Jstr.append key_prefix id
       | Some ns ->

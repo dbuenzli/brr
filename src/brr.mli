@@ -73,17 +73,26 @@ module Jstr : sig
   (** [rchop suffix s] is [s] without the suffix [suffix] or [None] if
       [suffix] is not a suffix of [s]. *)
 
+  val equal : t -> t -> bool
+  (** [equal s0 s1] is [true] iff [s0] and [s1] are equal. *)
+
+  val compare : t -> t -> int
+  (** [compare s0 s1] is a total order on strings compatible with {!equal}. *)
+
+  (** {1:conv Conversions} *)
+
   val to_string : t -> string
   (** [to_string s] is [s] as an OCaml string. *)
 
   val of_string : string -> t
   (** [of_string s] is the OCaml string [s] as a JavaScript string. *)
 
-  val equal : t -> t -> bool
-  (** [equal s0 s1] is [true] iff [s0] and [s1] are equal. *)
+  val to_int : t -> int option
+  (** [to_int s] is [int_of_string (to_string s)] with [Failure _] mapping
+      on [None]. *)
 
-  val compare : t -> t -> int
-  (** [compare s0 s1] is a total order on strings compatible with {!equal}. *)
+  val of_int : int -> t
+  (** [of_int i] is [Jstr.v (string_of_int i)]. *)
 
   val pp : Format.formatter -> t -> unit
   (** [pp ppf s] prints [s] on [ppf]. *)
