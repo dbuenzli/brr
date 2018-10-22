@@ -1,15 +1,16 @@
-opam-version: "1.2"
+opam-version: "2.0"
 maintainer: "Daniel Bünzli <daniel.buenzl i@erratique.ch>"
 authors: ["The brr programmers"]
 homepage: "http://erratique.ch/software/brr"
 doc: "http://erratique.ch/software/brr/doc"
 license: "ISC"
-dev-repo: "http://erratique.ch/repos/brr.git"
+dev-repo: "git+http://erratique.ch/repos/brr.git"
 bug-reports: "https://github.com/dbuenzli/brr/issues"
-tags: []
-available: [ ocaml-version >= "4.01.0"]
+tags: ["reactive" "declarative" "signal" "event" "frp" "front-end"
+       "browser" "org:erratique"]
 depends:
 [
+  "ocaml" {>= "4.03.0"}
   "ocamlfind" {build}
   "ocamlbuild" {build}
   "topkg" {build & >= "0.9.0"}
@@ -18,7 +19,6 @@ depends:
   "js_of_ocaml-ocamlbuild" {>= "3.0"}
   "js_of_ocaml-ppx" {>= "3.0"}
   "note"
-  "react"
 ]
 depopts: []
 build:
