@@ -475,6 +475,8 @@ module El : sig
     val background_color : prop
     val color : prop
     val cursor : prop
+    (** See {!Mouse.Cursor} for property values. *)
+
     val display : prop
     val height : prop
     val visibility : prop
@@ -1396,6 +1398,154 @@ module Mouse : sig
 
   val right_up :'a events -> 'a event
   (** [right_up] is like {!left_up} but for the right button. *)
+
+  (** {1:cursors Mouse cursors} *)
+
+  (** Mouse cursors.
+
+      To be used with {!El.Style.cursor}. *)
+  module Cursor : sig
+
+    (** {1:cursors Mouse cursors} *)
+
+    type t = Jstr.t
+    (** The type for specifying cusrors. *)
+
+    val url : ?x:int -> ?y:int -> string -> t
+    (** [url ~x ~y u] is an image cursor using URL [u] for the image
+        with [x,y] identifiying the position of the hotspot in the image
+        relative to the top-left corner (defaults to [0,0]). *)
+
+    (** {1:gen General purpose cursors} *)
+
+    val auto : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-auto}auto} *)
+
+    val default : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-default}default} *)
+
+    val none : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-none}none} *)
+
+    (** {1:links_status Links and status} *)
+
+    val context_menu : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-context-menu}
+        context-menu} *)
+
+    val help : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-help}help} *)
+
+    val pointer : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-pointer}pointer} *)
+
+    val progress : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-progress}progress} *)
+
+    val wait : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-wait}wait} *)
+
+    (** {1:sel Selection cursors} *)
+
+    val cell : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-cell}cell} *)
+
+    val crosshair : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-crosshair}crosshair} *)
+
+    val text : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-text}text} *)
+
+    val vertical_text : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-vertical-text}
+        vertical-text} *)
+
+    (** {1:dd Drag and drop cursors} *)
+
+    val alias : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-alias}alias} *)
+
+    val copy : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-copy}copy} *)
+
+    val move : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-move}move} *)
+
+    val no_drop : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-no-drop}no-drop} *)
+
+    val not_allowed : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-not-allowed}
+        not-allowed} *)
+
+    val grab : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-grab}grab} *)
+
+    val grabbing : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-grabbing}grabbing} *)
+
+    (** {1:resize_scroll Resizing and scrolling cursors} *)
+
+    val e_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-e-resize}e-resize} *)
+
+    val n_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-n-resize}n-resize} *)
+
+    val ne_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-ne-resize}ne-resize} *)
+
+    val nw_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-nw-resize}nw-resize} *)
+
+    val s_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-s-resize}s-resize} *)
+
+    val se_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-se-resize}se-resize} *)
+
+    val sw_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-sw-resize}sw-resize} *)
+
+    val w_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-w-resize}w-resize} *)
+
+    val ew_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-ew-resize}ew-resize} *)
+
+    val ns_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-ns-resize}ns-resize} *)
+
+    val nesw_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-nesw-resize}
+        nesw-resize} *)
+
+    val nwse_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-nwse-resize}
+        nwse-resize} *)
+
+    val col_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-col-resize}
+        col-resize} *)
+
+    val row_resize : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-row-resize}
+        row-resize} *)
+
+    val all_scroll : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-all-scroll}
+        all-scroll} *)
+
+    (** {1:zooming_cursors Zooming cursors} *)
+
+    val zoom_in : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-zoom-in}
+        zoom-in} *)
+
+    val zoom_out : t
+    (** {{:https://www.w3.org/TR/css-ui-3/#valdef-cursor-zoom-out}
+        zoom-out} *)
+  end
 end
 
 

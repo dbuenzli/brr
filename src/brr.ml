@@ -1157,6 +1157,51 @@ module Mouse = struct
   let right evs = evs.right
   let right_down evs = evs.right_down
   let right_up evs = evs.right_up
+
+  module Cursor = struct
+    type t = Jstr.t
+    let url ?(x = 0) ?(y = 0) url = match x = 0 && y = 0 with
+    | true -> Jstr.vf "url(%s)" url
+    | false -> Jstr.vf "url(%s) %d %d" url x y
+
+    let c = Jstr.v
+    let auto = c "auto"
+    let default = c "default"
+    let none = c "none"
+    let context_menu = c "context-menu"
+    let help = c "help"
+    let pointer = c "pointer"
+    let progress = c "progress"
+    let wait = c "wait"
+    let cell = c "cell"
+    let crosshair = c "crosshair"
+    let text = c "text"
+    let vertical_text = c "vertical-text"
+    let alias = c "alias"
+    let copy = c "copy"
+    let move = c "move"
+    let no_drop = c "no-drop"
+    let not_allowed = c "not-allowed"
+    let grab = c "grab"
+    let grabbing = c "grabbing"
+    let e_resize = c "e-resize"
+    let n_resize = c "n-resize"
+    let ne_resize = c "ne-resize"
+    let nw_resize = c "nw-resize"
+    let s_resize = c "s-resize"
+    let se_resize = c "se-resize"
+    let sw_resize = c "sw-resize"
+    let w_resize = c "w-resize"
+    let ew_resize = c "ew-resize"
+    let ns_resize = c "ns-resize"
+    let nesw_resize = c "nesw-resize"
+    let nwse_resize = c "nwse-resize"
+    let col_resize = c "col-resize"
+    let row_resize = c "row-resize"
+    let all_scroll = c "all-scroll"
+    let zoom_in = c "zoom-in"
+    let zoom_out = c "zoom-out"
+  end
 end
 
 module Human = struct
