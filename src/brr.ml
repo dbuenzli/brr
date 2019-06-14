@@ -4,6 +4,7 @@
    %%NAME%% %%VERSION%%
   ---------------------------------------------------------------------------*)
 
+open Js_of_ocaml
 open Note
 
 (* Array utilities *)

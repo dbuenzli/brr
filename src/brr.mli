@@ -14,6 +14,7 @@
 
     {e %%VERSION%% — {{:%%PKG_HOMEPAGE%% }homepage}} *)
 
+open Js_of_ocaml
 open Note
 
 (** {1:std Preliminaries} *)
