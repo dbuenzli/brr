@@ -1,0 +1,10 @@
+{0 Brr {%html: <span class="version">%%VERSION%%</span>%}}
+
+brr is a library for reactive browser programming with
+{!Note}.
+
+{1:api API}
+
+{!modules:
+Brr
+}
