@@ -1,8 +1,5 @@
 true : bin_annot, safe_string, package(bytes)
 
 <src> : include
-<src/**> : package(js_of_ocaml.ppx), package(js_of_ocaml), package(react), \
-          package(note)
-
-<test/**> : package(js_of_ocaml.ppx), package(js_of_ocaml), package(react), \
-            package(note)
+<src/**> : package(js_of_ocaml.ppx), package(js_of_ocaml), package(note)
+<test/**> : package(js_of_ocaml.ppx), package(js_of_ocaml), package(note)
