@@ -446,6 +446,22 @@ module El = struct
 
   (* Children *)
 
+  let get_children ((`El n : t)) =
+    let ns = n ##. childNodes in
+    let acc = ref [] in
+    for i = ns ##. length - 1 downto 0 do
+      match Js.Opt.to_option (ns ## item i) with
+      | None -> ()
+      | Some c ->
+          match c ##. nodeType with
+          | Dom.ELEMENT -> acc := (`El (Js.Unsafe.coerce c) :> child) :: !acc
+          | Dom.TEXT ->
+              let txt = ((Js.Unsafe.coerce c) :> Dom.text Js.t) ##. data in
+              acc := (`Txt txt) :: !acc
+          | _ -> ()
+    done;
+    !acc
+
   let rec rem_children (`El n) =
     let rec loop n = match Js.Opt.to_option (n ##. firstChild) with
     | None -> ()

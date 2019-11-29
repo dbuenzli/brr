@@ -447,6 +447,10 @@ module El : sig
 
   (** {1:children Children} *)
 
+  val get_children : t -> child list
+  (** [get_chidren e] are the children of [e]. {b. Note}
+      that function may not be very efficient. *)
+
   val set_children : t -> child list -> unit
   (** [set_children e children] sets [e]'s children to [children] *)
 
