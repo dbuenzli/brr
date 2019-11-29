@@ -277,6 +277,53 @@ module Time : sig
   (** [pp_mus ppf s] prints [s] seconds in microseconds. *)
 end
 
+(** URIs.
+
+    {b Note.} Built on top of the
+    {{:https://url.spec.whatwg.org/#api}URL} API, but we return data
+    according to {{:http://tools.ietf.org/html/rfc3986}RFC 3986}
+    terminology. This means we don't return separators like [':'], ['?']
+    and ['#'] in the data. *)
+module Uri : sig
+
+  (** {1:uris URIs} *)
+
+  type t
+  (** The type for URIs. *)
+
+  val scheme : t -> Jstr.t
+  (** [scheme u] is the scheme of [u]. *)
+
+  val host : t -> Jstr.t
+  (** [host u] is the host of [u] (Note this is what
+      JavaScript calls [hostname]). *)
+
+  val port : t -> int option
+  (** [port u] is the port of [u]. *)
+
+  val path : t -> Jstr.t
+  (** [path u] is the path of [u]. *)
+
+  val query : t -> Jstr.t
+  (** [query u] is the query of [u]. *)
+
+  val fragment : t -> Jstr.t
+  (** [fragment u] is fragment of [u]. *)
+
+  val with_uri :
+    ?scheme:Jstr.t -> ?host:Jstr.t -> ?port:int option -> ?path:Jstr.t ->
+    ?query:Jstr.t -> ?fragment:Jstr.t -> t -> t
+  (** [with_uri u] is [u] with the specified components updated. *)
+
+  (** {1:conv Converting} *)
+
+  val of_jstr : Jstr.t -> t option
+  (** [of_jstr s] is an URL from [s]. *)
+
+  val to_jstr : t -> Jstr.t
+  (** [to_jstr u] is [u] as a JavaScript string. *)
+end
+
 (** {1:dom DOM} *)
 
 (** DOM element attributes. *)
@@ -1663,7 +1710,7 @@ end
 (** Browser location
 
     {b TODO.} Needs redesign/review.
-
+    {b FIXME.} Rig on top of {!Uri}.
     {b Warning.} We use the terminology and return data according to
     {{:http://tools.ietf.org/html/rfc3986}RFC 3986},
     not according to the broken HTML URLUtils interface.  *)

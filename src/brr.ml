@@ -225,6 +225,52 @@ module Time = struct
   let pp_mus ppf s = Format.fprintf ppf "%gμs" (s *. 1e6)
 end
 
+module Uri = struct
+
+  type t = < > Js.t
+
+  (* Location URI *)
+
+  let cons = Js.Unsafe.global ##. _URL
+  let of_jstr u = try Some (new%js cons (u)) with e -> None
+
+  let scheme u =
+    let p = (Js.Unsafe.get u "protocol" : Jstr.t) in
+    if p ##. length <> 0 then p ## slice 0 (-1) (* remove last ':' *) else p
+
+  let host u = (Js.Unsafe.get u "hostname" : Jstr.t)
+  let port u =
+    let p = (Js.Unsafe.get u "port" : Jstr.t) in
+    if p ##. length = 0 then None else Jstr.to_int p
+
+  let query u =
+    let q = (Js.Unsafe.get u "search" : Jstr.t) in
+    if q ##. length = 0 then q else q ## slice_end (1) (* remove '?' *)
+
+  let path u = (Js.Unsafe.get u "pathname" : Jstr.t)
+
+  let fragment u =
+    let f = (Js.Unsafe.get u "fragment" : Jstr.t) in
+    if f ##. length = 0 then f else f ## slice_end (1) (* remove '#' *)
+
+  let to_jstr u = Js.Unsafe.(coerce u) ## toString ()
+
+  let with_uri ?scheme ?host ?port ?path ?query ?fragment u =
+    let u = new%js cons (to_jstr u) (* XXX is there a better way ? *) in
+    (match scheme with None -> () | Some s -> Js.Unsafe.set u "protocol" s);
+    (match host with None -> () | Some h -> Js.Unsafe.set u "hostname" h);
+    (match port with
+    | None -> ()
+    | Some p ->
+        match p with
+        | None -> ()
+        | Some p -> Js.Unsafe.set u "port" (Jstr.of_int p));
+    (match path with None -> () | Some p -> Js.Unsafe.set u "pathname" p);
+    (match query with None -> () | Some q -> Js.Unsafe.set u "search" q);
+    (match fragment with None -> () | Some f -> Js.Unsafe.set u "hash" f);
+    u
+end
+
 (* DOM *)
 
 module Att = struct
@@ -1321,7 +1367,9 @@ end
 
 module Loc = struct
 
-  (* Location URI *)
+  (* Location URI
+
+     FIXME remove and use Uri *)
 
   let uri () = Dom_html.window ##. location ##. href
   let scheme () =
