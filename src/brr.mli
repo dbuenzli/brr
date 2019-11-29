@@ -196,7 +196,7 @@ module Debug : sig
   val tick : Format.formatter -> 'a -> unit
   (** [tick] formats ["tick"] on any value. *)
 
-  val pr : ('a, Format.formatter, unit) Pervasives.format -> 'a
+  val pr : ('a, Format.formatter, unit) format -> 'a
   (** [pr fmt ...] unconditionally outputs on the browser console with
       level Debug. Use {!Log.debug} for level-based conditional output. *)
 
@@ -1548,7 +1548,6 @@ module Mouse : sig
         zoom-out} *)
   end
 end
-
 
 (** Human factors. *)
 module Human : sig

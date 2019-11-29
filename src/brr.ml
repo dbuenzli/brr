@@ -59,7 +59,7 @@ module Jstr = struct
 
   let of_int i = Js.string (string_of_int i)
   let equal = ( = )
-  let compare = Pervasives.compare
+  let compare = compare
   let pp ppf s = Format.pp_print_string ppf (Js.to_string s)
 end
 
