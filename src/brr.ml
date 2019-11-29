@@ -381,7 +381,12 @@ module El = struct
     | Some e -> (Some (`El e))
 
   let find_class cl =
-    array_to_list (Dom_html.document ## getElementsByClassName cl)
+    let a = Dom_html.document ## getElementsByClassName cl in
+    let acc = ref [] in
+    for i = a ##. length - 1 downto 0 do
+      acc := (`El (Js.Unsafe.get a i)) :: !acc
+    done;
+    !acc
 
   let tag_name (`El e) = e ##. tagName
   let document () = `El (Dom_html.document ##. documentElement)
