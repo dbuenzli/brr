@@ -875,6 +875,7 @@ module Ev = struct
   let reset = Dom.Event.make "reset"
   let resize = Dom.Event.make "resize"
   let submit = Dom.Event.make "submit"
+  let storage = Dom.Event.make "storage"
   let unload = Dom.Event.make "unload"
 end
 
@@ -1547,6 +1548,8 @@ module Store = struct
 
   let clear ?(scope = `Persist) () = match scope_store scope with
   | Some s -> s ## clear | None -> ()
+
+  let ev = Ev.(for_target Dom_html.window storage (fun _ -> ()))
 end
 
 module File = struct

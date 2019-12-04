@@ -1226,6 +1226,7 @@ module Ev : sig
   val readystatechange : Dom_html.event kind
   val reset : Dom_html.event kind
   val resize : Dom_html.event kind
+  val storage : Dom_html.storageEvent kind
   val submit : Dom_html.event kind
   val unload : Dom_html.event kind
 end
@@ -1833,9 +1834,13 @@ end
 
     Persisent key-value store implemented over
     {{:http://www.w3.org/TR/webstorage/}webstorage}. Safe if no one
-    tampers with the storage outside of the program. FIXME/TODO this
-    still relies on the jsoo representation, add safer keys with type
-    indexed codecs. *)
+    tampers with the storage outside of the program.
+
+    {b TODO.}
+    {ul
+    {- This still relies on the jsoo representation, add safer keys with type
+    indexed codecs.}
+    {- Provide something sensitive for storage events}} *)
 module Store : sig
 
   (** {1 Storage scope} *)
@@ -1886,6 +1891,11 @@ module Store : sig
 
   val clear : ?scope:scope -> unit -> unit
   (** [clear ()], clears all mapping. *)
+
+
+  val ev : unit event
+  (** [ev] fires on storage changes. FIXME provide something
+      sensitive, e.g. key watching. *)
 
   (** {1 Versioning} *)
 
