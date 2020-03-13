@@ -63,7 +63,7 @@ module Jstr = struct
   let pp ppf s = Format.pp_print_string ppf (Js.to_string s)
 end
 
-module Prop = struct
+module Jprop = struct
   type 'a t = { path : Jstr.t list ; undefined : 'a }
   let v ~undefined path = { path; undefined }
   let set p v o =
@@ -87,13 +87,17 @@ module Prop = struct
 
   (* Predefined *)
 
-  let bool n = v ~undefined:false [Jstr.v n]
-  let str n = v ~undefined:Jstr.empty [Jstr.v n]
+  let bool n = (v ~undefined:false [Jstr.v n] : bool t)
+  let str n = (v ~undefined:Jstr.empty [Jstr.v n] : Jstr.t t)
+  let int n = (v ~undefined:0 [Jstr.v n] : int t)
+
   let checked = bool "checked"
+  let height = int "height"
   let id = str "id"
   let name = str "name"
   let title = str "title"
   let value = str "value"
+  let width = int "width"
 end
 
 module Log = struct
@@ -338,20 +342,20 @@ module El = struct
      appropriate life cycle event. In particular Note loggers from
      nodes that are removed from the HTML DOM are destroyed. *)
 
-  let add_prop : (unit -> unit) list Prop.t =
-    Prop.v ~undefined:[] [Jstr.v "brr_add"]
+  let add_prop : (unit -> unit) list Jprop.t =
+    Jprop.v ~undefined:[] [Jstr.v "brr_add"]
 
-  let rem_prop : (unit -> unit) list Prop.t =
-    Prop.v ~undefined:[] [Jstr.v "brr_rem"]
+  let rem_prop : (unit -> unit) list Jprop.t =
+    Jprop.v ~undefined:[] [Jstr.v "brr_rem"]
 
-  let add_fun prop f (`El e) = Prop.set prop (f :: Prop.get prop e) e
+  let add_fun prop f (`El e) = Jprop.set prop (f :: Jprop.get prop e) e
 
   let invoke_funs prop node = match (node ##. nodeType) with
   | Dom.ELEMENT ->
       let invoke_node_funs n =
-        let funs = Prop.get prop n in
+        let funs = Jprop.get prop n in
         List.iter (fun f -> f ()) funs;
-        Prop.set prop [] n
+        Jprop.set prop [] n
       in
       let ns = descendents node in
       for i = 0 to ns ##. length - 1 do
@@ -497,8 +501,8 @@ module El = struct
 
   (* Properties *)
 
-  let get_prop p (`El e) = Prop.get p e
-  let set_prop p v (`El e) = Prop.set p v e
+  let get_prop p (`El e) = Jprop.get p e
+  let set_prop p v (`El e) = Jprop.set p v e
   let rset_prop p ~on e = may_add_logr e (E.log on (fun v -> set_prop p v e))
   let def_prop p vs e = add_logr e (S.log vs (fun v -> set_prop p v e))
 

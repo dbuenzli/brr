@@ -100,9 +100,10 @@ module Jstr : sig
 end
 
 (** JavaScript properties. *)
-module Prop : sig
+module Jprop : sig
+
   type 'a t
-  (** The type for properties of type ['a]. *)
+  (** The type for JavaScript properties of type ['a]. *)
 
   val v : undefined:'a -> Jstr.t list -> 'a t
   (** [v p : prop_type t] is accessed via path [p] of type [prop_type].
@@ -119,13 +120,15 @@ module Prop : sig
   (** {1:predef Predefined properties}
 
       These properties all have an undefined value: [Jstr.empty] for strings,
-      [false] for booleans. *)
+      [false] for booleans, [0] for ints. *)
 
   val checked : bool t
+  val height : int t
   val id : Jstr.t t
   val name : Jstr.t t
   val title : Jstr.t t
   val value : Jstr.t t
+  val width : int t
 end
 
 (** Console logging.
@@ -448,7 +451,7 @@ module El : sig
   (** {1:children Children} *)
 
   val get_children : t -> child list
-  (** [get_chidren e] are the children of [e]. {b. Note}
+  (** [get_chidren e] are the children of [e]. {b Note}
       that function may not be very efficient. *)
 
   val set_children : t -> child list -> unit
@@ -501,20 +504,20 @@ module El : sig
       over time with the value of [b]. {b Warning.} This assumes [b] is
       the only entity interacting with that class. *)
 
-  (** {1:properies Properties} *)
+  (** {1:properties Properties} *)
 
-  val get_prop : 'a Prop.t -> t -> 'a
+  val get_prop : 'a Jprop.t -> t -> 'a
   (** [get_prop p e] is the property [p] of element [e] if defined and
       [p]'s undefined value otherwise. *)
 
-  val set_prop : 'a Prop.t -> 'a -> t -> unit
+  val set_prop : 'a Jprop.t -> 'a -> t -> unit
   (** [set_prop p v o] sets property [p] of element [e] to [v]. *)
 
-  val rset_prop : 'a Prop.t -> on:'a event -> t -> unit
+  val rset_prop : 'a Jprop.t -> on:'a event -> t -> unit
   (** [rset_prop p ~on e] sets property [p] of [e] to the value
       of [on] whenever it occurs. *)
 
-  val def_prop : 'a Prop.t -> 'a signal -> t -> unit
+  val def_prop : 'a Jprop.t -> 'a signal -> t -> unit
   (** [def_prop p v e] defines the property [p] of [e] over time with
       the value of [v]. {b Warning.} This assumes [v] is the only
       entity interacting with that property. *)

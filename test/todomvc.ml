@@ -139,14 +139,14 @@ fun () ->
   let i = El.input ~atts [] in
   let return = E.filter (Key.equal `Return) Ev.(for_el i keydown Key.of_ev) in
   let input =
-    E.map (fun _ -> Jstr.trim @@ El.get_prop Prop.value i) return
+    E.map (fun _ -> Jstr.trim @@ El.get_prop Jprop.value i) return
   in
   let add_todo = input |> E.filter_map @@ fun v -> match Jstr.is_empty v with
   | true -> None
   | false -> Some (`Add_todo v)
   in
   let clear = E.stamp add_todo Jstr.empty in
-  let () = El.rset_prop Prop.value i ~on:clear in
+  let () = El.rset_prop Jprop.value i ~on:clear in
   add_todo, i
 
 let toggle_all : set:bool signal -> [> bulk_action ] event * [> El.t] =
@@ -154,9 +154,9 @@ fun ~set ->
   let tid = Jstr.v "toggle-all" in
   let typ = Att.type' (Jstr.v "checkbox") in
   let i = El.input ~atts:Att.[typ; class' tid; id tid] [] in
-  let () = El.def_prop Prop.checked set i in
+  let () = El.def_prop Jprop.checked set i in
   let click = Ev.(for_el i click unit) in
-  let toggle = E.map (fun _ -> `All_done (El.get_prop Prop.checked i)) click in
+  let toggle = E.map (fun _ -> `All_done (El.get_prop Jprop.checked i)) click in
   let label = [`Txt (Jstr.v "Mark all as complete")] in
   let label = El.label ~atts:Att.[for' tid] label in
   toggle, El.div [i; label]
@@ -203,8 +203,8 @@ fun s ~on ->
   let start_edit = E.stamp on true in
   let stop_edit = E.stamp (E.select [edited; undo]) false in
   let editing = E.select [start_edit; stop_edit] in
-  let str = E.map (fun _ -> El.get_prop Prop.value ed) edited in
-  let () = El.rset_prop Prop.value ~on:(E.map (fun _ -> s) undo) ed in
+  let str = E.map (fun _ -> El.get_prop Jprop.value ed) edited in
+  let () = El.rset_prop Jprop.value ~on:(E.map (fun _ -> s) undo) ed in
   let () = El.rset_focus ~on:start_edit ed in
   let () = El.(call (fun _ e -> select_txt e) ~on:start_edit ed) in
   editing, str, ed
@@ -215,7 +215,7 @@ fun b ->
   let atts = Att.(add_if b checked atts) in
   let el = El.input ~atts [] in
   let click = Ev.(for_el el click unit) in
-  let toggle = E.map (fun () -> El.get_prop Prop.checked el) click in
+  let toggle = E.map (fun () -> El.get_prop Jprop.checked el) click in
   toggle, el
 
 let todo_item : Todo.t -> [> edit_action ] event * [> El.t] =

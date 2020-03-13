@@ -17,7 +17,7 @@ let in_html_dom n =
 
 let log_obj op n =
   Debug.pr "[%s] id:%a in_html_dom %b"
-    op Jstr.pp Prop.(get id n) (in_html_dom n);
+    op Jstr.pp Jprop.(get id n) (in_html_dom n);
   Debug.dump_obj n;
   begin match (n ##. nodeType) with
   | Dom.ELEMENT -> Debug.dump_obj (descendents n);
