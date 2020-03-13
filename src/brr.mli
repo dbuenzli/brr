@@ -522,6 +522,28 @@ module El : sig
       the value of [v]. {b Warning.} This assumes [v] is the only
       entity interacting with that property. *)
 
+  (** {1:geomprop Geometric read-only properties} *)
+
+  val client_height : t -> int
+  (** [client_height e] is [e]'s
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/clientHeight}
+      [clientHeight]}. *)
+
+  val client_left : t -> int
+  (** [client_left e] is [e]'s
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/clientLeft}
+      [clientLeft]}. *)
+
+  val client_top : t -> int
+  (** [client_top e] is [e]'s
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/clientTop}
+      [clientTop]}. *)
+
+  val client_width : t -> int
+  (** [client_width e] is [e]'s
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/clientWidth}
+      [clientWidth]}. *)
+
   (** {1:style Style} *)
 
   (** Style property names. *)

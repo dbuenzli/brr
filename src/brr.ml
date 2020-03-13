@@ -506,6 +506,13 @@ module El = struct
   let rset_prop p ~on e = may_add_logr e (E.log on (fun v -> set_prop p v e))
   let def_prop p vs e = add_logr e (S.log vs (fun v -> set_prop p v e))
 
+  (* Read-only Geometric properties *)
+
+  let client_height (`El e) = e ##. clientHeight
+  let client_left (`El e) = e ##. clientLeft
+  let client_top (`El e) = e ##. clientTop
+  let client_width (`El e) = e ##. clientWidth
+
   (* Style *)
 
   module Style = struct
