@@ -330,7 +330,7 @@ end
 (** {1:dom DOM} *)
 
 (** DOM element attributes. *)
-module Att : sig
+module At : sig
 
   (** {1:atts Attributes} *)
 
@@ -340,13 +340,27 @@ module Att : sig
   type t = name * Jstr.t
   (** The type for attributes. *)
 
+  val v : name -> Jstr.t -> t
+  (** [v n value] is an attribute named [n] with value [value]. *)
+
+  val v_true : name -> t
+  (** [v_true n] is [v n Jstr.empty] the {{:https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes}boolean attribute}
+      [n] set to true (the attribute must be omitted to be false). *)
+
+  val v_int : name -> int -> t
+  (** [v_int n i] is [v n (Jstr.of_int i)]. *)
+
   val add_if : bool -> t -> t list -> t list
   (** [add_if b a l] is [a :: l] if [b] is [true] and [l] otherwise *)
 
   val add_some : name -> Jstr.t option -> t list -> t list
   (** [add_some n o l] is [v n a :: l] if [o] is [Some a] and [l] otherwise. *)
 
-  (** {1 Predefined attribute constructors and names}
+  (** {1:predef Predefined attribute names and constructors}
+
+      See the
+      {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}MDN
+      HTML attribute reference}.
 
       {b Convention.} Whenever an attribute name conflicts with an OCaml
       keyword we prime them, see for example {!class'}. *)
@@ -354,15 +368,21 @@ module Att : sig
   (** Attribute names. *)
   module Name : sig
     val autofocus : name
+    val charset : name
     val checked : name
     val class' : name
+    val content : name
+    val defer : name
     val disabled : name
     val for' : name
     val height : name
     val href : name
     val id : name
+    val lang : name
+    val media : name
     val name : name
     val placeholder : name
+    val rel : name
     val src : name
     val tabindex : name
     val title : name
@@ -371,28 +391,102 @@ module Att : sig
     val width : name
   end
 
+  type 'a cons = 'a -> t
+  (** The type for attribute constructors with value of type ['a]. *)
+
   val autofocus : t
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autofocus}
+      autofocus} *)
+
+  val charset : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/charset}
+      charset} *)
+
   val checked : t
-  val class' : Jstr.t -> t
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/checked}
+      checked} *)
+
+  val class' : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/class}
+      class} *)
+
+  val content : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/content}
+      content} *)
+
+  val defer : t
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/defer}
+      defer} *)
+
   val disabled : t
-  val for' : Jstr.t -> t
-  val height : int -> t
-  val href : Jstr.t -> t
-  val id : Jstr.t -> t
-  val name : Jstr.t -> t
-  val placeholder : Jstr.t -> t
-  val src : Jstr.t -> t
-  val tabindex : int -> t
-  val title : Jstr.t -> t
-  val type' : Jstr.t -> t
-  val value : Jstr.t -> t
-  val width : int -> t
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled}
+      disabled} *)
+
+  val for' : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/for'}
+      for'} *)
+
+  val height : int cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/height}
+      height} *)
+
+  val href : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/href}
+      href} *)
+
+  val id : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/id}
+      id} *)
+
+  val lang : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/lang}
+      lang} *)
+
+  val media : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/media}
+      media} *)
+
+  val name : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/name}
+      name} *)
+
+  val placeholder : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/placeholder}
+      placeholder} *)
+
+  val rel : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel}
+      rel} *)
+
+  val src : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/src}
+      src} *)
+
+  val tabindex : int cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/tabindex}
+      tabindex} *)
+
+  val title : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/title}
+      title} *)
+
+  val type' : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/type}
+      type} *)
+
+  val value : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/value}
+      value} *)
+
+  val width : int cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/width}
+      width} *)
 end
 
 (** DOM elements.
 
-    {b Warning.} Reactive DOM element mutators ({!rset_att},
-    {!rset_children}, etc.) and definers ({!def_att}, {!def_children},
+    {b Warning.} Reactive DOM element mutators ({!rset_at},
+    {!rset_children}, etc.) and definers ({!def_at}, {!def_children},
     etc.) use {{!Note.Logr}[Note] loggers} to perform their action.
     To prevent memory leaks, these loggers, and thus their action,
     automatically get destroyed whenever the element is removed from
@@ -413,7 +507,7 @@ module El : sig
   type child = [ t | `Txt of Jstr.t ]
   (** The type for element children. *)
 
-  val v : ?atts:Att.t list -> name -> child list -> [> t]
+  val v : ?at:At.t list -> name -> child list -> [> t]
   (** [v ?atts name cs] is an element [name] with attribute [atts]
       (defaults to [[]]) and children [cs]. If [atts] specifies
       an attribute more than once, the last one takes over with
@@ -466,22 +560,22 @@ module El : sig
       value of signal [cs]. {b Warning.} This assumes [cs] is the only
       entity interacting with the children. *)
 
-  (** {1:atts Attributes} *)
+  (** {1:ats Attributes} *)
 
-  val get_att : Att.name -> t -> Jstr.t option
-  (** [get_att a e] is the value of the attribute [a] of [e] (if any). *)
+  val get_at : At.name -> t -> Jstr.t option
+  (** [get_at a e] is the value of the attribute [a] of [e] (if any). *)
 
-  val set_att : Att.name -> Jstr.t option -> t -> unit
-  (** [set_att a v e] sets the value of attribute [a] of [e] to [v].
+  val set_at : At.name -> Jstr.t option -> t -> unit
+  (** [set_at a v e] sets the value of attribute [a] of [e] to [v].
       If [v] is [None] this removes the attribute. *)
 
-  val rset_att : Att.name -> on:Jstr.t option event -> t -> unit
-  (** [rset_att a ~on e] sets attribute [a] of [e] with the value
+  val rset_at : At.name -> on:Jstr.t option event -> t -> unit
+  (** [rset_at a ~on e] sets attribute [a] of [e] with the value
       of [e] whenever it occurs. If the value is [None] this removes
       the attribute. *)
 
-  val def_att : Att.name -> Jstr.t option signal -> t -> unit
-  (** [def_att a v e] defines the attribute [a] of [e] over time
+  val def_at : At.name -> Jstr.t option signal -> t -> unit
+  (** [def_at a v e] defines the attribute [a] of [e] over time
       with the value of [v]. Whenever the signal value is [None],
       the attribute is removed. {b Warning.} This assumes [v] is the
       only entity interacting with that attribute. *)
@@ -753,7 +847,7 @@ module El : sig
     val wbr : name
   end
 
-  type 'a cons = ?atts:Att.t list -> child list -> ([> t] as 'a)
+  type 'a cons = ?at:At.t list -> child list -> ([> t] as 'a)
   (** The type for element constructors. This is simply {!v} with
       a pre-applied element name. *)
 

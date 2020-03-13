@@ -277,44 +277,61 @@ end
 
 (* DOM *)
 
-module Att = struct
+module At = struct
   type name = Jstr.t
   type t = name * Jstr.t
+  let v n v = (n, v)
+  let v_true n = (n, Jstr.empty)
+  let v_int n i = (n, Jstr.of_int i)
   let add_if b att l = if b then att :: l else l
   let add_some name o l = match o with None -> l | Some a -> (name, a) :: l
 
   module Name = struct
+    let autofocus = Jstr.of_string "autofocus"
+    let charset = Jstr.of_string "charset"
+    let checked = Jstr.of_string "checked"
+    let class' = Jstr.of_string "class"
+    let content = Jstr.of_string "content"
+    let defer = Jstr.of_string "defer"
+    let disabled = Jstr.of_string "disabled"
+    let for' = Jstr.of_string "for"
+    let height = Jstr.of_string "height"
+    let href = Jstr.of_string "href"
+    let id = Jstr.of_string "id"
+    let lang = Jstr.of_string "lang"
+    let media = Jstr.of_string "media"
+    let name = Jstr.of_string "name"
+    let placeholder = Jstr.of_string "placeholder"
+    let rel = Jstr.of_string "rel"
+    let src = Jstr.of_string "src"
+    let tabindex = Jstr.of_string "tabindex"
+    let title = Jstr.of_string "title"
+    let type' = Jstr.of_string "type"
     let value = Jstr.of_string "value"
     let width = Jstr.of_string "width"
-    let type' = Jstr.of_string "type"
-    let title = Jstr.of_string "title"
-    let tabindex = Jstr.of_string "tabindex"
-    let src = Jstr.of_string "src"
-    let placeholder = Jstr.of_string "placeholder"
-    let name = Jstr.of_string "name"
-    let id = Jstr.of_string "id"
-    let href = Jstr.of_string "href"
-    let height = Jstr.of_string "height"
-    let for' = Jstr.of_string "for"
-    let disabled = Jstr.of_string "disabled"
-    let class' = Jstr.of_string "class"
-    let checked = Jstr.of_string "checked"
-    let autofocus = Jstr.of_string "autofocus"
   end
 
+  type 'a cons = 'a -> t
   let bool n = n, Jstr.empty
   let int n i = (n, Jstr.of_int i)
   let str n v = (n, v)
+
   let autofocus = bool Name.autofocus
+  let charset = str Name.charset
   let checked = bool Name.checked
   let class' s = str Name.class' s
+  let content s = str Name.content s
+  let defer = bool Name.defer
   let disabled = bool Name.disabled
   let for' s = str Name.for' s
   let height i = int Name.height i
   let href s = str Name.href s
   let id s = str Name.id s
+  let lang s = str Name.lang s
+  let media s = str Name.media s
   let name s = str Name.name s
   let placeholder s = str Name.placeholder s
+  let rel s = str Name.src s
   let src s = str Name.src s
   let tabindex i = int Name.tabindex i
   let title s = str Name.title s
@@ -414,14 +431,14 @@ module El = struct
     in
     loop n children
 
-  let v ?(atts = []) name cs =
-    let set_att e (a, v) = match Jstr.equal a Att.Name.class' with
+  let v ?(at = []) name cs =
+    let set_att e (a, v) = match Jstr.equal a At.Name.class' with
     | true -> e ##. classList ## add (v)
     | false -> e ## setAttribute a v
     in
     let e = Dom_html.document ## createElement name in
     let el = `El e in
-    List.iter (set_att e) atts;
+    List.iter (set_att e) at;
     add_children el cs;
     el
 
@@ -481,13 +498,13 @@ module El = struct
 
   (* Attributes *)
 
-  let get_att a (`El e) = Js.Opt.to_option (e ## getAttribute a)
-  let set_att a v (`El e) = match v with
+  let get_at a (`El e) = Js.Opt.to_option (e ## getAttribute a)
+  let set_at a v (`El e) = match v with
   | None -> e ## removeAttribute a
   | Some v -> e ## setAttribute a v
 
-  let rset_att a ~on e = may_add_logr e (E.log on (fun v -> set_att a v e))
-  let def_att a vs e = add_logr e (S.log vs (fun v -> set_att a v e))
+  let rset_at a ~on e = may_add_logr e (E.log on (fun v -> set_at a v e))
+  let def_at a vs e = add_logr e (S.log vs (fun v -> set_at a v e))
 
   (* Classes *)
 
@@ -685,8 +702,8 @@ module El = struct
     let wbr = v "wbr"
   end
 
-  type 'a cons = ?atts:Att.t list -> child list -> ([> t] as 'a)
-  let cons name ?atts cs = v ?atts name cs
+  type 'a cons = ?at:At.t list -> child list -> ([> t] as 'a)
+  let cons name ?at cs = v ?at name cs
 
   let a = cons Name.a
   let abbr = cons Name.abbr

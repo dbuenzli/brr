@@ -52,7 +52,7 @@ let obs = match MutationObserver.is_supported () with
       ~child_list:true ~subtree:true ~attributes:false ~character_data:false
       ~attribute_old_value:false ~character_data_old_value:false ()
 
-let el_id eid cs = El.div ~atts:Att.[id (Jstr.v eid)] cs
+let el_id eid cs = El.div ~at:At.[id (Jstr.v eid)] cs
 
 let d0 = el_id "d0" [el_id "i0" [el_id "i00" []]; el_id "i1" [];]
 let d1 = el_id "d1" []
