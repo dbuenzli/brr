@@ -1,1 +1,3 @@
-(srcs-x pkg myocamlbuild.ml)
+(srcs-x pkg myocamlbuild.ml test src-note/brr.ml src-note/brr.mli)
+(srcs-i . test/test_browser.ml)
+(ocaml (libs js_of_ocaml js_of_ocaml-compiler/runtime))

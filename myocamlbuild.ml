@@ -21,5 +21,7 @@ let jsoo () =
   pflag [ "js_of_ocaml" ] "set" (fun n -> S [ A "--set"; A n ])
 
 let () = Ocamlbuild_plugin.dispatch @@ function
-| After_rules -> jsoo ()
+| After_rules ->
+    jsoo ();
+    flag ["ocaml"; "byte"; "link"; "no_check_prims"] (A "-no-check-prims");
 | _ -> ()

@@ -7,3 +7,4 @@ tmp
 *.install
 *.native
 *.byte
+src/console/ocaml_console.js

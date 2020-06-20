@@ -1,10 +1,130 @@
 {0 Brr {%html: <span class="version">%%VERSION%%</span>%}}
 
-brr is a library for reactive browser programming with
-{!Note}.
+Brr is a toolkit for programming browsers in OCaml with the
+[js_of_ocaml] compiler. It provides:
 
-{1:api API}
+{ul
+{- Interfaces to a {{!supported_apis}selection} of browser APIs.}
+{- {!Note} based {{!lib_note}reactive support} (optional and experimental).}
+{- An {{!page-ocaml_console}OCaml console} developer tool for live interaction
+   with programs running in web pages.}
+{- A {{!page-ffi_manual}JavaScript FFI} for idiomatic OCaml programming.}}
+
+{1:manuals Manuals}
+
+These manuals are available:
+
+{ul
+{- The {{!page-web_page_howto}Web page howto} explains
+   how to compile and integrate your OCaml program in a web page.}
+{- The {{!page-ocaml_console}OCaml console manual} has intructions
+   to setup the developer tool WebExtension to peek into your programs at
+   runtime.}
+{- The {{!page-ffi_manual}FFI manual} explains
+   how OCaml and JavaScript values are represented by [js_of_ocaml]
+   and Brr. Recommended reading.}
+{- The {{!page-ffi_cookbook}FFI cookbook} has off-the-shelf
+   design answers for common JavaScript binding scenarios.}}
+
+{1:lib_brr Library [brr]}
+
+This library has the JavaScript FFI and the interfaces to the
+{{!supported_apis}supported browser} APIs.
 
 {!modules:
+Jstr
+Jv
+Fut
 Brr
+Brr_canvas
+Brr_io
+Brr_webaudio
+Brr_webcrypto
+Brr_webworkers
 }
+
+{1:lib_note Library [brr.note]}
+
+This library has the {!Note} reactive infrastructure for browsers and a
+few higher-level APIs.
+
+{b Experimental, will break in the future}.
+
+{!modules:
+Brr_note
+Brr_note_kit
+Brr_note_legacy
+}
+
+{1:lib_poke Libraries [brr.poke[d]] and [brr.ocaml_poke[_ui]]}
+
+The [brr.poke] library provides a function to define a poke object for
+your program so that the {{!page-ocaml_console}OCaml console} can
+interact with it. Use [brr.poked] to poke your program by side-effect
+without modifying its source. In both cases you need compile your
+JavaScript {{!page-web_page_howto.ocaml_console}appropriately}.
+
+{!modules:
+Brr_poke
+Brr_poked
+}
+
+The [brr.ocaml_poke] library provides support to find and access the
+[ocaml_poke] object provided by your program. The [brr.ocaml_poke_ui]
+library provides an HTML interface to the poke object as an
+interactive toplevel (REPL). These APIs are used by the
+{{!page-ocaml_console}OCaml console}.
+
+{!modules:
+Brr_ocaml_poke
+Brr_ocaml_poke_ui}
+
+{1:supported_apis Supported browser APIs}
+
+The following JavaScript and browser functionality is supported:
+
+{ul
+{- General support for JavaScript values is in {!Jv}.}
+{- JavaScript [String]s are in {!Jstr}.}
+{- Left-pad support in is {!Jstr.pad_start}.}
+{- JavaScript [Promise]s are in {!Fut} to safely type them. {!Brr.Abort}
+   has support for aborting them.}
+{- JavaScript [ArrayBuffer]s and [TypedArray]s are in {!Brr.Tarray}.}
+{- Data encoding are in {!Brr.Base64}, {!Brr.Json}.}
+{- Global objects and functions are in {!Brr.G}.}
+{- A remixed HTML DOM API is provided by {!Brr.Ev}, {!Brr.At} and
+   {!Brr.El}.}
+{- Some browser functionality is in {!Brr.Console},
+   {!Brr.Window}, {!Brr.Navigator}.}
+{- The Blob API is in {!Brr.Blob}}
+{- The Broadcast and Channel Messsaging API is in {!Brr_io.Message}.}
+{- The Canvas 2D API is in {!Brr_canvas.C2d}.}
+{- The Cache API is in {!Brr_io.Fetch.Cache}.}
+{- The Clipboard API is in {!Brr_io.Clipboard}.}
+{- The File API is in {!Brr.File}.}
+{- The Fetch API is in {!Brr_io.Fetch}.}
+{- The Form element and Form Data API is in {!Brr_io.Form}.}
+{- The Geolocation API is i {!Brr_io.Geolocation}.}
+{- The History API is in {!Brr.Window.History}.}
+{- The Media capture, media streams and media element APIs are in
+   {!Brr_io.Media}.}
+{- The Notification API is in {!Brr_io.Notification}.}
+{- The Performance API is in {!Brr.Performance}.}
+{- The Service Worker API is in {!Brr_webworkers.Service_worker}.}
+{- The URL API is in {!Brr.Uri}.}
+{- The Web Audio API is in {!Brr_webaudio}.}
+{- The Web Crypto API is in {!Brr_webcrypto}.}
+{- The WebGL2 API is in {!Brr_canvas.Gl}.}
+{- The Web Sockets API is in {!Brr_io.Websocket}.}
+{- The Web Storage API is in {!Brr_io.Storage}.}
+{- The Web Workers API is in {!Brr_webworkers.Worker}.}}
+
+Finally note that:
+
+{ul
+{- Brr is incomplete. Exhaustiveness is a non-goal.}
+{- Brr tracks long-term, universal and forward-looking browser changes.}
+{- Brr does not provide one-to-one bindings to JavaScript APIs. Some of them
+   may be remixed, tweaked and functionality may be deliberately left out.}
+{- If you would like to add something, first get in
+   touch on the {{:https://github.com/dbuenzli/brr/issues}issue tracker}.}}
