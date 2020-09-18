@@ -75,13 +75,13 @@ You need to compile a JavaScript file that has the [js_of_ocaml]
 toplevel machinery in your page and exposes it via the
 {{!ocaml_poke}poke} object.
 
-One way of doing this to link with the [brr.ocaml_poke] library and
+One way of doing this to link with the [brr.poke] library and
 add this line:
 {[
-let () = Brr_ocaml_poke.define ()
+let () = Brr_poke.define ()
 ]}
 somewhere in your code. Alternatively linking against the
-[brr.ocaml_poked] with [-linkall] adds the above line to your program
+[brr.poked] with [-linkall] adds the above line to your program
 without having to modify it.
 
 To be able to access all your program libraries and modules you need
