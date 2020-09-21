@@ -28,7 +28,7 @@ let console : level -> string -> unit =
   | App -> "log"
   | Quiet -> assert false
   in
-  ignore @@ Jv.call Brr.Console.(to_jv global) meth [| Jv.of_string s |]
+  ignore @@ Jv.call Brr.Console.(to_jv (get ())) meth [| Jv.of_string s |]
 
 
 let report level k msgf =
