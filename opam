@@ -19,6 +19,11 @@ depends:
   "js_of_ocaml-toplevel" {>= "3.6.0"}
   "note"
 ]
+conflicts:
+[
+  # We are hit by https://github.com/ocsigen/js_of_ocaml/issues/1059
+  "js_of_ocaml-compiler" {= "3.7.0"}
+]
 depopts: []
 build:
 [[
