@@ -292,8 +292,15 @@ external set' : t -> prop' -> t -> unit = "caml_js_set"
 external delete' : t -> prop' -> unit = "caml_js_delete"
 let find' o p = let v = get' o p in if is_none v then None else Some v
 let find_map' f o p = let v = get' o p in if is_none v then None else Some (f v)
-external obj' : (prop' * t) array -> t = "caml_js_object"
-external call' : t -> Jstr.t -> t array -> 'a = "caml_js_meth_call"
+
+(* XXX the following were supposed to be direct call to externals like for
+   the above but they are not implemented that way for now. See discussion here:
+   https://github.com/ocsigen/js_of_ocaml/pull/997#issuecomment-694925765.
+   It would likely need a bit of upstream cajoling to move on – OTOH
+   these should end up being used pervasively. *)
+
+let obj' props = obj (Array.map (fun (p, v) -> Jstr.to_string p, v) props)
+let call' o m args = call o (Jstr.to_string m) args
 
 (* Debugger *)
 

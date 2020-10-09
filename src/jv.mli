@@ -523,12 +523,12 @@ val find' : t -> prop' -> t option
 val find_map' : (t -> 'a) -> t -> prop' -> 'a option
 (** [find_map' f p o] is Option.map f (find' p o). *)
 
-external obj' : (prop' * t) array -> t = "caml_js_object"
+val obj' : (prop' * t) array -> t
 (** [obj props] is an object with properties [prop]. *)
 
-external call' : t -> Jstr.t -> t array -> 'a = "caml_js_meth_call"
+val call' : t -> Jstr.t -> t array -> 'a
 (** [call' o m args] calls method [m] on [o] with arguments [m]. [m]
-      must be a JavaScript string. *)
+    must be a JavaScript string. *)
 
 (** {1:debugger Entering the debugger} *)
 
