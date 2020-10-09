@@ -67,6 +67,16 @@ Make sure you have the OCaml console extension
 {{!page-ocaml_console.ext_install} installed} in your browser, open
 [min.html] and click on the OCaml tab of the developer tools.
 
+{1:dune Dune instructions for using [brr]}
+
+Unless you link against the [js_of_ocaml] library you need to
+add the following to your executable stanza when you link the
+[brr] library:
+
+{v
+(ocamlc_flags -no-check-prims)
+v}
+
 {1:running How do I run my program?}
 
 Most programs need to have the page HTML parsed to operate
