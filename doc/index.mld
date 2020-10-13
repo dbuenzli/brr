@@ -104,7 +104,7 @@ The following JavaScript and browser functionality is supported:
 {- The File API is in {!Brr.File}.}
 {- The Fetch API is in {!Brr_io.Fetch}.}
 {- The Form element and Form Data API is in {!Brr_io.Form}.}
-{- The Geolocation API is i {!Brr_io.Geolocation}.}
+{- The Geolocation API is in {!Brr_io.Geolocation}.}
 {- The History API is in {!Brr.Window.History}.}
 {- The Media capture, media streams and media element APIs are in
    {!Brr_io.Media}.}

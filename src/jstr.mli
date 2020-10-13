@@ -52,7 +52,7 @@ val pad_start : ?pad:t -> int -> t -> t
 (** [pad_start ~pad n s] is [s] with [pad] strings prepended to [s]
     until the length of the result is [n] or [s] if [length s >= n].
     The first prepended [pad] may be truncated to satisfy the
-    constraint.
+    constraint. [pad] defaults to {!sp}.
 
     {b Warning.} Since {!length} is neither the number of Unicode
     characters of [s] nor its number of
@@ -65,6 +65,7 @@ val pad_end : ?pad:t -> int -> t -> t
 (** [pad_end ~pad n s] is [s] with [pad] strings appended to [s] until
     the {!length} of the result is [n] or [s] if [length s >= n]. The
     last appended [pad] may be truncated to satisfy the constraint.
+    [pad] defaults to {!sp}.
 
     {b Warning.} Since {!length} is neither the number of Unicode
     characters of [s] nor its number of

@@ -42,7 +42,7 @@ let err_version version =
            latest version.")
 
 let err_miss_prop p =
-  Jstr.(v "Page poke property ocaml_poke." + v p + v "is missing.")
+  Jstr.(v "Page poke property ocaml_poke." + v p + v " is missing.")
 
 let find () = match Jv.find Jv.global "ocaml_poke" with
 | None -> Fut.ok None
