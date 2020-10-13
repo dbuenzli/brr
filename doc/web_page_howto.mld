@@ -45,7 +45,7 @@ open min.html        # macOS
 start min.html       # Windows
 v}
 
-{2:ocaml_console And the fancy OCaml console support?}
+{2:ocaml_console And the fancy OCaml console?}
 
 Poke your program by side effect by linking against the [brr.poked]
 library. Make sure everything gets in by using [-linkall].
@@ -58,24 +58,84 @@ ocamlfind ocamlc -g -linkall -linkpkg -no-check-prims \
 Compile with [js_of_ocaml]. This time it needs to see the cmis and you need
 to add its toplevel and dynlink JavaScript support:
 
-{[
+{v
 js_of_ocaml $(ocamlfind query -r -i-format brr.poked) -I . \
             --toplevel +toplevel.js +dynlink.js a.out -o min.js
-]}
+v}
 
 Make sure you have the OCaml console extension
 {{!page-ocaml_console.ext_install} installed} in your browser, open
 [min.html] and click on the OCaml tab of the developer tools.
 
-{1:dune Dune instructions for using [brr]}
+{1:dune Quick with Dune!}
 
-Unless you link against the [js_of_ocaml] library you need to
-add the following to your executable stanza when you link the
-[brr] library:
+Assuming you created the two minimal sources [min.ml], [min.html] from
+the {{!quick}previous section}. Create this [dune] file:
 
 {v
-(ocamlc_flags -no-check-prims)
+cat - > dune <<EOF
+(executables
+  (names min)
+  (libraries brr)
+  (link_flags (:standard -no-check-prims))
+  (modes js))
+
+(rule
+  (targets min.js)
+  (deps min.bc.js)
+  (action (run cp %{deps} %{targets})))
+
+(alias
+  (name app)
+  (deps min.js min.html))
+EOF
 v}
+
+Now build and open the web page in your browser:
+{v
+dune build @app
+xdg-open _build/default/min.html # Linux and XDG compliant systems
+open _build/default/min.html     # macOS
+start _build/default/min.html    # Windows
+v}
+
+{2:ocaml_console And the fancy OCaml console?}
+
+Poke your program by side effect by linking against the [brr.poked]
+library. Make sure to [-linkall] the modules into the bytecode and
+tweak a bit the [js_of_ocaml] invocation. This [dune] file should do:
+
+{v
+cat - > dune <<EOF
+(executables
+  (names min)
+  (libraries brr brr.poked)
+  (link_flags (:standard -linkall -no-check-prims))
+  (modes byte))
+
+(rule
+ (targets min.js)
+ (action
+    (run %{bin:js_of_ocaml} -I %{lib:brr:.} -I . --toplevel
+         +toplevel.js +dynlink.js %{dep:min.bc} -o %{targets})))
+
+(alias
+  (name app)
+  (deps min.js min.html))
+EOF
+v}
+
+Now build and open the web page in your browser:
+{v
+dune build @app
+xdg-open _build/default/min.html # Linux and XDG compliant systems
+open _build/default/min.html     # macOS
+start _build/default/min.html    # Windows
+v}
+
+Make sure you have the OCaml console extension
+{{!page-ocaml_console.ext_install} installed} in your browser, and
+click on the OCaml tab of the developer tools.
 
 {1:running How do I run my program?}
 
