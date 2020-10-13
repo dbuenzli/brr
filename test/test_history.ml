@@ -13,15 +13,15 @@ let with_frag frag u = Uri.with_uri ~fragment:(Jstr.v frag) u
 let test_history () =
   let h = Window.history G.window in
   let loc = Window.location G.window in
-  Window.History.push_state h ~uri:(with_frag "h1" loc);
-  Window.History.push_state h ~uri:(with_frag "h2" loc);
-  Window.History.push_state h ~uri:(with_frag "h3" loc);
+  Window.History.push_state h ~uri:(with_frag "h1" loc |> Result.get_ok);
+  Window.History.push_state h ~uri:(with_frag "h2" loc |> Result.get_ok);
+  Window.History.push_state h ~uri:(with_frag "h3" loc |> Result.get_ok);
   ()
 
 let test_no_reload () =
   let loc = Window.location G.window in
-  Window.set_location G.window (with_frag "l1" loc);
-  Window.set_location G.window (with_frag "l2" loc);
+  Window.set_location G.window (with_frag "l1" loc |> Result.get_ok);
+  Window.set_location G.window (with_frag "l2" loc |> Result.get_ok);
   ()
 
 let test_back () = Window.History.back (Window.history G.window)

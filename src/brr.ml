@@ -799,39 +799,47 @@ module Uri = struct
   type t = Jv.t
   include (Jv.Id : Jv.CONV with type t := t)
 
+  let encode = Jv.get Jv.global "encodeURI"
+  let decode = Jv.get Jv.global "decodeURI"
+
   let url = Jv.get Jv.global "URL"
 
   let v s = Jv.new' url [| Jv.of_jstr s |]
 
   let with_uri ?scheme ?host ?port ?path ?query ?fragment u =
     let u = Jv.new' url [| u |] in
-    Jv.Jstr.set_if_some u "protocol" scheme;
-    Jv.Jstr.set_if_some u "hostname" host;
-    begin match port with
-    | None -> ()
-    | Some p -> Jv.Jstr.set_if_some u "port" (Option.map Jstr.of_int p)
-    end;
-    Jv.Jstr.set_if_some u "pathname" path;
-    Jv.Jstr.set_if_some u "search" query;
-    Jv.Jstr.set_if_some u "hash" fragment;
-    u
+    let pct_enc v = Jv.apply encode [| Jv.of_jstr v |] in
+    try
+      Jv.set_if_some u "protocol" (Option.map pct_enc scheme);
+      Jv.set_if_some u "hostname" (Option.map pct_enc host);
+      begin match port with
+      | None -> ()
+      | Some p -> Jv.Jstr.set_if_some u "port" (Option.map Jstr.of_int p)
+      end;
+      Jv.set_if_some u "pathname" (Option.map pct_enc path);
+      Jv.set_if_some u "search" (Option.map pct_enc query);
+      Jv.set_if_some u "hash" (Option.map pct_enc fragment);
+      Ok u
+    with Jv.Error e -> Error e
+
+  let pct_dec v = Jv.to_jstr @@ Jv.apply decode [| v |]
 
   let scheme u =
-    let p = Jv.Jstr.get u "protocol" in
+    let p = pct_dec (Jv.get u "protocol") in
     if Jstr.length p <> 0 then Jstr.slice p ~stop:(-1) (* remove ':' *) else p
 
-  let host u = Jv.Jstr.get u "hostname"
+  let host u = pct_dec (Jv.get u "hostname")
   let port u =
     let p = Jv.Jstr.get u "port" in
     if Jstr.is_empty p then None else Jstr.to_int p
 
   let query u =
-    let q = Jv.Jstr.get u "search" in
+    let q = pct_dec (Jv.get u "search") in
     if Jstr.is_empty q then q else Jstr.slice q ~start:1 (* remove '?' *)
 
-  let path u = Jv.Jstr.get u "pathname"
+  let path u = pct_dec (Jv.get u "pathname")
   let fragment u =
-    let f = Jv.Jstr.get u "hash" in
+    let f = Jv.to_jstr @@ Jv.apply decode [| Jv.get u "hash" |] in
     if Jstr.is_empty f then f else Jstr.slice f ~start:1 (* remove '#' *)
 
   (* Params *)
@@ -868,8 +876,6 @@ module Uri = struct
   | exception Jv.Error e -> Error e
   | v -> Ok (Jv.to_jstr v)
 
-  let encode = Jv.get Jv.global "encodeURI"
-  let decode = Jv.get Jv.global "decodeURI"
   let encode_component = Jv.get Jv.global "encodeURIComponent"
   let decode_component = Jv.get Jv.global "decodeURIComponent"
   let encode s = code encode s

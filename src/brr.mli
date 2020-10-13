@@ -524,9 +524,7 @@ end
     {{:http://tools.ietf.org/html/rfc3986}RFC 3986} terminology:
     we don't return separators like [':'], ['?']  and ['#'] in
     the data and we use [host] for what is [hostname] in the URL API.
-
-    {b Warning/FIXME.} The strings returned by the functions below
-    are URL encoded (always ? Should we decode ?) *)
+    Also the data we return is {{!Brr.Uri.decode}URL (percent) decoded}). *)
 module Uri : sig
 
   (** {1:uris URIs} *)
@@ -561,8 +559,10 @@ module Uri : sig
 
   val with_uri :
     ?scheme:Jstr.t -> ?host:Jstr.t -> ?port:int option -> ?path:Jstr.t ->
-    ?query:Jstr.t -> ?fragment:Jstr.t -> t -> t
-  (** [with_uri u] is [u] with the specified components updated. *)
+    ?query:Jstr.t -> ?fragment:Jstr.t -> t -> (t, Jv.Error.t) result
+  (** [with_uri u] is [u] with the specified components updated.
+      The given parameters are {{!Brr.Uri.encode}URL (percent) encoded}
+      by the function. *)
 
   (** {1:params Fragment or query parameters} *)
 
@@ -622,8 +622,8 @@ module Uri : sig
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI}encodeURI}. *)
 
   val decode : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [decode s] URL decodes [s] by precent-decoding an UTF-8 representation
-      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI}decodeURI}
+  (** [decode s] URL decodes [s] by percent-decoding an UTF-8 representation
+      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI}decodeURI}.
 *)
 
   val encode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
@@ -631,8 +631,8 @@ module Uri : sig
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent}encodeURIComponent}. *)
 
   val decode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [decode s] URL decodes [s] by precent-decoding an UTF-8 resprentation
-      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent}decodeURIComponent} *)
+  (** [decode s] URL decodes [s] by precent-decoding an UTF-8 representation
+      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent}decodeURIComponent}. *)
 
   (** {1:conv Converting} *)
 
