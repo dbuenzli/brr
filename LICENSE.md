@@ -1,7 +1,8 @@
 
 # Brr copyrights 
 
-All sources except [src/console/highlight.js](src/console/highlight.js)
+All sources except 
+[src/console/highlight.pack.js](src/console/highlight.pack.js)
 are distributed under the following license:
 
 ```
@@ -22,8 +23,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Highlight.js copyrights
 
-The file [src/console/highlight.js](src/console/highlight.js) is
-distributed under the following license
+The file [src/console/highlight.pack.js](src/console/highlight.pack.js) 
+is distributed under the following license:
 
 ```
 BSD 3-Clause License

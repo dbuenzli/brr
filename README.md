@@ -3,7 +3,7 @@ brr — Browser programming toolkit for OCaml
 %%VERSION%%
 
 Brr is a toolkit for programming browsers in OCaml with the
-[`js_of_ocaml`][js_of_ocaml] compiler. It provides:
+[`js_of_ocaml`][jsoo] compiler. It provides:
 
 * Interfaces to a selection of browser APIs.
 * Note based reactive support (optional and experimental).
@@ -16,7 +16,7 @@ and on the `js_of_ocaml` compiler and runtime – but not on its
 libraries or syntax extension.
 
 [note]: https://erratique.ch/software/note
-[js_of_ocaml]: https://ocsigen.org/js_of_ocaml
+[jsoo]: https://ocsigen.org/js_of_ocaml
 
 Homepage: https://erratique.ch/software/brr  
 
