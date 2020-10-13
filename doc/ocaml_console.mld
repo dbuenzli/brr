@@ -27,7 +27,7 @@ can be seen in the image below.
 The extension is distributed with [brr] not via the browser specific
 app stores. It is installed in:
 {v
-$(opam var etc)/brr/ocaml_console
+$(opam var share)/brr/ocaml_console
 v}
 and can be added to your browser from there.
 

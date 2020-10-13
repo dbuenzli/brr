@@ -11,14 +11,14 @@ let () =
        Pkg.mllib "src/ocaml_poke_ui/brr_ocaml_poke_ui.mllib" ~dst_dir:"ocaml_poke_ui/";
        Pkg.mllib "src/poke/brr_poke.mllib" ~dst_dir:"poke/";
        Pkg.mllib "src/poked/brr_poked.mllib" ~dst_dir:"poked/";
-       Pkg.lib "src/console/devtools.html" ~dst:"console/";
-       Pkg.lib "src/console/devtools.js" ~dst:"console/";
-       Pkg.lib "src/console/highlight.pack.js" ~dst:"console/";
-       Pkg.lib "src/console/manifest.json" ~dst:"console/";
-       Pkg.lib "src/console/ocaml.png" ~dst:"console/";
-       Pkg.lib "src/console/ocaml_console.css" ~dst:"console/";
-       Pkg.lib "src/console/ocaml_console.html" ~dst:"console/";
-       Pkg.lib "src/console/ocaml_console.js" ~dst:"console/";
+       Pkg.share "src/console/devtools.html" ~dst:"console/";
+       Pkg.share "src/console/devtools.js" ~dst:"console/";
+       Pkg.share "src/console/highlight.pack.js" ~dst:"console/";
+       Pkg.share "src/console/manifest.json" ~dst:"console/";
+       Pkg.share "src/console/ocaml.png" ~dst:"console/";
+       Pkg.share "src/console/ocaml_console.css" ~dst:"console/";
+       Pkg.share "src/console/ocaml_console.html" ~dst:"console/";
+       Pkg.share "src/console/ocaml_console.js" ~dst:"console/";
 
        (* Samples *)
        Pkg.doc "test/poke.ml";
