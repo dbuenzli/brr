@@ -511,7 +511,7 @@ module Json : sig
       value to be decoded back by [decoded]. *)
 
 
-  val decode : Jstr.t -> (t, Jstr.t) result
+  val decode : Jstr.t -> (t, Jv.Error.t) result
   (** [decode s] decodes the JSON text [s] into a JavaScript value using
       {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse}JSON.parse}. *)
 end
@@ -617,26 +617,26 @@ module Uri : sig
 
   (** {1:encoding URI Encoding} *)
 
-  val encode : Jstr.t -> (Jstr.t, Jstr.t) result
+  val encode : Jstr.t -> (Jstr.t, Jv.Error.t) result
   (** [encode s] URL encodes [s] by percent-encoding an UTF-8 representation
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI}encodeURI}. *)
 
-  val decode : Jstr.t -> (Jstr.t, Jstr.t) result
+  val decode : Jstr.t -> (Jstr.t, Jv.Error.t) result
   (** [decode s] URL decodes [s] by precent-decoding an UTF-8 representation
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI}decodeURI}
 *)
 
-  val encode_component : Jstr.t -> (Jstr.t, Jstr.t) result
+  val encode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
   (** [encode s] URL encodes [s] by percent-encoding an UTF-8 representation
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent}encodeURIComponent}. *)
 
-  val decode_component : Jstr.t -> (Jstr.t, Jstr.t) result
+  val decode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
   (** [decode s] URL decodes [s] by precent-decoding an UTF-8 resprentation
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent}decodeURIComponent} *)
 
   (** {1:conv Converting} *)
 
-  val of_jstr : Jstr.t -> (t, Jstr.t) result
+  val of_jstr : Jstr.t -> (t, Jv.Error.t) result
   (** [of_jstr s] is an URL from [s]. *)
 
   val to_jstr : t -> Jstr.t

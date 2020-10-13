@@ -792,7 +792,7 @@ module Json = struct
   let json = Jv.get Jv.global "JSON"
   let encode v = Jv.to_jstr (Jv.call json "stringify" [| v |])
   let decode s = match Jv.call json "parse" [|Jv.of_jstr s|] with
-  | exception Jv.Error e -> Error (Jv.Error.message e) | v -> Ok v
+  | exception Jv.Error e -> Error e | v -> Ok v
 end
 
 module Uri = struct
@@ -865,7 +865,7 @@ module Uri = struct
   (* URI encoding *)
 
   let code f s = match Jv.apply f [|Jv.of_jstr s|] with
-  | exception Jv.Error e -> Error (Jv.Error.message e)
+  | exception Jv.Error e -> Error e
   | v -> Ok (Jv.to_jstr v)
 
   let encode = Jv.get Jv.global "encodeURI"
@@ -881,7 +881,7 @@ module Uri = struct
 
   let to_jstr u = Jv.to_jstr (Jv.call u "toString" [||])
   let of_jstr s = match Jv.new' url [| Jv.of_jstr s |] with
-  | exception Jv.Error e -> Error (Jv.Error.message e) | v -> Ok v
+  | exception Jv.Error e -> Error e | v -> Ok v
 end
 
 (* DOM interaction *)
