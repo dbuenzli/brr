@@ -67,7 +67,7 @@ Make sure you have the OCaml console extension
 {{!page-ocaml_console.ext_install} installed} in your browser, open
 [min.html] and click on the OCaml tab of the developer tools.
 
-{1:dune Quick with Dune!}
+{1:dune_quick Quick with Dune!}
 
 Assuming you created the two minimal sources [min.ml], [min.html] from
 the {{!quick}previous section}. Create this [dune] file:
@@ -99,11 +99,20 @@ open _build/default/min.html     # macOS
 start _build/default/min.html    # Windows
 v}
 
-{2:ocaml_console And the fancy OCaml console?}
+{2:dune_ocaml_console And the fancy OCaml console?}
 
 Poke your program by side effect by linking against the [brr.poked]
 library. Make sure to [-linkall] the modules into the bytecode and
-tweak a bit the [js_of_ocaml] invocation. This [dune] file should do:
+tweak a bit the [js_of_ocaml] invocation.
+
+But first since you want to access your main program's modules
+disable the [dune] renaming business:
+
+{v
+echo '(wrapped_executables false)' >> dune-project
+v}
+
+This [dune] file should now do:
 
 {v
 cat - > dune <<EOF
@@ -116,8 +125,9 @@ cat - > dune <<EOF
 (rule
  (targets min.js)
  (action
-    (run %{bin:js_of_ocaml} -I %{lib:brr:.} -I . --toplevel
-         +toplevel.js +dynlink.js %{dep:min.bc} -o %{targets})))
+    (run %{bin:js_of_ocaml}
+         -I %{lib:brr:.} -I .min.eobjs/byte ; to see the program's cmis
+         --toplevel +toplevel.js +dynlink.js %{dep:min.bc} -o %{targets})))
 
 (alias
   (name app)
