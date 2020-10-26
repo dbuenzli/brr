@@ -5,10 +5,10 @@ by [js_of_ocaml] and Brr. The companion {{!page-ffi_cookbook}FFI
 cookbook} has a few tips and off-the-shelf design answers for common
 JavaScript bindings scenarios.
 
-An OCaml value compiled by the [js_of_ocaml] is encoded as a
-JavaScript value (see {{:http://doi.org/10.1002/spe.2187}this paper}
-for outdated yet interesting details). JavaScript does not understand
-this encoding, conversly OCaml does not understand JavaScript values
+An OCaml value compiled by [js_of_ocaml] is encoded as a JavaScript
+value (see {{:http://doi.org/10.1002/spe.2187}this paper} for outdated
+yet interesting details). JavaScript does not understand this
+encoding, conversly OCaml does not understand JavaScript values
 directly.  The {e foreign function interface} (FFI) reconciles these
 views.
 

@@ -86,7 +86,7 @@ The following JavaScript and browser functionality is supported:
 {ul
 {- General support for JavaScript values is in {!Jv}.}
 {- JavaScript [String]s are in {!Jstr}.}
-{- Left-pad support in is {!Jstr.pad_start}.}
+{- Left-pad support is in {!Jstr.pad_start}.}
 {- JavaScript [Promise]s are in {!Fut} to safely type them. {!Brr.Abort}
    has support for aborting them.}
 {- JavaScript [ArrayBuffer]s and [TypedArray]s are in {!Brr.Tarray}.}

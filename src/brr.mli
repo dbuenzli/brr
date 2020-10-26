@@ -2149,8 +2149,9 @@ module El : sig
   (** {1:ifaces Element interfaces}
 
       Some interfaces are in other modules. See for example
-      {!Brr_io.Media.El} for the media element interface
-      and {!Brr_canvas.Canvas} for the Canvas Element interface. *)
+      {!Brr_io.Media.El} for the media element interface,
+      {!Brr_canvas.Canvas} for the canvas element interface and
+      {!Brr_io.Form} for the form element interface. *)
 
   (** The HTML
       {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement}
