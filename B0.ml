@@ -17,35 +17,35 @@ let brr_poked = B0_ocaml.libname "brr.poked"
 (* Units *)
 
 let brr_lib =
-  let srcs = [ `Dir "src" ] in
+  let srcs = Fpath.[ `Dir (v "src") ] in
   let requires = [] in
   B0_ocaml.lib brr ~doc:"Brr JavaScript FFI and browser API" ~srcs ~requires
 
 let brr_note_lib =
-  let srcs = [ `Dir "src/note" ] in
+  let srcs = Fpath.[ `Dir (v "src/note") ] in
   let requires = [brr; note] in
   B0_ocaml.lib brr_note ~doc:"Brr Note support" ~srcs ~requires
 
 let brr_ocaml_poke_lib =
-  let srcs = [ `Dir "src/ocaml_poke" ] in
+  let srcs = Fpath.[ `Dir (v "src/ocaml_poke") ] in
   let requires = [brr] in
   let doc = "OCaml poke objects interaction" in
   B0_ocaml.lib brr_ocaml_poke ~doc ~srcs ~requires
 
 let brr_ocaml_poke_ui_lib =
-  let srcs = [ `Dir "src/ocaml_poke_ui" ] in
+  let srcs = Fpath.[ `Dir (v "src/ocaml_poke_ui") ] in
   let requires = [brr; brr_ocaml_poke] in
   let doc = "OCaml poke user interface (toplevel)" in
   B0_ocaml.lib brr_ocaml_poke_ui ~doc ~srcs ~requires
 
 let brr_poke_lib =
-  let srcs = [ `Dir "src/poke" ] in
+  let srcs = Fpath.[ `Dir (v "src/poke") ] in
   let requires = [js_of_ocaml; js_of_ocaml_toplevel; brr] in
   let doc = "Poke explicitely" in
   B0_ocaml.lib brr_poke ~doc ~srcs ~requires
 
 let brr_poked_lib =
-  let srcs = [ `Dir "src/poked" ] in
+  let srcs = Fpath.[ `Dir (v "src/poked") ] in
   let requires = [brr_poke] in
   let doc = "Poke by side effect" in
   B0_ocaml.lib brr_poked ~doc ~srcs ~requires
@@ -53,30 +53,30 @@ let brr_poked_lib =
 (* Web extension *)
 
 let console =
-  let srcs = [ `Dir "src/console";
-               `X "src/console/ocaml_console.js"; (* GNGNGNGN *)
-               `X "src/console/devtools.js";
-               `X "src/console/highlight.pack.js";
+  let srcs = Fpath.[ `Dir (v "src/console");
+               `X (v "src/console/ocaml_console.js"); (* GNGNGNGN *)
+               `X (v "src/console/devtools.js");
+               `X (v "src/console/highlight.pack.js");
                (* FIXME we want something like ext_js *) ]
   in
   let requires = [brr; brr_ocaml_poke; brr_ocaml_poke_ui] in
   let comp_mode = `Whole and source_map = Some `Inline in
-  let comp = Cmd.(arg "--pretty") in
+  let comp = Cmd.(atom "--pretty") in
   let meta = B0_jsoo.meta ~requires ~comp ~comp_mode ~source_map () in
   let doc = "Browser developer tool OCaml console" in
   B0_jsoo.web "ocaml_console" ~doc ~srcs ~meta
 
 let poke =
-  let srcs = [ `File "test/poke.ml"; `File "test/base.css" ] in
+  let srcs = Fpath.[ `File (v "test/poke.ml"); `File (v "test/base.css") ] in
   let requires = [brr; brr_note; brr_poked] in
   let meta = B0_jsoo.meta ~requires ~toplevel:true () in
   let doc = "OCaml console test" in
   B0_jsoo.web "poke" ~doc ~srcs ~meta
 
 let top =
-  let srcs = [ `File "test/top.ml";
+  let srcs = Fpath.[ `File (v "test/top.ml");
 (* FIXME js_of_ocaml chokes `File "src/console/highlight.pack.js"; *)
-               `File "src/console/ocaml_console.css" ] in
+                     `File (v "src/console/ocaml_console.css") ] in
   let requires =
     [ js_of_ocaml; js_of_ocaml_toplevel; brr; brr_note; brr_ocaml_poke_ui;
       brr_poke; brr_ocaml_poke]
@@ -88,18 +88,18 @@ let top =
 
 (* Tests and samples *)
 
-let test_assets = [ `File "test/base.css" ]
+let test_assets = Fpath.[ `File (v "test/base.css") ]
 
 let test ?(requires = [brr]) n ~doc =
-  let srcs = `File (Fmt.str "test/%s.ml" n) :: test_assets in
+  let srcs = `File (Fpath.v (Fmt.str "test/%s.ml" n)) :: test_assets in
   let meta = B0_jsoo.meta ~requires () in
   B0_jsoo.web n ~doc ~srcs ~meta
 
 let test_module ?doc top m requires  =
   let test = Fmt.str "test_%s" (String.Ascii.uncapitalize m) in
   let doc = Fmt.str "Test %s.%s module" top m in
-  let srcs = `File (Fmt.str "test/%s.ml" test) :: test_assets in
-  let comp = Cmd.(arg "--pretty") in
+  let srcs = `File (Fpath.v (Fmt.str "test/%s.ml" test)) :: test_assets in
+  let comp = Cmd.(atom "--pretty") in
   let meta = B0_jsoo.meta ~requires ~comp () in
   B0_jsoo.web test ~doc ~srcs ~meta
 
@@ -129,18 +129,20 @@ let test_webcryto = test_module "Brr_webcrypto" "Crypto" [brr]
 let test_worker = test_module "Brr" "Worker" [brr]
 
 let min =
-  let srcs = [ `File "test/min.ml"; `File "test/min.html" ] in
+  let srcs = Fpath.[ `File (v "test/min.ml"); `File (v "test/min.html") ] in
   let requires = [brr] in
   let meta = B0_jsoo.meta ~requires () in
   B0_jsoo.web "min" ~doc:"Brr minimal web page" ~srcs ~meta
 
 let nop =
-  let srcs = [ `File "test/nop.ml"; ] in
+  let srcs = Fpath.[ `File (v "test/nop.ml") ] in
   let meta = B0_jsoo.meta ~requires:[] () in
   B0_jsoo.web "nop" ~doc:"js_of_ocaml nop web page" ~srcs ~meta
 
 let todomvc =
-  let srcs = [ `File "test/todomvc.ml"; `File "test/todomvc.html" ] in
+  let srcs = Fpath.[ `File (v "test/todomvc.ml");
+                     `File (v "test/todomvc.html"); ]
+  in
   let requires = [note; brr; brr_note;] in
   let meta = B0_jsoo.meta ~requires () in
   B0_jsoo.web "todomvc" ~doc:"TodoMVC app" ~srcs ~meta
@@ -162,17 +164,17 @@ let jsoo_toplevels =
 (* Cmdlets *)
 
 let update_console =
-  let open Result.Syntax in
-  let cmd clet ~argv =
-    Log.if_error ~use:B00_cli.Exit.some_error @@
-    let* cwd = Os.Dir.cwd () in
-    (* FIXME assumes invoked at the root. Need to sort out cmdlet cwd
-       let root_dir = B0_cmdlet.get_meta B0_meta.scope_dir clet in *)
-    let src = Fpath.(cwd // v "_b0/b/user/ocaml_console/ocaml_console.js") in
-    let dst = Fpath.(cwd // v "src/console/ocaml_console.js") in
-    let cmd = Cmd.(arg "b0" % "-u" % "ocaml_console" % "-u" % "poke") in
-    let* () = Os.Cmd.run cmd in
-    let* () = Os.File.copy ~force:true ~make_path:false ~src dst in
-    Ok (B00_cli.Exit.ok)
-  in
-  B0_cmdlet.v ~doc:"Develop console" "dev-console" (`Cmd cmd)
+  B0_cmdlet.v ~doc:"Develop console" "dev-console" @@ fun env args ->
+  B0_cmdlet.exit_of_result @@
+  (* FIXME so much path boilerplate. Summon units/packs to be build
+     and get info directly. *)
+  let b0_dir = B0_cmdlet.Env.b0_dir env in
+  let variant = "user" in
+  let build_dir = B0_dir.build_dir ~b0_dir ~variant in
+  let unit_dir = B0_dir.unit_build_dir ~build_dir ~name:"ocaml_console" in
+  let src = Fpath.(unit_dir / "ocaml_console.js") in
+  let dst = Fpath.(v "src" / "console" / "ocaml_console.js") in
+  let dst = B0_cmdlet.in_scope_dir env dst in
+  let cmd = Cmd.(atom "b0" % "-u" % "ocaml_console" % "-u" % "poke") in
+  Result.bind (Os.Cmd.run cmd) @@ fun () ->
+  Os.File.copy ~force:true ~make_path:false ~src dst
