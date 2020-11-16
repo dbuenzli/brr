@@ -275,7 +275,8 @@ let history_next r s = match History.next r.h s with
 
 let history_save r s =
   let chop_end_nl s =
-    if Jstr.ends_with ~sub:(Jstr.v "\n") s then Jstr.slice ~stop:(-1) s else s
+    if Jstr.ends_with ~suffix:(Jstr.v "\n") s
+    then Jstr.slice ~stop:(-1) s else s
   in
   r.h <- History.add r.h (chop_end_nl s);
   let h = History.to_string ~sep:history_sep r.h in
@@ -335,7 +336,9 @@ let unlock_input r =
 let handle_text_input r poke _e =
   let i = Text_input.get r.input in
   let enter = Jstr.v ";;\n" and enter_win = Jstr.v ";;\r\n" in
-  let submit = Jstr.ends_with ~sub:enter i || Jstr.ends_with ~sub:enter_win i in
+  let submit =
+    Jstr.ends_with ~suffix:enter i || Jstr.ends_with ~suffix:enter_win i
+  in
   if not submit then Text_input.update_input r.input else
   begin
     history_save r i;

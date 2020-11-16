@@ -138,9 +138,9 @@ let uppercased s = jv_call s "toUpperCase" [||]
 (* Predicates and comparisons *)
 
 let is_empty s = length s = 0
-let starts_with ~sub s = jv_to_bool @@ jv_call s "startsWith" [| sub |]
-let includes ~sub s = jv_to_bool @@ jv_call s "includes" [| sub |]
-let ends_with ~sub s = jv_to_bool @@ jv_call s "endsWith" [| sub |]
+let starts_with ~prefix s = jv_to_bool @@ jv_call s "startsWith" [| prefix |]
+let includes ~affix s = jv_to_bool @@ jv_call s "includes" [| affix |]
+let ends_with ~suffix s = jv_to_bool @@ jv_call s "endsWith" [| suffix |]
 let equal = ( = )
 let compare = compare
 

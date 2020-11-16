@@ -176,15 +176,17 @@ val uppercased : t -> t
 val is_empty : t -> bool
 (** [is_empty s] is [true] iff [s] is an empty string. *)
 
-val starts_with : sub:t -> t -> bool
-(** [starts_with ~sub s] is [true] iff [s] starts with [sub] (as per
+val starts_with : prefix:t -> t -> bool
+(** [starts_with ~prefix s] is [true] iff [s] starts with [prefix] (as per
     {!equal}). *)
 
-val includes : sub:t -> t -> bool
-(** [includes ~sub s] is [true] iff [s] includes [sub] (as per {!equal}). *)
+val includes : affix:t -> t -> bool
+(** [includes ~suffix s] is [true] iff [s] includes [affix]
+    (as per {!equal}). *)
 
-val ends_with : sub:t -> t -> bool
-(** [ends_with ~sub s] is [true] iff [s] ends with [sub] (as per {!equal}). *)
+val ends_with : suffix:t -> t -> bool
+(** [ends_with ~suffix s] is [true] iff [s] ends with [suffix]
+    (as per {!equal}). *)
 
 val equal : t -> t -> bool
 (** [equal s0 s1] is [true] iff [s0] and [s1] are equal. {b Warning.}
