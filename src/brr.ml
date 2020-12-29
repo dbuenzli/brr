@@ -1028,7 +1028,11 @@ module El = struct
     el_list_of_node_list @@
     Jv.call root "getElementsByTagName" [| Jv.of_jstr n |]
 
-  (* Children *)
+  (* Parent and children *)
+
+  let parent e = match Jv.find e "parentNode" with
+  | Some e when is_el e -> Some e
+  | _ -> None
 
   let delete_children e =
     while not (Jv.is_null (Jv.get e "firstChild")) do

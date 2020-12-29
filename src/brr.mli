@@ -1905,7 +1905,11 @@ module El : sig
   (** [find_by_tag_name ~root n] are the elements with tag name [t] that
       are descendents of [root] (defaults to {!Document.root}). *)
 
-  (** {1:children Children} *)
+  (** {1:tree Parent and children} *)
+
+  val parent : t -> t option
+  (** [parent e] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/Node/parentNode}
+      parent} {e element} of [e] (if any). *)
 
   val children : ?only_els:bool -> t -> t list
   (** [children e] are [e]'s children. {b Warning}, unless [only_els]

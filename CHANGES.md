@@ -1,4 +1,6 @@
 
+- Add `Brr.El.parent`, thanks to Sébastien Dailly for the suggestion 
+  and the patch.
 - `Jstr.{starts_with,ends_with}`, change labels to follow Stdlib labelling. 
   
 
