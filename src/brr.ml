@@ -1051,6 +1051,10 @@ module El = struct
 
   let remove e = ignore @@ Jv.call e "remove" [| e |]
 
+  (* Other traversals *)
+
+  let parent_node e = Jv.find e "parentNode"
+
   (* Attributes *)
 
   let at a e =

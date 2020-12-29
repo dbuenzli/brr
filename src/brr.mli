@@ -1925,6 +1925,10 @@ module El : sig
   (** [insert_siblings loc e l] inserts [l] before, after or instead of
       element [e] according to [loc]. *)
 
+  val parent_node : t -> t option
+  (** [parent_node e] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/Node/parentNode}
+      parent} of [e] *)
+
   val remove : t -> unit
   (** [remove e] removes [e] from the document. *)
 
