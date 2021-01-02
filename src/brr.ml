@@ -1028,6 +1028,15 @@ module El = struct
     el_list_of_node_list @@
     Jv.call root "getElementsByTagName" [| Jv.of_jstr n |]
 
+  (* Parent *)
+
+  let parent e = match Jv.find e "parentNode" with
+    (* The parentNode function might return either an Element, a Document, or a
+       DocumentFragment. Only elements are returned and all other types are
+       transformed in None *)
+  | Some e when is_el e -> Some e
+  | _ -> None
+
   (* Children *)
 
   let delete_children e =
@@ -1050,10 +1059,6 @@ module El = struct
   | `Replace -> Jv.call e "replaceWith" (Array.of_list l)
 
   let remove e = ignore @@ Jv.call e "remove" [| e |]
-
-  (* Other traversals *)
-
-  let parent_node e = Jv.find e "parentNode"
 
   (* Attributes *)
 

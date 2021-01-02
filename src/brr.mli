@@ -1904,6 +1904,13 @@ module El : sig
   val find_by_tag_name : ?root:t -> Jstr.t -> t list
   (** [find_by_tag_name ~root n] are the elements with tag name [t] that
       are descendents of [root] (defaults to {!Document.root}). *)
+  
+  (** {1:parent Parent} *)
+
+  val parent : t -> t option
+  (** [parent_node e] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/Node/parentNode}
+      parent} of [e] *)
+
 
   (** {1:children Children} *)
 
@@ -1924,10 +1931,6 @@ module El : sig
   val insert_siblings : [ `Before | `After | `Replace ] -> t -> t list -> unit
   (** [insert_siblings loc e l] inserts [l] before, after or instead of
       element [e] according to [loc]. *)
-
-  val parent_node : t -> t option
-  (** [parent_node e] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/Node/parentNode}
-      parent} of [e] *)
 
   val remove : t -> unit
   (** [remove e] removes [e] from the document. *)
