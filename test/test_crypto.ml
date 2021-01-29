@@ -83,6 +83,30 @@ let test_sym_crypt log =
   Console.(assert' (Jstr.equal clear' data) [str "Encryption trip failed"]);
   Fut.ok ()
 
+let test_import_export log =
+  let to_hex t = Tarray.to_hex_jstr ~sep:Jstr.sp t in
+  let s = Crypto.subtle Crypto.crypto in
+  let sym_key_gen =
+    let name = Crypto_algo.aes_cbc and length = 128 in
+    Crypto_algo.Aes_key_gen_params.v ~name ~length ()
+  in
+  let* k =
+    Subtle_crypto.generate_key s sym_key_gen ~extractable:true
+      ~usages:Crypto_key.Usage.[ wrap_key; unwrap_key ]
+  in
+  let* v = Subtle_crypto.export_key s Crypto_key.Format.raw k in
+  let[@warning "-8"] (`Buffer raw : [ `Buffer of _ | `Json_web_key of _ ]) = v in
+  let raw = Tarray.uint8_of_buffer raw in
+  log El.[txt' "Key exported: "; code [ txt (to_hex raw) ] ];
+  let* k' = Subtle_crypto.import_key s Crypto_key.Format.raw v sym_key_gen ~extractable:true
+    ~usages:Crypto_key.Usage.[ wrap_key; unwrap_key ] in
+  let* v' = Subtle_crypto.export_key s Crypto_key.Format.raw k in
+  let[@warning "-8"] (`Buffer raw' : [ `Buffer of _ | `Json_web_key of _ ]) = v' in
+  let raw' = Tarray.uint8_of_buffer raw' in
+  log El.[txt' "Key imported: "; code [ txt (to_hex raw') ] ];
+  Console.(assert' (String.equal (Tarray.to_string raw) (Tarray.to_string raw')) [str "Keys mismatch"]);
+  Fut.ok ()
+
 (* Test *)
 
 let test log =
@@ -90,6 +114,7 @@ let test log =
   let* () = test_random log in
   let* () = test_signing log in
   let* () = test_sym_crypt log in
+  let* () = test_import_export log in
   Fut.ok ()
 
 let main () =
