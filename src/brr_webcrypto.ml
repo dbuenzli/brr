@@ -52,7 +52,7 @@ module Crypto_algo = struct
   let v  n = Jv.obj [| "name", Jv.of_jstr n |]
   let name a = Jv.Jstr.get a "name"
 
-  let rsassa_pks1_v1_5 = Jstr.v "RSASSA-PKCS1-v1_5"
+  let rsassa_pkcs1_v1_5 = Jstr.v "RSASSA-PKCS1-v1_5"
   module Rsa_hashed_key_gen_params = struct
     type t = Jv.t
     let v ~name ~modulus_length ~public_exponent ~hash () =
