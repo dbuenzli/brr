@@ -694,14 +694,14 @@ module Subtle_crypto : sig
 
   val export_key :
     t -> Crypto_key.Format.t -> Crypto_key.t ->
-    [ `Buffer of ('a, 'b) Tarray.t | `Json_web_key of Json.t ] Fut.or_error
+    [ `Buffer of Tarray.Buffer.t | `Json_web_key of Json.t ] Fut.or_error
   (** [export_key s f k] is the key [k]
       {{:https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey}exported} in format [f]. [`Json_web_key] is only returned if
       {!Crypto_key.Format.jwk} is specified. *)
 
   val import_key :
     t -> Crypto_key.Format.t ->
-    [ `Buffer of ('a, 'b) Tarray.t | `Json_web_key of Json.t ] ->
+    [ `Buffer of Tarray.Buffer.t | `Json_web_key of Json.t ] ->
     Crypto_algo.t -> extractable:bool -> usages:Crypto_key.Usage.t list ->
     Crypto_key.t Fut.or_error
   (** [import_key s f k a ~extractable ~usage] is the key [k]

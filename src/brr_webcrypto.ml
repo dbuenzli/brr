@@ -298,7 +298,7 @@ module Subtle_crypto = struct
   (* Key encoding and decoding *)
 
   let import_key s f k a ~extractable ~usages =
-    let k = match k with | `Buffer b -> Tarray.to_jv b | `Json_web_key k -> k in
+    let k = match k with | `Buffer b -> Tarray.Buffer.to_jv b | `Json_web_key k -> k in
     Fut.of_promise ~ok:Crypto_key.of_jv @@
     Jv.call s "importKey"
       [| Jv.of_jstr f; k; Crypto_algo.to_jv a; Jv.of_bool extractable;
@@ -307,7 +307,7 @@ module Subtle_crypto = struct
   let export_key s f k =
     let ok = match Jstr.equal Crypto_key.Format.jwk f with
     | true -> fun v -> `Json_web_key v
-    | false -> fun v -> `Buffer (Tarray.of_jv v)
+    | false -> fun v -> `Buffer (Tarray.Buffer.of_jv v)
     in
     Fut.of_promise ~ok @@
     Jv.call s "exportKey" [| Jv.of_jstr f; Crypto_key.to_jv k |]
