@@ -23,7 +23,7 @@ let test_random log =
 
 let sign_key_pair s =
   let sig_key_gen =
-    let name = Crypto_algo.rsassa_pks1_v1_5 in
+    let name = Crypto_algo.rsassa_pkcs1_v1_5 in
     let modulus_length = 2048 in
     let i65537 = [|0x01; 0x0; 0x01|] in
     let public_exponent = Tarray.of_int_array Tarray.Uint8 i65537 in
@@ -34,7 +34,7 @@ let sign_key_pair s =
   let usages = Crypto_key.Usage.[sign; verify] in
   Subtle_crypto.generate_key_pair s sig_key_gen ~extractable:false ~usages
 
-let sign_algo = Crypto_algo.v Crypto_algo.rsassa_pks1_v1_5
+let sign_algo = Crypto_algo.v Crypto_algo.rsassa_pkcs1_v1_5
 let sign s priv_key d = Subtle_crypto.sign s sign_algo priv_key d
 let verify s pub_key sig' d = Subtle_crypto.verify s sign_algo pub_key ~sig' d
 let test_signing log =

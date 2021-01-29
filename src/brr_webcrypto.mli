@@ -137,9 +137,9 @@ module Crypto_algo : sig
 
   (** {1:rsassa_pkcs1_v1_5 RSASSA-PKCS1-v1_5} *)
 
-  val rsassa_pks1_v1_5 : Jstr.t
+  val rsassa_pkcs1_v1_5 : Jstr.t
   (** The name for {{:https://www.w3.org/TR/WebCryptoAPI/#rsassa-pkcs1}
-      RSASSA-PCS1-v1_5}. *)
+      RSASSA-PKCS1-v1_5}. *)
 
   (** RSA key generation parameters. *)
   module Rsa_hashed_key_gen_params : sig
