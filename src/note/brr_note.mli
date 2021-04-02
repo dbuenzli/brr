@@ -124,8 +124,8 @@ end
 
 (** Reactive DOM elements.
 
-    {b Warning.} Reactive DOM element mutators ({!rset_at},
-    {!rset_children}, etc.) and definers ({!def_at}, {!def_children},
+    {b Warning.} Reactive DOM element mutators ({!set_at},
+    {!set_children}, etc.) and definers ({!def_at}, {!def_children},
     etc.) use {{!Note.Logr}[Note] loggers} to perform their action.
     To prevent memory leaks, these loggers, and thus their action,
     automatically get destroyed whenever the element is removed from
