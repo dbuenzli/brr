@@ -804,7 +804,9 @@ module Uri = struct
 
   let url = Jv.get Jv.global "URL"
 
-  let v s = Jv.new' url [| Jv.of_jstr s |]
+  let v ?base s = match base with
+  | None -> Jv.new' url [| Jv.of_jstr s |]
+  | Some b -> Jv.new' url [| Jv.of_jstr s; Jv.of_jstr b |]
 
   let with_uri ?scheme ?host ?port ?path ?query ?fragment u =
     let u = Jv.new' url [| u |] in
@@ -886,7 +888,7 @@ module Uri = struct
   (* Converting *)
 
   let to_jstr u = Jv.to_jstr (Jv.call u "toString" [||])
-  let of_jstr s = match Jv.new' url [| Jv.of_jstr s |] with
+  let of_jstr ?base s = match v ?base s with
   | exception Jv.Error e -> Error e | v -> Ok v
 end
 

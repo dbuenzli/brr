@@ -533,9 +533,10 @@ module Uri : sig
   (** The type for {{:https://developer.mozilla.org/en-US/docs/Web/API/URL}
       [URL]} objects. *)
 
-  val v : Jstr.t -> t
-  (** [v s] is an URI from [s]. Raises in in case of error, use
-      {!of_jstr} if you need to deal with user input. *)
+  val v : ?base:Jstr.t -> Jstr.t -> t
+  (** [v ?base s] is an URI from [s] relative to [base] (if specified).
+      Raises in in case of error, use {!of_jstr} if you need to deal
+      with user input. *)
 
   val scheme : t -> Jstr.t
   (** [scheme u] is the scheme of [u]. *)
@@ -636,8 +637,10 @@ module Uri : sig
 
   (** {1:conv Converting} *)
 
-  val of_jstr : Jstr.t -> (t, Jv.Error.t) result
-  (** [of_jstr s] is an URL from [s]. *)
+  val of_jstr : ?base:Jstr.t -> Jstr.t -> (t, Jv.Error.t) result
+  (** [of_jstr ~base s] is an URL from [s] relative to [base] (if specified).
+      Note that if [s] is relative and [base] is unspecified the function
+      errors. *)
 
   val to_jstr : t -> Jstr.t
   (** [to_jstr u] is [u] as a JavaScript string. The result is URL

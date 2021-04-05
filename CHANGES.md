@@ -9,7 +9,7 @@
 - Add `Brr.El.parent` (#10).
   Thanks to Sébastien Dailly for the suggestion and the patch.
 - `Jstr.{starts_with,ends_with}`, change labels to follow Stdlib labelling. 
-  
+- Add optional `base` argument to `Brr.Uri.{v,of_jstr}`.
 
 v0.0.1 2020-10-14 Zagreb
 ------------------------
