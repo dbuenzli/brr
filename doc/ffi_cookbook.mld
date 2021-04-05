@@ -392,7 +392,7 @@ and the result type are compatible with those JavaScript expect. See
 Just name its JavaScript representation in the {!Jv.global} object (or
 any other object). You need to make sure the representations of the
 function arguments and the result type are compatible with those
-JavaScript expect, see the {{!page-manual}FFI manual} for discussions
+JavaScript expect, see the {{!page-ffi_manual}FFI manual} for discussions
 on this.  So for example to expose an OCaml factorial function in the
 global object as [fact] you could write:
 
