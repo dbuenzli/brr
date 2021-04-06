@@ -10,6 +10,9 @@
   Thanks to Sébastien Dailly for the suggestion and the patch.
 - `Jstr.{starts_with,ends_with}`, change labels to follow Stdlib labelling. 
 - Add optional `base` argument to `Brr.Uri.{v,of_jstr}`.
+- Add `Brr.Uri.Params.is_empty`.
+- Add `Brr_io.Form.Data.{is_empty,has_file_entry,of_uri_params,to_uri_params}`.
+
 
 v0.0.1 2020-10-14 Zagreb
 ------------------------

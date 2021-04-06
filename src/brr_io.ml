@@ -88,7 +88,17 @@ module Form = struct
     let formdata = Jv.get Jv.global "FormData"
     let create () = Jv.new' formdata [||]
     let of_form f = Jv.new' formdata [| f |]
+    let is_empty d = Jv.It.result_done (Jv.It.next (Jv.call d "entries" [||]))
     let mem d k = Jv.to_bool @@ Jv.call d "has" Jv.[| of_jstr k |]
+    let has_file_entry d =
+      let rec loop it =
+        let r = Jv.It.next it in
+        if Jv.It.result_done r then false else
+        let v = Jv.Jarray.get (Jv.It.get_result_value r) 1 in
+        if Jv.instanceof v (Jv.get Jv.global "File") then true else
+        loop it
+      in
+      loop (Jv.call d "entries" [||])
 
     let entry_value v = match Jv.instanceof v (Jv.get Jv.global "File") with
     | true -> `File (File.of_jv v)
@@ -127,6 +137,14 @@ module Form = struct
       List.iter (app d) l; d
 
     let to_assoc p = List.rev (fold (fun k v acc -> (k, v) :: acc) p [])
+
+    let of_uri_params p =
+      let add k v d = append d k v; d in
+      Uri.Params.fold add p (create ())
+
+    let to_uri_params p =
+      let usp = Jv.get Jv.global "URLSearchParams" in
+      Uri.Params.of_jv (Jv.new' usp [| p |])
   end
 
   module Ev = struct

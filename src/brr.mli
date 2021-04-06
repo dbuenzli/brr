@@ -582,6 +582,9 @@ module Uri : sig
         {{:https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams}
         [URLSearchParams]} objects. *)
 
+    val is_empty : t -> bool
+    (** [is_empty ps] is [true] if [ps] has no key value bindings. *)
+
     val mem : Jstr.t -> t -> bool
     (** [mem k ps] is [true] if key [k] is bound in [ps]. *)
 
@@ -592,7 +595,7 @@ module Uri : sig
     (** [find_all k ps] are the values of all bindings of [k] in [ps]. *)
 
     val fold : (Jstr.t -> Jstr.t -> 'a -> 'a) -> t -> 'a -> 'a
-    (** [fold f ps acc] folds the key value bindings. *)
+    (** [fold f ps acc] folds {e all} the key value bindings. *)
 
     (** {1:conver Converting} *)
 

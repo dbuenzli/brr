@@ -851,6 +851,7 @@ module Uri = struct
     include (Jv.Id : Jv.CONV with type t := t)
 
     let usp = Jv.get Jv.global "URLSearchParams"
+    let is_empty p = Jv.It.result_done (Jv.It.next (Jv.call p "entries" [||]))
     let mem k p = Jv.to_bool (Jv.call p "has" [|Jv.of_jstr k|])
     let find k p = Jv.to_option Jv.to_jstr (Jv.call p "get" [|Jv.of_jstr k|])
     let find_all k p = Jv.to_jstr_list (Jv.call p "getAll" [|Jv.of_jstr k|])

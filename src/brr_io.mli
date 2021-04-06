@@ -186,6 +186,12 @@ module Form : sig
     (** [of_form f] is a form data from the
         {{:https://developer.mozilla.org/en-US/docs/Web/API/FormData/FormData#Parameters}current key-values} of form [f]. *)
 
+    val is_empty : t -> bool
+    (** [is_empty d] is [true] if [d] has no entries. *)
+
+    val has_file_entry : t -> bool
+    (** [has_file_entry d] is [true] iff [d] has a file entry. *)
+
     val mem : t -> Jstr.t -> bool
     (** [mem d k] is [true] if [d]
         {{:https://developer.mozilla.org/en-US/docs/Web/API/FormData/has}has}
@@ -235,6 +241,16 @@ module Form : sig
 
     val to_assoc : t -> (Jstr.t * entry_value) list
     (** [to_assoc l] is the form data as an association list. *)
+
+    val of_uri_params : Uri.Params.t -> t
+    (** [of_uri_params p] is a form data for [p]. *)
+
+    val to_uri_params : t -> Uri.Params.t
+    (** [to_uri_params t] is the form data as URI query parameters.
+
+        {b Note.} If your form has file inputs this will map their keys
+        to something like ["[Object File]"], {!has_file_entry} indicates
+        whether the form data has a file entry. *)
 
     (**/**)
     include Jv.CONV with type t := t
