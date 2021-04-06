@@ -8,6 +8,8 @@
   Thanks to Romain Calascibetta for the report and the fix.
 - Add `Brr.El.parent` (#10).
   Thanks to Sébastien Dailly for the suggestion and the patch.
+- Add `Brr.El.{find_first_by_selector,fold_find_by_selector}` to 
+  lookup elements by CSS selectors.
 - `Jstr.{starts_with,ends_with}`, change labels to follow Stdlib labelling. 
 - Add optional `base` argument to `Brr.Uri.{v,of_jstr}`.
 - Add `Brr.Uri.Params.is_empty`.

@@ -1033,6 +1033,17 @@ module El = struct
     el_list_of_node_list @@
     Jv.call root "getElementsByTagName" [| Jv.of_jstr n |]
 
+  let find_first_by_selector ?(root = global_root) sel =
+    Jv.to_option of_jv @@ Jv.call root "querySelector" [| Jv.of_jstr sel |]
+
+  let fold_find_by_selector ?(root = global_root) f sel acc =
+    let nl = Jv.call root "querySelectorAll" [| Jv.of_jstr sel |] in
+    let acc = ref acc in
+    for i = 0 to (Jv.Int.get nl "length") - 1 do
+      acc := f (of_jv (Jv.Jarray.get nl i)) !acc
+    done;
+    !acc
+
   (* Parent and children *)
 
   let parent e = match Jv.find e "parentNode" with
