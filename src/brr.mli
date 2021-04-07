@@ -779,7 +779,9 @@ module Ev : sig
       epoch when the event was created. *)
 
   val dispatch : 'a t -> target -> bool
-  (** [dispatch e t] dispatches event [e] on target [t]. *)
+  (** [dispatch e t]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent}dispatches}
+      event [e] on target [t]. *)
 
   (** {1:listening Listening} *)
 
