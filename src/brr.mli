@@ -1859,13 +1859,15 @@ module El : sig
   type el = t
   (** See {!t}. *)
 
-  val v : ?d:document -> ?at:At.t list -> tag_name -> t list -> t
-  (** [v ?d ?at name cs] is an element [name] with attribute [at]
+  val v : ?ns:Jstr.t -> ?d:document -> ?at:At.t list -> tag_name -> t list -> t
+  (** [v ?ns ?d ?at name cs] is an element [name] with attribute [at]
       (defaults to [[]]) and children [cs]. If [at] specifies an
-      attribute more thanonce, the last one takes over with the
+      attribute more than once, the last one takes over with the
       exception of {!At.class'} whose occurences accumulate to define
       the final value. [d] is the document on which the element is
-      defined it defaults {!Brr.G.document}. *)
+      defined, it defaults to {!Brr.G.document}. [ns] allows specifying
+      a namespace for the element; by default, the ambient namespace is used.
+  *)
 
   val txt : ?d:document -> Jstr.t -> t
   (** [txt s] is the text [s]. [d] is the document on which the element is

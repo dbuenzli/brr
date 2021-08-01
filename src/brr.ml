@@ -998,8 +998,12 @@ module El = struct
   | true when Jstr.is_empty v -> ()
   | true -> ignore (Jv.call (Jv.get e "classList") "add" [| Jv.of_jstr v |])
 
-  let v ?(d = global_document) ?(at = []) name cs =
-    let e = Jv.call d "createElement" [| Jv.of_jstr name |] in
+  let v ?ns ?(d = global_document) ?(at = []) name cs =
+    let e =
+      match ns with
+      | None -> Jv.call d "createElement" [| Jv.of_jstr name |]
+      | Some ns -> Jv.call d "createElementNS" [| Jv.of_jstr ns; Jv.of_jstr name |]
+    in
     List.iter (set_at e) at;
     List.iter (append_child e) cs;
     e
