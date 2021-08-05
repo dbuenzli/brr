@@ -3139,10 +3139,12 @@ module Window : sig
   (** {1:ops Operations} *)
 
   val open' : ?name:Jstr.t -> ?features:Jstr.t -> t -> Jstr.t -> t option
-  (** [open w]
+  (** [open' ~name ~features url]
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open}
       loads the specified resource} into the new or existing browsing context
-      (window, <iframe> or tab) with the specified name. *)
+      (window, <iframe> or tab) with the specified name and
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features}
+      window features}. *)
 
   val close : t -> unit
   (** [close w]
