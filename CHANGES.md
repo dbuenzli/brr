@@ -1,5 +1,7 @@
 
 
+- Add `Brr.Window.open'`. 
+  Thanks to Boris Dob for the suggestion and the patch.
 - Fix `Jstr.concat` when `sep` is unspecified (#14).
   Thanks to Sébastien Dailly for the report.
 - Rename `Brr_webcrypto.crypto_algo.rsassa_pks1_v1_5` to `rsassa_pkcs1_v1_5`. 

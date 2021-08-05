@@ -1645,6 +1645,10 @@ module Window = struct
 
   (* Operations *)
 
+  let open' ?(features = Jstr.empty) ?(name = Jstr.empty) w u =
+    Jv.to_option of_jv @@
+      Jv.call w "open" [|Jv.of_jstr u; Jv.of_jstr name; Jv.of_jstr features|]
+
   let close w = ignore (Jv.call w "close" [||])
   let print w = ignore (Jv.call w "print" [||])
   let reload w = ignore (Jv.call (Jv.get w "location") "reload" [||])

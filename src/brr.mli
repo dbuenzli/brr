@@ -3138,6 +3138,15 @@ module Window : sig
 
   (** {1:ops Operations} *)
 
+  val open' : ?features:Jstr.t -> ?name:Jstr.t -> t -> Jstr.t -> t option
+  (** [open' w url ~name ~features]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open}
+      loads the specified resource} [url] into a new or existing browsing
+      context with the specified [name] and
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features}
+      window features}. [None] is returned if the window could not be
+      opened.*)
+
   val close : t -> unit
   (** [close w]
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/close}
