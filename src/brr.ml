@@ -1646,7 +1646,8 @@ module Window = struct
   (* Operations *)
 
   let open' ?(name = Jstr.empty) ?(features = Jstr.empty) w u =
-    Jv.to_option Fun.id @@ Jv.call w "open" [|Uri.to_jv u; Jv.of_jstr name; Jv.of_jstr features|]
+    Jv.to_option Fun.id @@
+      Jv.call w "open" [|Jv.of_jstr u; Jv.of_jstr name; Jv.of_jstr features|]
 
   let close w = ignore (Jv.call w "close" [||])
   let print w = ignore (Jv.call w "print" [||])
