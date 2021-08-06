@@ -517,7 +517,7 @@ module C2d = struct
     include (Jv.Id : Jv.CONV with type t := t)
 
     let image_data = Jv.get Jv.global "ImageData"
-    let create ?data ~w ~h =
+    let create ?data ~w ~h () =
       let args = match data with
       | None -> Jv.[|of_int w; of_int h|]
       | Some data -> Jv.[|Tarray.to_jv data; of_int w; of_int h|]

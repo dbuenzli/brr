@@ -151,10 +151,10 @@ module Audio = struct
     let set_channel_interpretation n i =
       Jv.Jstr.set n "channelInterpretation" i
 
-    let connect_node n ?(output = 0) ?(input = 0) ~dst =
+    let connect_node ?(output = 0) ?(input = 0) n ~dst =
       ignore @@ Jv.call n "connect" Jv.[| dst; of_int output; of_int input |]
 
-    let connect_param n ?(output = 0) ~dst =
+    let connect_param ?(output = 0) n ~dst =
       ignore @@ Jv.call n "connect" Jv.[| dst; of_int output |]
 
     let disconnect n = ignore @@ Jv.call n "disconnect" [||]

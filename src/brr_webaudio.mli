@@ -340,12 +340,12 @@ module Audio : sig
     (** [set_channel_interpretation n i] sets the {!channel_interpretation}
         of [n] to [i]. *)
 
-    val connect_node : t -> ?output:int -> ?input:int -> dst:t -> unit
+    val connect_node : ?output:int -> ?input:int -> t -> dst:t -> unit
     (** [connect_node n ~output ~input ~dst]
         {{:https://developer.mozilla.org/en-US/docs/Web/API/AudioNode/connect}
         connects} [n] to [dst]. *)
 
-    val connect_param : t -> ?output:int -> dst:Param.t -> unit
+    val connect_param : ?output:int -> t -> dst:Param.t -> unit
     (** [connect_param n ~output ~dst]
         {{:https://developer.mozilla.org/en-US/docs/Web/API/AudioNode/connect}
         connects} [n] to [dst]. *)

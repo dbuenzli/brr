@@ -17,6 +17,13 @@
 - Add `Brr.Uri.Params.is_empty`.
 - Add `Brr_io.Form.Data.{is_empty,has_file_entry,of_uri_params,to_uri_params}`.
 
+The following functions had their interface tweaked so as not to trigger
+the 4.12 definition of the warning `unerasable-optional-argument`. 
+
+* `Brr_canvas.Image_data.create`.
+* `Brr_webaudio.Node.connect_node`
+* `Brr_webaudio.Node.connect_param`
+
 
 v0.0.1 2020-10-14 Zagreb
 ------------------------

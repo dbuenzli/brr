@@ -772,8 +772,8 @@ module C2d : sig
         {{:https://developer.mozilla.org/en-US/docs/Web/API/ImageData}
         ImageData} objects. *)
 
-    val create : ?data:Tarray.uint8_clamped -> w:int -> h:int -> t
-    (** [create ~data ~w ~h] is the image data [data] for an image of
+    val create : ?data:Tarray.uint8_clamped -> w:int -> h:int -> unit -> t
+    (** [create ~data ~w ~h ()] is the image data [data] for an image of
         width [w] and height [h]. If [data] is unspecified it is created
         as a transparent black rectangle. Raises if [data] is specified
         and its length is not [4 * w * h]. *)
