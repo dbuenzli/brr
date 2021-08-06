@@ -671,7 +671,7 @@ module Ev : sig
     (** A type for events that do not expose further data. *)
 
     type 'a t = 'a type'
-    (** See {!type'}. *)
+    (** See {!type-type'}. *)
 
     external create : Jstr.t -> 'a type' = "%identity"
     (** [create n] is a new event type named [n]. Constrain the result
@@ -813,7 +813,7 @@ module Ev : sig
 
   val next : ?capture:bool -> 'a type' -> target -> 'a t Fut.t
   (** [next type' t] is a future that determines the next event of
-      type [type'] on target [t]. For [capture] see {!listen_opts}. *)
+      type [type'] on target [t]. For [capture] see {!val-listen_opts}. *)
 
   (** {1:objs Event subobjects} *)
 
@@ -1029,7 +1029,7 @@ module Ev : sig
         e.g. if characters are being deleted. *)
 
     val data_transfer : t -> Data_transfer.t option
-    (** [data_transfer i] has {!data} in a richer form. *)
+    (** [data_transfer i] has {!val-data} in a richer form. *)
 
     val input_type : t -> Jstr.t
     (** [input_type i] is a high-level description the input
@@ -2748,7 +2748,7 @@ module Document : sig
 
       {b Warning.} Technically this could be [null] if your script
       loads too early. It's a bit inconvenient to have it as an option
-      though so we raise a {{!Jv.Error}JavaScript error} if that
+      though so we raise a {{!Jv.exception-Error}JavaScript error} if that
       happens; see {{!page-web_page_howto}here} on the way to load your
       script so that it does not. *)
 
@@ -2829,7 +2829,7 @@ end
 
     This mecanism provides a way to abort futures with
     a {!Jv.Error.t} named [AbortError] ([`Abort_error] in
-    {!Jv.Error.enum}). *)
+    {!Jv.Error.type-enum}). *)
 module Abort : sig
 
   (** Abort signals. *)
@@ -2954,7 +2954,7 @@ let () = Console.(log [str "This is:\n%o\n the navigator"; G.navigator])
   val log_result :
     ?ok:'a msgr -> ?error:'b msgr -> ('a, 'b) result -> ('a, 'b) result
 
-  (** [log_result ~ok ~error r] is [r] but logs [r] using {!log} and
+  (** [log_result ~ok ~error r] is [r] but logs [r] using {!val-log} and
       [ok] to format [Ok v] and {!error} and [error] for [Error
       e]. [ok] defaults to [[v]] and [error] to [[str e]]. *)
 
@@ -3228,7 +3228,7 @@ module Window : sig
     (** {1:making Making history}
 
         {b Warning.} This may become typed in the future. Note that
-        the specifiation mandates {!state} values to be serializable. *)
+        the specifiation mandates {!type-state} values to be serializable. *)
 
     type state = Jv.t
     (** The type for history state. *)

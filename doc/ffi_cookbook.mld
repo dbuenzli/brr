@@ -304,8 +304,8 @@ fun n -> Jv.to_jstr_list @@ Jv.get (Navigator.to_jv n) "languages"
 {2:exns Deal with exceptions}
 
 JavaScript exceptions/errors are thrown in your face as the OCaml
-{!Jv.Error} exception. To handle it simply pattern match on it like you do
-with any other OCaml exception:
+{!Jv.exception-Error} exception. To handle it simply pattern match on
+it like you do with any other OCaml exception:
 
 {[
 let atob : Jstr.t -> (Jstr.t, Jv.Error.t) result =

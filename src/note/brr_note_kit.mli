@@ -576,11 +576,11 @@ module Group : sig
       classes:
       {ul
       {- [ui-group] always.}
-      {- [ui-dir-{h,v}] according to {!dir}.}
+      {- [ui-dir-{h,v}] according to {!val-dir}.}
       {- [ui-dir-align-{start,end,center,justify,distribute,stretch}] according
-         to {!dir_align}}
+         to {!val-dir_align}}
       {- [ui-xdir-align-{start,end,center,justify,distribute,stretch}] according
-         to {!xdir_align}}
+         to {!val-xdir_align}}
       {- [ui-disabled] whenever {!enabled} is [false].}} *)
 end
 

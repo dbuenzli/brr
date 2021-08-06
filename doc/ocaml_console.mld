@@ -122,7 +122,7 @@ following object members and types (in OCaml record notation) :
   use : Jstr.t -> Brr.Json.t; }
 ]}
 
-[init], [eval] and [use] should raise {!Jv.Error} in case of problem
+[init], [eval] and [use] should raise {!Jv.exception-Error} in case of problem
 (the right interface would be to return a promise but we cannot
 because of WebExtension API constraints). For now [eval] should
 always return a {!Jstr.t}.

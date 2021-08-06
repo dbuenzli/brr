@@ -29,7 +29,7 @@ type 'a t
 val create : unit -> 'a t * ('a -> unit)
 (** [create ()] is [(f, set] with [f] the future value and [set] the
     function to [set] it. The latter can be called only once, a
-    {!Jv.Error} is thrown otherwise. *)
+    {!Jv.exception-Error} is thrown otherwise. *)
 
 val await : 'a t -> ('a -> unit) -> unit
 (** [await f k] waits for [f] to determine [v] and continues with [k

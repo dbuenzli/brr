@@ -75,7 +75,7 @@ val pad_end : ?pad:t -> int -> t -> t
     before. *)
 
 val repeat : int -> t -> t
-(** [repeat n s] is [s] repeated [n] times. Raises {!Jv.Error} if [n]
+(** [repeat n s] is [s] repeated [n] times. Raises {!Jv.exception-Error} if [n]
     is negative. *)
 
 (** {1:finding Finding} *)

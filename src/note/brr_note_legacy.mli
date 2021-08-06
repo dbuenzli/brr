@@ -38,9 +38,9 @@ module Store : sig
   (** [key ~ns ()] is a new storage key in namespace [ns]. If [ns]
       is unspecified, the key lives in a global namespace.
 
-      {b Warning.} Reordering invocations of {!key} in the same
+      {b Warning.} Reordering invocations of {!val-key} in the same
       namespace will most of the time corrupt existing storage. This
-      means that all {!key} calls should always be performed at
+      means that all {!val-key} calls should always be performed at
       initialization time. {!Store.force_version} can be used to
       easily version your store and aleviate this problem. *)
 

@@ -36,7 +36,7 @@ module Consoler : sig
   val log_value : ?l:Console.log -> ?v:'a Console.msgr -> string -> 'a -> 'a
   (** [log_value ~l ~v id x] is [x] but logs [x] with [l] (defaults to
       {!Brr.Console.debug}) formatted by [v] (defaults
-      {!Brr.Console.msg}) and prepended by [id]. *)
+      {!Brr.Console.val-msg}) and prepended by [id]. *)
 
   (** Logging events. *)
   module E : sig
@@ -124,8 +124,8 @@ end
 
 (** Reactive DOM elements.
 
-    {b Warning.} Reactive DOM element mutators ({!rset_at},
-    {!rset_children}, etc.) and definers ({!def_at}, {!def_children},
+    {b Warning.} Reactive DOM element mutators ({!set_at},
+    {!set_children}, etc.) and definers ({!def_at}, {!def_children},
     etc.) use {{!Note.Logr}[Note] loggers} to perform their action.
     To prevent memory leaks, these loggers, and thus their action,
     automatically get destroyed whenever the element is removed from

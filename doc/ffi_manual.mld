@@ -361,9 +361,9 @@ The {!module:Jv.Error} module has a dedicated type and functions to
 handle them. Use the {!Jv.of_error} and {!Jv.to_error} functions to
 convert them with {!Jv.t} objects.
 
-JavaScript exceptions are thrown in your face as the OCaml {!Jv.Error}
-which holds a {!Jv.Error.t} value. So handling JavaScript exceptions
-is just a matter of catching that exception:
+JavaScript exceptions are thrown in your face as the OCaml
+{!Jv.exception-Error} which holds a {!Jv.Error.t} value. So handling
+JavaScript exceptions is just a matter of catching that exception:
 
 {[
 let result_of_raising f v = match f v with

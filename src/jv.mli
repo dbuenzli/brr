@@ -375,7 +375,7 @@ module Error : sig
   (** [name e] is the exception name as a string. *)
 
   val enum : t -> enum
-  (** [enum e] is [name e] parsed into the {!enum} type. *)
+  (** [enum e] is [name e] parsed into the {!type-enum} type. *)
 
   val message : t -> Jstr.t
   (** [msg exn] is the exception message as a string. *)
