@@ -727,7 +727,7 @@ module Blob = struct
   let of_jstr ?(init = Jv.undefined) s = Jv.new' blob [| Jv.of_jstr s; init |]
   let of_jarray ?(init = Jv.undefined) a = Jv.new' blob [| a; init |]
   let of_array_buffer ?(init = Jv.undefined) b =
-    Jv.new' blob [| Tarray.Buffer.to_jv b; init |]
+    Jv.new' blob [| Jv.of_jv_array [| Tarray.Buffer.to_jv b |]; init |]
 
   let byte_length b = Jv.Int.get b "size"
   let type' b = Jv.Jstr.get b "type"

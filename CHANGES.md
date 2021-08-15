@@ -1,5 +1,5 @@
-
-
+- Fix `Blob.of_array_buffer`, didn't work at all. Thanks to
+  Armaël Guéneau for the report and the fix (#23).
 - Add `Brr.Window.open'`. 
   Thanks to Boris Dob for the suggestion and the patch.
 - Fix `Jstr.concat` when `sep` is unspecified (#14).
