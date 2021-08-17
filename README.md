@@ -37,7 +37,7 @@ The documentation can be consulted [online][doc] or via `odig doc brr`.
 
 ## Sample programs
 
-Not much for now. A few basic programs are in the [test suite][test].
+Not much for now. A few basic programs are in the [test suite](test).
 
 An implementation of the [TodoMVC][todomvc] application with `brr.note` is 
 in [todomvc.ml](test/todomvc.ml).
