@@ -218,7 +218,7 @@ module Fetch = struct
     end
     module Credentials = struct
       type t = Jstr.t
-      let include' = Jstr.v "include'"
+      let include' = Jstr.v "include"
       let omit = Jstr.v "omit"
       let same_origin = Jstr.v "same-origin"
     end
