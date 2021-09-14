@@ -3243,12 +3243,18 @@ module Window : sig
     (** [push_state h ~state ~title ~uri h]
         {{:https://developer.mozilla.org/en-US/docs/Web/API/History/pushState}
         pushes} state [state] with title [title] and URI [uri] (if any).
-        Any of these can be omitted. *)
+        Any of these can be omitted.
+
+        {b Warning.} The [title] argument seems to be ignored by
+        browsers. Use {!Document.set_title} to change the title. *)
 
     val replace_state : ?state:state -> ?title:Jstr.t -> ?uri:Uri.t -> t -> unit
     (** [replace_state h ~state ~title ~uri]
         {{:https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState}replaces} state [state] with title [title] and URI [uri] (if any).
-        Any of these can be omitted. *)
+        Any of these can be omitted.
+
+        {b Warning.} The [title] argument seems to be ignored by
+        browsers. Use {!Document.set_title} to change the title. *)
 
     (** {1:events Events} *)
 
