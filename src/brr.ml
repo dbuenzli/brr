@@ -657,6 +657,32 @@ module Tarray = struct
     match Jv.call dec "decode" [| a |] with
     | exception Jv.Error e -> Error e | s -> Ok (Jv.to_jstr s)
 
+  let of_binary_jstr s =
+    let code s i =
+      let c = Jv.to_int @@ Jv.call (Jv.of_jstr s) "charCodeAt" [|Jv.of_int i|]in
+      if c <= 255 then c else
+      Jv.throw Jstr.(of_int i + v ": char code " + of_int c + v "exceeds 255")
+    in
+    try
+      let b = Buffer.create (Jstr.length s) in
+      let d = Data_view.of_buffer b in
+      for i = 0 to Jstr.length s - 1 do Data_view.set_int8 d i (code s i) done;
+      Ok (of_buffer Int8 b)
+    with
+    | Jv.Error e -> Error e
+
+  let to_binary_jstr a =
+    let chr b =
+      Jv.to_jstr @@
+      Jv.call (Jv.get Jv.global "String") "fromCharCode" [| Jv.of_int b |]
+    in
+    let d = Data_view.of_buffer (buffer a) in
+    let s = ref Jstr.empty in
+    for i = 0 to Data_view.byte_length d - 1 do
+      let b = Data_view.get_uint8 d i in
+      s := Jstr.(!s + chr b);
+    done;
+    !s
 
   (* Bigarray *)
 
@@ -776,6 +802,16 @@ module File = struct
 end
 
 module Base64 = struct
+
+  type data = Jstr.t
+
+  let data_utf_8_of_jstr s = Tarray.to_binary_jstr (Tarray.of_jstr s)
+  let data_utf_8_to_jstr d = match Tarray.of_binary_jstr d with
+  | Error _ as e -> e | Ok t -> Tarray.to_jstr t
+
+  let data_of_binary_jstr = Fun.id
+  let data_to_binary_jstr = Fun.id
+
   let encode bs =
     match Jv.apply (Jv.get Jv.global "btoa") Jv.[| of_jstr bs |] with
     | exception Jv.Error e -> Error e

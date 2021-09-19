@@ -113,6 +113,7 @@ let test_leak =
   let requires = [note; brr; brr_note] in
   test "test_leak" ~requires ~doc:"Tests reactive DOM gc strategy"
 
+let test_base64 = test_module "Brr" "Base64" [brr]
 let test_c2d = test_module "Brr_canvas" "C2d" [brr]
 let test_clipboard = test_module "Brr_io" "Clipboard" [brr]
 let test_console = test_module "Brr" "Console" [brr]

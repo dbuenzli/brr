@@ -287,6 +287,17 @@ module Tarray : sig
   (** [to_jstr a] is the UTF-8 encoded data [a] as a string. Errors
       if [a] holds invalid UTF-8. *)
 
+  val of_binary_jstr : Jstr.t -> (uint8, Jv.Error.t) result
+  (** [of_binary_jstr s] is an unsigned byte array with the bytes of the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary}
+      JavaScript binary string} [s]. Errors if a code unit of [s] is greater
+      than [255]. *)
+
+  val to_binary_jstr : uint8 -> Jstr.t
+  (** [to_binary_jstr a] is a
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary}
+      JavaScript binary string} with the unsigned bytes of [a]. *)
+
   val to_int_jstr : ?sep:Jstr.t -> ('a, 'b) t -> Jstr.t
   (** [to_int_jstr ~sep a] is a string with the elements of [a] printed and
       separated by [sep] (defaults to {!Jstr.sp}). *)
@@ -474,18 +485,58 @@ module File : sig
   (**/**)
 end
 
-(** Base64 codec.
+(** [base64] codec.
 
     As performed by {{:https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/btoa}[btoa]} and
-{{:https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/atob}[atob]} functions. *)
+{{:https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/atob}[atob]} functions.
+
+    {b Warning.} These functions are slightly broken API-wise. They
+    are easy to use incorrectly and involve a lot of data copies to
+    use them correctly. Use only for quick hacks. The detour via the
+    {!Base64.type-data} type is provided to hopefully prevent people
+    from shooting themselves in the foot. *)
 module Base64 : sig
 
-  val encode : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [encode s] encodes the {{:https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary}binary string} [s] to Base64.
-      Errors if [s] is not a binary string. *)
+  (** {1:data Binary data} *)
 
-  val decode : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [decode s] decodes the Base64 encoded string [s] to
+  type data
+  (** The type for representing binary data to codec. *)
+
+  val data_utf_8_of_jstr : Jstr.t -> data
+  (** [data_utf_8_of_jstr s] is the UTF-16 encoded JavaScript string
+      [s] as UTF-8 binary data. This is to be used with {!encode}
+      which results in a [base64] encoding of the UTF-8 representation
+      of [s]. *)
+
+  val data_utf_8_to_jstr : data -> (Jstr.t, Jv.Error.t) result
+  (** [data_utf_8_to_jstr d] decodes the UTF-8 binary data [d] to an UTF-16
+      encoded JavaScript string. *)
+
+  val data_of_binary_jstr : Jstr.t -> data
+  (** [data_of_binary_jstr d] is the binary data represented
+      by the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary}
+      JavaScript binary string} [d]. Note that this does not check that
+      [d] is a binary string, {!encode} will error if that's not the case.
+      Use {!Tarray.to_binary_jstr} to convert typed arrays to binary
+      strings. *)
+
+  val data_to_binary_jstr : data -> Jstr.t
+  (** [data_to_jstr d] is a
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary}
+      JavaScript binary string} from [d]. Use {!Tarray.of_binary_jstr} to
+      convert binary strings to typed arrays. *)
+
+  (** {1:codec Codec} *)
+
+  val encode : data -> (Jstr.t, Jv.Error.t) result
+  (** [encode d] encodes the binary data [d] to [base64]. This errors if
+      [d] was constructed with {!data_of_binary_jstr} from an invalid
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary}
+      JavaScript binary string}. *)
+
+  val decode : Jstr.t -> (data, Jv.Error.t) result
+  (** [decode s] decodes the [base64] encoded string [s] to
       a {{:https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary}
       binary string}. Errors if [s] is not only made of US-ASCII characters or
       is not well formed Base64. *)

@@ -1,4 +1,8 @@
 
+
+- Change the `Brr.Base64` module (`atob`, `bota`) to make it more
+  useful and less error prone. Thanks to Armaël Guéneau for shooting
+  himself in the foot (#18).
 - Fix wrong value of `Request.Credentials.include`.
 - Fix `Blob.of_array_buffer`, didn't work at all. Thanks to
   Armaël Guéneau for the report and the fix (#23).
