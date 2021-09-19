@@ -1312,11 +1312,11 @@ module Media : sig
     val muted : t -> bool
     (** [muted t] is [true] if [t] is
         {{:https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/muted}muted}. Use {!set_enabled} to manually mute and unmute a track. Use events
-        {!mute} and {!unmute} to monitor mute status. *)
+        {!Ev.mute} and {!Ev.unmute} to monitor mute status. *)
 
     val ready_state : t -> State.t
     (** [ready_state t] is the
-        {{:https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/readyState}status} of the track. Use event {!ended} to monitor ready state. *)
+        {{:https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/readyState}status} of the track. Use event {!Ev.ended} to monitor ready state. *)
 
     val enabled : t -> bool
     (** [enabled t] is [true] if the track is {{:https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/enabled}allowed} to render the source
@@ -1680,7 +1680,7 @@ module Media : sig
     (** [enumerate m]
     {{:https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices}determines}
     a list of connected media devices. Monitor changes by listening
-    {!devicechange} on [m]. *)
+    {!Ev.devicechange} on [m]. *)
 
     val get_supported_constraints : t -> Supported_constraints.t
     (** [get_supported_constraints m]
@@ -1728,7 +1728,8 @@ module Media : sig
   (** The HTML {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement}media element interface}.
 
       {b Warning.} This binding is incomplete, the modules
-      {!Audio_track}, {!Video_track}, {!Text_track} are mostly empty. *)
+      {!El.Audio_track}, {!El.Video_track}, {!El.Text_track} are mostly
+      empty. *)
   module El : sig
 
     (** {1:prelim Preliminaries} *)
@@ -2002,7 +2003,7 @@ module Media : sig
     (** [current_time m] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/currentTime}current time} of [m]. *)
 
     val set_current_time_s : t -> float -> unit
-    (** [set_current_time_s m t] sets the {!current_time} of [m] to [t]. *)
+    (** [set_current_time_s m t] sets the {!current_time_s} of [m] to [t]. *)
 
     val fast_seek_s : t -> float -> unit
     (** [fast_seek_s m t]
@@ -2211,7 +2212,7 @@ module Message : sig
 
     val post : t -> 'a -> unit
     (** [post b v]
-        {{:https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel/postMessage}sends} [v] to all listeners of {!Message.message}
+        {{:https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel/postMessage}sends} [v] to all listeners of {!Brr_io.Message.Ev.message}
         on [b]. *)
 
     (**/**)
@@ -2555,7 +2556,7 @@ module Storage : sig
     (** {1:events Storage event} *)
 
     val storage : t Ev.type'
-    (** [storage] is the type for [storage] event fired on {!Window}s
+    (** [storage] is the type for [storage] event fired on {!Brr.Window}s
         on storage changes. *)
   end
 

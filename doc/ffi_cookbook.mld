@@ -328,7 +328,7 @@ When a function or method throws exceptions distinguish between:
 
 In the first case simply bind the function and mention in the
 documentation that it may raise. In the second case catch the
-JavaScript exception and turn it into a {!Result.t} type, see the
+JavaScript exception and turn it into a {!Stdlib.result} type, see the
 example above.
 
 See also {!promises}.
@@ -336,7 +336,7 @@ See also {!promises}.
 {2:promises Deal with promises}
 
 Brr represents JavaScript promises as {!Fut.result} values which are
-{!Fut.t} values that determine to a standard OCaml {!result}
+{!Fut.t} values that determine to a standard OCaml {!Stdlib.result}
 type using the [Error] case for rejections.
 
 In JavaScript APIs most promises reject by returning a JavaScript

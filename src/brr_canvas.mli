@@ -379,8 +379,8 @@ module C2d : sig
       can be {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasImageSource}many things}. *)
 
   val image_src_of_el : El.t -> image_src
-  (** [image_src_of_el e] use this with an {!El.img}, {!El.video},
-      {!El.canvas} element. No checks are performed. *)
+  (** [image_src_of_el e] use this with an {!Brr.El.img}, {!Brr.El.video},
+      {!Brr.El.canvas} element. No checks are performed. *)
 
   val image_src_of_jv : Jv.t -> image_src
   (** [image_src_of_jv jv] is an image source from the given JavaScript
@@ -687,7 +687,7 @@ module C2d : sig
 
   val draw_focus_if_needed : t -> Path.t -> El.t -> unit
   (** [draw_focus_if_needed c p e] {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawFocusIfNeeded}draws} a focus ring
-      around [p] in [c] if [e] {{!El.has_focus}has focus}. *)
+      around [p] in [c] if [e] {{!Brr.El.has_focus}has focus}. *)
 
   val scroll_path_into_view : t -> Path.t -> unit
   (** [scroll_path_into_view c p]
@@ -834,7 +834,8 @@ end
     [array_buffer]. If they clash with a function name we prime
     them. If a function is overloaded alternate versions live
     as seperate entry point with an additional suffix, e.g.
-    {!Brr.Gl.buffer_data_size} or {!Brr.Gl.read_pixels_to_pixel_pack}
+    {!Brr_canvas.Gl.buffer_data_size} or
+    {!Brr_canvas.Gl.read_pixels_to_pixel_pack}.
 
     {b Warning.} These bindings were semi-automatically generated.
     Some of the functions signatures may require tweaking; if you doubt

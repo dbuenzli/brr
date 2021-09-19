@@ -32,7 +32,7 @@ module Key : sig
       {b Note.} Physical keys are for using the keyboard as a {e
       controller}. Do not use them to derive text input, they are
       unrelated to the user's keyboard layout for text entry. Use
-      {{!Brr.Ev.input_events}input events} for text entry. *)
+      {{!Brr.Ev.Input}input events} for text entry. *)
 
   type code = int
   (** The type for physical key codes. *)
@@ -142,7 +142,7 @@ S.Bool.(holds evs (`Meta `Left) || holds evs (`Meta `Right))
 (** {1:semantics Semantic incoherences}
 
     {!holds} and {!any_holds} may be initially set to [false] even
-    though they should be [true] if {!for_target} is invoked when the
+    though they should be [true] if {!on_target} is invoked when the
     corresponding keys are depressed. *)
 
 (** {1:repeat Key repeat events}
@@ -247,7 +247,7 @@ module Mouse : sig
 
   (** Mouse cursors.
 
-      To be used with {!El.Style.cursor}. *)
+      To be used with {!Brr.El.Style.cursor}. *)
   module Cursor : sig
 
     (** {1:cursors Mouse cursors} *)
@@ -512,7 +512,7 @@ module Ui : sig
 (** Element groups.
 
     Groups allow to gather and layout GUI elements and summarize
-    their actions. See the {{!style}styling information}. *)
+    their actions. See the {{!Group.style}styling information}. *)
 module Group : sig
 
   (** {1:group Groups} *)
@@ -539,9 +539,9 @@ module Group : sig
       {- [xdir_align] is the alignement between elements in the direction
          perpendicular to the layout direction. Defaults to [`Start].}
       {- [action] can be used by the client to summarize the user interaction
-         performed by the underlying elements. Defaults to {!E.enver}}
+         performed by the underlying elements. Defaults to {!Note.E.never}}
       {- [enabled] visually indicates if the group can be
-         interacted with. Defaults to {!S.Bool.true'}}
+         interacted with. Defaults to {!Note.S.Bool.true'}}
       {- [class'] is added to the underlying element's classes.}} *)
 
   val dir : 'a t -> dir
@@ -602,7 +602,7 @@ module Label : sig
       {ul
       {- [label] the label's contents.}
       {- [enabled] indicates if the label should look as such. Defaults to
-         {!S.Bool.true'}}
+         {!Note.S.Bool.true'}}
       {- [tip] is a tooltip for the label.}
       {- [class'] is added to the element's classes.}} *)
 
@@ -623,7 +623,7 @@ end
 
 (** Buttons.
 
-    See the {{!style}styling information}. *)
+    See the {{!Button.style}styling information}. *)
 module Button : sig
 
   (** {1:buttons Buttons} *)
@@ -697,7 +697,7 @@ end
 (** String editors.
 
     String editors are for editing short strings. See the
-    {{!style}styling information}. *)
+    {{!Jstr_editor.style}styling information}. *)
 module Jstr_editor : sig
 
   (** {1:str String editors} *)
@@ -716,7 +716,7 @@ module Jstr_editor : sig
       {- [on] can be used to put the string editor on focus and in
          editing mode.}
       {- [enabled] indicates if the editor can be interacted with
-         defaults to {!S.Bool.true'}.}
+         defaults to {!Note.S.Bool.true'}.}
       {- [class'] is added to the underlying element's classes.}} *)
 
   val action : t -> Jstr.t event
@@ -750,7 +750,7 @@ module Value_selector : sig
   (** Menu selector
 
       The value is selected in a list of elements
-      via a drop down menu. See the {{!style}styling information}. *)
+      via a drop down menu. See the {{!Menu.style}styling information}. *)
   module Menu : sig
 
     (** {1:selector Selectors} *)
@@ -770,7 +770,7 @@ module Value_selector : sig
         {- [sel] is the value shown as selected it must be included in
          [choices]}
         {- [enabled] indicates if the selector can be
-         interacted with. Defaults to {!S.Bool.true'}}
+         interacted with. Defaults to {!Note.S.Bool.true'}}
         {- [class'] is added to the underlying element's classes.}} *)
 
     val action : 'a t -> 'a event
@@ -794,7 +794,7 @@ module Value_selector : sig
   (** Button selectors.
 
       The value is selected by clicking in a list of buttons.
-      See the {{!style}styling information}. *)
+      See the {{!Button.style}styling information}. *)
   module Button : sig
 
     (** {1:selector Selector} *)
@@ -815,7 +815,7 @@ module Value_selector : sig
           included in [choices]}
           {- [button_class] is a class for choice buttons.}
           {- [enabled] indicates if the selector can be
-          interacted with. Defaults to {!S.Bool.true'}}
+          interacted with. Defaults to {!Note.S.Bool.true'}}
           {- [class'] is added to the underlying element's classes.}}
 
           The {!Group.action} of the result occurs whenever a new
@@ -829,14 +829,14 @@ module Value_selector : sig
         {- [ui-button-selector] always on the group}
         {- [ui-selected] on the button currently selected}
         {- [ui-disabled] on the group and buttons whenever
-         {!enabled} is [false].}} *)
+           [enabled] is [false].}} *)
   end
 end
 
 (** Floating point value selector.
 
     The value is selected by a slider.
-    See the {{!style}styling information}. *)
+    See the {{!Float_selector.style}styling information}. *)
 module Float_selector : sig
 
   (** {1:selector Selector} *)

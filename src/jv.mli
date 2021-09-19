@@ -108,8 +108,8 @@ external obj : (prop * t) array -> t = "caml_js_object"
 
 external new' : t -> t array -> t = "caml_js_new"
 (** [new_obj c args] creates an object with constructor function [c]
-    and arguments [args]. {!constructor} can be used to lookup a
-    constructor function by name in the {{!global}global object}. *)
+    and arguments [args]. {{!page-ffi_manual.create}Lookup} contructor
+    functions in the {!Jv.global} object. *)
 
 (** {2:methods Methods} *)
 
@@ -331,9 +331,9 @@ end
 (** {1:functions Functions} *)
 
 external apply : t -> t array -> t = "caml_js_fun_call"
-(** [apply f args] calls function [f] with arguments [args]. {!func}
-    can be used to lookup a function by name in the {{!global}global
-    object}. *)
+(** [apply f args] calls function [f] with arguments [args].
+'    {{!page-ffi_manual.funcs}Lookup} functions names
+    in the {!Jv.global} object. *)
 
 (** {1:exns Errors and exceptions} *)
 
@@ -500,7 +500,7 @@ end
 
     The functions above only work with US-ASCII OCaml string literals.
     If you hit general Unicode identifiers create JavaScript strings
-    representing them with {!Jstr.v} and use the following functions. *)
+    representing them with [Jstr.v] and use the following functions. *)
 
 type prop' = Jstr.t
 (** The type for full Unicode JavaScript object property names. *)

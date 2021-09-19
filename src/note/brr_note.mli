@@ -83,7 +83,7 @@ module Evr : sig
   val on_targets :
     ?capture:bool -> ?propagate:bool -> ?default:bool -> 'b Ev.type' ->
     (Ev.target -> 'b Ev.t -> 'c) -> Ev.target list -> 'c event
-  (** {!on_targets} is like {!for_target} except the event occurs
+  (** {!on_targets} is like {!on_target} except the event occurs
       for the event kind on the given list of targets. *)
 
   val on_el :
@@ -106,7 +106,7 @@ module Evr : sig
 
   (** {1:low Low level functions}
 
-      {b XXX.} Maybe move that to {!Ev} *)
+      {b XXX.} Maybe move that to {!Brr.Ev} *)
 
   val instruct : ?propagate:bool -> ?default:bool -> 'a Ev.t -> unit
   (** [instruct ?propagate ?default e] defines the propagation and
@@ -124,12 +124,12 @@ end
 
 (** Reactive DOM elements.
 
-    {b Warning.} Reactive DOM element mutators ({!set_at},
-    {!set_children}, etc.) and definers ({!def_at}, {!def_children},
-    etc.) use {{!Note.Logr}[Note] loggers} to perform their action.
-    To prevent memory leaks, these loggers, and thus their action,
-    automatically get destroyed whenever the element is removed from
-    the HTML DOM. *)
+    {b Warning.} Reactive DOM element mutators ({!Elr.set_at},
+    {!Elr.set_children}, etc.) and definers ({!Elr.def_at},
+    {!Elr.def_children}, etc.) use {{!Note.Logr}[Note] loggers} to
+    perform their action. To prevent memory leaks, these loggers, and
+    thus their action, automatically get destroyed whenever the
+    element is removed from the HTML DOM. *)
 module Elr : sig
 
   (** {1:children Children} *)

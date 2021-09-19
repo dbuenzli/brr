@@ -313,7 +313,7 @@ module Tarray : sig
 
   val type_to_bigarray_kind : ('a, 'b) type' -> ('a, 'b) Bigarray.kind
   (** [type_to_bigarray_kind t] is [t] as a bigarray kind. [Uint32] is
-      mapped on {!Stdlib.Bigarray.int32}. *)
+      mapped on {!Bigarray.int32}. *)
 
   val type_of_bigarray_kind : ('a, 'b) Bigarray.kind -> ('a, 'b) type' option
   (** [type_of_bigarray_kind k] is [k] as a type array type or [None] if
@@ -437,7 +437,7 @@ end
 
 (** File objects and reads.
 
-    There are various ways to get {!t} values. On of them is to create
+    There are various ways to get {!File.t} values. On of them is to create
     an {!El.input} element of type [file] and use the
     {!El.Input.files} function. Another way is to use drag and
     drop events and get them via the {!Ev.Data_transfer} values. *)
@@ -1883,8 +1883,8 @@ end
     However most of DOM processing happens on elements. So
     we make it as if {!El.t} values were just elements and most of the
     functions of this module will fail on text nodes. Except on
-    {!val:children} where you may see them you'll likely never run into
-    problems. The {!is_txt} function can be used to check for
+    {!El.val-children} where you may see them you'll likely never run into
+    problems. The {!El.is_txt} function can be used to check for
     textiness. *)
 module El : sig
 
@@ -2080,7 +2080,7 @@ module El : sig
     val background_color : prop
     val color : prop
     val cursor : prop
-    (** See {!Brr_note.Mouse.Cursor} for property values. *)
+    (** See {!Brr_note_kit.Mouse.Cursor} for property values. *)
 
     val display : prop
     val height : prop
@@ -2090,7 +2090,7 @@ module El : sig
 
   val computed_style : ?w:window -> Style.prop -> t -> Jstr.t
   (** [computed_style ?w p e] is the computed style property [p] of [e] in
-      window [w] (defaults to {!Window.global}). *)
+      window [w] (defaults to {!G.window}). *)
 
   val inline_style : Style.prop -> t -> Jstr.t
   (** [inline_style p e] is the inline style property [p] of [e]. *)
@@ -2931,7 +2931,7 @@ end
 (** Browser console.
 
     See {{:https://developer.mozilla.org/en-US/docs/Web/API/console}
-    [Console]}. Take a few minutes to {{!log}understand this}. *)
+    [Console]}. Take a few minutes to {{!Console.val-log}understand this}. *)
 module Console : sig
 
   type t
@@ -3144,7 +3144,7 @@ end
     are in other modules:
     {ul
     {- {!Brr_io.Storage.local} and {!Brr_io.Storage.session}}
-    {- {!Brr_webworkers.Message.window_post}}}
+    {- {!Brr_io.Message.window_post}}}
 *)
 module Window : sig
 

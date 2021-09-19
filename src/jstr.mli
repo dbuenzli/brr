@@ -131,7 +131,7 @@ val trim : t -> t
 (** {1:nf Normalization}
 
     For more information on normalization consult a short
-    {{!Uucp.equivalence}introduction}, the
+    {{!page-unicode.equivalence}introduction}, the
     {{:http://www.unicode.org/reports/tr15/}UAX #15 Unicode
     Normalization Forms} and
     {{:http://www.unicode.org/charts/normalization/} normalization
