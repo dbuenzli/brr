@@ -41,7 +41,7 @@ val null : t
 (** [null] is JavaScript {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null}[null]}. *)
 
 val undefined : t
-(** [null] is JavaScript {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined}[undefined]}. *)
+(** [undefined] is JavaScript {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined}[undefined]}. *)
 
 val is_null : t -> bool
 (** [is_null v] is [true] iff [v] is {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality}strictly equal} to {!null}.
