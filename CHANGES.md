@@ -1,5 +1,7 @@
 
-
+- Fix `Brr_canvas.Gl` for browsers that do not support GL2 contexts.
+  On these browsers this would lead to obscure failures in separate
+  compilation mode. Thanks to Duncan Holm for the report (#9).
 - Change the `Brr.Base64` module (`atob`, `bota`) to make it more
   useful and less error prone. Thanks to Armaël Guéneau for shooting
   himself in the foot (#18).
