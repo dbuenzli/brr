@@ -18,6 +18,8 @@
 - Tweak interfaces of `Brr_canvas.Image_data.create`, `Brr_webaudio.Node.connect_node`, 
   `Brr_webaudio.Node.connect_param` so as not to trigger the 4.12 definition of the 
   warning `unerasable-optional-argument`. 
+- Fix for uncaught JavaScript exceptions in the OCaml console (#21). The fix is brittle, 
+  the right fix is to solve (#2).
 - Fix `Brr_canvas.Gl` for browsers that do not support GL2 contexts.
   On these browsers this would lead to obscure failures in separate
   compilation mode. Thanks to Duncan Holm for the report (#9).

@@ -27,7 +27,8 @@ let top_init () =
   Js_of_ocaml.Sys_js.set_channel_flusher stdout stdouts_append;
   Js_of_ocaml.Sys_js.set_channel_flusher stderr stdouts_append;
   Js_of_ocaml_toplevel.JsooTop.initialize ();
-  (* FIXME we likely want to go differently about these things *)
+  (* FIXME we likely want to go differently about these things.
+     https://github.com/ocaml/ocaml/pull/10559 would be nice. *)
   let ppf = Format.formatter_of_buffer resp in
   ignore (Js_of_ocaml_toplevel.JsooTop.use ppf
             "#install_printer Brr_poke.pp_jstr;;");
@@ -35,6 +36,9 @@ let top_init () =
             "#install_printer Brr_poke.pp_jv_error;;");
   ignore (Js_of_ocaml_toplevel.JsooTop.use ppf
             "#install_printer Brr_poke.pp_jv;;");
+  (* We are fighting with Js_of_ocaml's [Callback.register_exception]. We
+     should really solve https://github.com/dbuenzli/brr/issues/2 *)
+  Jv.register_error_exception ();
   ()
 
 let top_eval phrase =
