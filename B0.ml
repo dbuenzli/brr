@@ -162,6 +162,35 @@ let jsoo_toplevels =
   let doc = "Units with toplevel (slow to build)" in
   B0_pack.v ~locked:false "tops" ~doc us
 
+let default =
+  let meta =
+    let open B0_meta in
+    empty
+    |> add authors ["The brr programmers"]
+    |> add maintainers ["Daniel Bünzli <daniel.buenzl i@erratique.ch>"]
+    |> add homepage "https://erratique.ch/software/brr"
+    |> add online_doc "https://erratique.ch/software/brr/doc/"
+    |> add licenses ["ISC"; "BSD-3-Clause"]
+    |> add repo "git+https://erratique.ch/repos/brr.git"
+    |> add issues "https://github.com/dbuenzli/brr/issues"
+    |> add description_tags
+      [ "reactive"; "declarative"; "frp"; "front-end"; "browser";
+        "org:erratique"]
+    |> add B0_opam.Meta.build
+      {|[["ocaml" "pkg/pkg.ml" "build" "--dev-pkg" "%{dev}%"]]|}
+    |> tag B0_opam.tag
+    |> add B0_opam.Meta.depends
+      [ "ocaml", {|>= "4.08.0"|};
+        "ocamlfind", {|build|};
+        "ocamlbuild", {|build|};
+        "js_of_ocaml-compiler", {|>= "3.7.1"|};
+        "js_of_ocaml-toplevel", {|>= "3.7.1"|};
+        "note", "";
+      ]
+  in
+  B0_pack.v "default" ~doc:"brr package" ~meta ~locked:true @@
+  B0_unit.list ()
+
 (* Cmdlets *)
 
 let update_console =
