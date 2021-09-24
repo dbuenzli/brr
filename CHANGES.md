@@ -1,4 +1,4 @@
-v0.0.2 2020-09-23 Zagreb
+v0.0.2 2021-09-23 Zagreb
 ------------------------
 
 - Change the `Brr.Base64` module (`atob`, `bota`) to make it more
