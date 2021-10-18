@@ -750,7 +750,11 @@ module Blob = struct
   type t = Jv.t
   include (Jv.Id : Jv.CONV with type t := t)
   let blob = Jv.get Jv.global "Blob"
-  let of_jstr ?(init = Jv.undefined) s = Jv.new' blob [| Jv.of_jstr s; init |]
+  let of_jstr ?(init = Jv.undefined) s =
+    let a = Jv.Jarray.create 1 in
+    Jv.Jarray.set a 0 (Jv.of_jstr s);
+    Jv.new' blob [| a; init |]
+
   let of_jarray ?(init = Jv.undefined) a = Jv.new' blob [| a; init |]
   let of_array_buffer ?(init = Jv.undefined) b =
     Jv.new' blob [| Jv.of_jv_array [| Tarray.Buffer.to_jv b |]; init |]

@@ -1,6 +1,8 @@
 
 
-- `Ev.target_{of,to}_jv` take adn return a `Jv.t` value instead of an `'a`. 
+- Fix `Blob.of_jstr`. It was not working. Thanks to Kiran Gopinathan for
+  the report (#31).
+- `Ev.target_{of,to}_jv` take and return a `Jv.t` value instead of an `'a`.
   Thanks to Joseph Price for the report (#28).
 
 v0.0.2 2021-09-23 Zagreb
