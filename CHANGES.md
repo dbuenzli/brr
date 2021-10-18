@@ -1,3 +1,8 @@
+
+
+- `Ev.target_{of,to}_jv` take adn return a `Jv.t` value instead of an `'a`. 
+  Thanks to Joseph Price for the report (#28).
+
 v0.0.2 2021-09-23 Zagreb
 ------------------------
 

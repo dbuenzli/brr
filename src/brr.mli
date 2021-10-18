@@ -1677,8 +1677,8 @@ module Ev : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/wheel_event}[wheel]} events. *)
 
   (**/**)
-  external target_to_jv : target -> 'a = "%identity"
-  external target_of_jv : 'a -> target = "%identity"
+  external target_to_jv : target -> Jv.t = "%identity"
+  external target_of_jv : Jv.t -> target = "%identity"
   external to_jv : 'a t -> Jv.t = "%identity"
   external of_jv : Jv.t -> 'a t = "%identity"
   (**/**)
