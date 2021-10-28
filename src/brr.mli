@@ -2078,12 +2078,17 @@ module El : sig
   module Style : sig
     type prop = Jstr.t
     val background_color : prop
+    val bottom : prop
     val color : prop
     val cursor : prop
     (** See {!Brr_note_kit.Mouse.Cursor} for property values. *)
 
     val display : prop
     val height : prop
+    val left : prop
+    val position : prop
+    val right : prop
+    val top : prop
     val visibility : prop
     val width : prop
   end

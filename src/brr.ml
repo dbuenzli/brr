@@ -1164,10 +1164,15 @@ module El = struct
   module Style = struct
     type prop = Jstr.t
     let background_color = Jstr.v "background-color"
+    let bottom = Jstr.v "bottom"
     let color = Jstr.v "color"
     let cursor = Jstr.v "cursor"
     let display = Jstr.v "display"
     let height = Jstr.v "height"
+    let left = Jstr.v "left"
+    let position = Jstr.v "position"
+    let right = Jstr.v "right"
+    let top = Jstr.v "top"
     let visibility = Jstr.v "visibility"
     let width = Jstr.v "width"
   end
