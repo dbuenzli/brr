@@ -2104,6 +2104,10 @@ module El : sig
   (** [set_inline_style ~important p v e] sets the inline style property [p] of
       [e] to [v] with priority [important] (defaults to [false]). *)
 
+  val remove_inline_style : Style.prop -> t -> unit
+  (** [remove_inline_style p e] removes the inlie style property [p]
+      of [e]. *)
+
   (** {1:layout Layout} *)
 
   (** The {e inner bound} of an element includes its content and

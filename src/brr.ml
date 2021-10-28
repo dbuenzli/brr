@@ -1195,6 +1195,11 @@ module El = struct
     (ignore @@
      Jv.call style "setProperty" Jv.[|of_jstr p; of_jstr v; of_jstr priority|])
 
+  let remove_inline_style p e =
+    let style = Jv.get e "style" in
+    if Jv.is_none style then () else
+    (ignore @@ Jv.call style "removeProperty" Jv.[|of_jstr p|])
+
   (* Layout *)
 
   let inner_x e = Jv.Float.get e "clientLeft"
