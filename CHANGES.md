@@ -1,7 +1,7 @@
 
 - Add `Brr.El.{previous,next}_sibling`.
 - Add `Brr.El.remove_inline_style`.
-- Add `Brr.El.Style.{top,left,right,bottom,position}`.
+- Add `Brr.El.Style.{top,left,right,bottom,position,z_index}`.
 - Fix `Blob.of_jstr`. It was not working. Thanks to Kiran Gopinathan for
   the report (#31).
 - `Ev.target_{of,to}_jv` take and return a `Jv.t` value instead of an `'a`.

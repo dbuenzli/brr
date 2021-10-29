@@ -2097,6 +2097,7 @@ module El : sig
     val top : prop
     val visibility : prop
     val width : prop
+    val z_index : prop
   end
 
   val computed_style : ?w:window -> Style.prop -> t -> Jstr.t
