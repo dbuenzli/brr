@@ -236,6 +236,7 @@ module Ev = struct
   module Pointer = struct
     type 'a event = 'a t
     type t = Jv.t
+    external as_mouse_event : t -> Mouse.t event = "%identity"
     let id p = Jv.Int.get p "pointerId"
     let width p = Jv.Float.get p "width"
     let height p = Jv.Float.get p "height"

@@ -1244,6 +1244,9 @@ module Ev : sig
         {{:https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent}
         [PointerEvent]} objects. *)
 
+    external as_mouse_event : t -> Mouse.t event = "%identity"
+    (** [as_mouse_event d] is [d] as a mouse event. *)
+
     val id : t -> int
     (** [id p] is the {{:https://w3c.github.io/pointerevents/#dom-pointerevent-pointerid}identifier} of the pointer causing the event
         ([id]s can get recycled but they are unique among active pointers). *)
