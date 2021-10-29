@@ -1104,6 +1104,8 @@ module El = struct
 
   let prepend_children e l = ignore @@ Jv.call e "prepend" (Array.of_list l)
   let append_children e l = ignore @@ Jv.call e "append" (Array.of_list l)
+  let previous_sibling e = Jv.find e "previousElementSibling"
+  let next_sibling e = Jv.find e "nextElementSibling"
   let insert_siblings loc e l = ignore @@ match loc with
   | `Before -> Jv.call e "before" (Array.of_list l)
   | `After ->  Jv.call e "after" (Array.of_list l)

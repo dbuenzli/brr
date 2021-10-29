@@ -1,5 +1,5 @@
 
-
+- Add `Brr.El.{previous,next}_sibling`.
 - Add `Brr.El.remove_inline_style`.
 - Add `Brr.El.Style.{top,left,right,bottom,position}`.
 - Fix `Blob.of_jstr`. It was not working. Thanks to Kiran Gopinathan for

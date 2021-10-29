@@ -1979,7 +1979,7 @@ module El : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll}elements selected} by the CSS selector [sel] that are descendent of [root]
       (defaults to {!Document.root}). *)
 
-  (** {1:tree Parent and children} *)
+  (** {1:tree Parent, children and siblings} *)
 
   val parent : t -> t option
   (** [parent e] is the
@@ -1999,6 +1999,12 @@ module El : sig
 
   val append_children : t -> t list -> unit
   (** [append_children e l] appends [l] to [e]'s children. *)
+
+  val previous_sibling : t -> t option
+  (** [previous_sibling e] is [e]'s previous sibling element (if any). *)
+
+  val next_sibling : t -> t option
+  (** [next_sibling e] is [e]'s next sibling element (if any). *)
 
   val insert_siblings : [ `Before | `After | `Replace ] -> t -> t list -> unit
   (** [insert_siblings loc e l] inserts [l] before, after or instead of
