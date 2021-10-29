@@ -1,3 +1,5 @@
+
+- Add `Brr.Ev.beforeunload`.
 - Add `Brr.Ev.Pointer.as_mouse_event`.
 - Add `Brr.El.{previous,next}_sibling`.
 - Add `Brr.El.remove_inline_style`.

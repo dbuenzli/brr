@@ -276,6 +276,7 @@ module Ev = struct
   let activate = Type.create (Jstr.v "activate")
   let auxclick = Type.create (Jstr.v "dblclick")
   let beforeinput = Type.create (Jstr.v "beforeinput")
+  let beforeunload = Type.create (Jstr.v "beforeunload")
   let blur = Type.create (Jstr.v "blur")
   let canplay = Type.void (Jstr.v "canplay")
   let canplaythrough = Type.void (Jstr.v "canplaythrough")

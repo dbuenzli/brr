@@ -1386,8 +1386,11 @@ module Ev : sig
    (** [beforeinput] is the
        {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/beforeinput_event}[beforeinput]} event. *)
 
+  val beforeunload : void
+ (** [beforeunload] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/Widow/beforunload_event}[beforeunload]} event. *)
+
   val blur : Focus.t type'
-  (** [blur] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event}blur} event. *)
+  (** [blur] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event}[blur]} event. *)
 
   val canplay : void
   (** [canplay] is the type for {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/canplay_event}[canplay]} events *)
