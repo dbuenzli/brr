@@ -1,6 +1,8 @@
 
 - Add `Brr.Ev.beforeunload`.
-- Add `Brr.Ev.Pointer.as_mouse_event`.
+- Add `Brr.Ev.Pointer.as_mouse`.
+- Tweak `Brr.Ev.{Drag,Wheel}.as_mouse_event` into 
+  `Brr.Ev.{Drag,Wheel}.as_mouse` to avoid coercion madness.
 - Add `Brr.El.{previous,next}_sibling`.
 - Add `Brr.El.remove_inline_style`.
 - Add `Brr.El.Style.{top,left,right,bottom,position,z_index}`.

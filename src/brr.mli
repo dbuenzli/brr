@@ -1230,8 +1230,8 @@ module Ev : sig
         {{:https://developer.mozilla.org/en-US/docs/Web/API/DragEvent}
         [DragEvent]} objects. *)
 
-    external as_mouse_event : t -> Mouse.t event = "%identity"
-    (** [as_mouse_event d] is [d] as a mouse event. *)
+    external as_mouse : t -> Mouse.t = "%identity"
+    (** [as_mouse d] is [d] as a mouse event. *)
 
     val data_transfer : t -> Data_transfer.t option
     (** [data_transfer d] is the data transfer of the drag event. *)
@@ -1244,8 +1244,8 @@ module Ev : sig
         {{:https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent}
         [PointerEvent]} objects. *)
 
-    external as_mouse_event : t -> Mouse.t event = "%identity"
-    (** [as_mouse_event d] is [d] as a mouse event. *)
+    external as_mouse : t -> Mouse.t = "%identity"
+    (** [as_mouse d] is [d] as a mouse event. *)
 
     val id : t -> int
     (** [id p] is the {{:https://w3c.github.io/pointerevents/#dom-pointerevent-pointerid}identifier} of the pointer causing the event
@@ -1335,8 +1335,8 @@ module Ev : sig
         {{:https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent}
         WheelEvent} objects. *)
 
-    external as_mouse_event : t -> Mouse.t event = "%identity"
-    (** [as_mouse_event w] is [w] as a mouse event. *)
+    external as_mouse : t -> Mouse.t = "%identity"
+    (** [as_mouse w] is [w] as a mouse event. *)
 
     val delta_x : t -> float
     (** [delta_x w] is the amount to be scrolled on the x-axis. *)

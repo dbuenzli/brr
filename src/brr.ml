@@ -230,13 +230,13 @@ module Ev = struct
   end
   module Drag = struct
     type t = Jv.t
-    external as_mouse_event : t -> Mouse.t event = "%identity"
+    external as_mouse : t -> Mouse.t = "%identity"
     let data_transfer d = Jv.find_map Fun.id d "dataTransfer"
   end
   module Pointer = struct
     type 'a event = 'a t
     type t = Jv.t
-    external as_mouse_event : t -> Mouse.t event = "%identity"
+    external as_mouse : t -> Mouse.t = "%identity"
     let id p = Jv.Int.get p "pointerId"
     let width p = Jv.Float.get p "width"
     let height p = Jv.Float.get p "height"
@@ -263,7 +263,7 @@ module Ev = struct
       let page = 0x02
     end
     type t = Jv.t
-    external as_mouse_event : t -> Mouse.t event = "%identity"
+    external as_mouse : t -> Mouse.t = "%identity"
     let delta_x w = Jv.Float.get w "deltaX"
     let delta_y w = Jv.Float.get w "deltaY"
     let delta_z w = Jv.Float.get w "deltaZ"
