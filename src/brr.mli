@@ -1111,11 +1111,15 @@ module Ev : sig
         KeyboardEvent} objects. *)
 
     val key : t -> Jstr.t
-    (** [key k] is the {{:https://www.w3.org/TR/uievents-key/#key-attribute-value}key attribute value} of [k]. *)
+    (** [key k] is the {{:https://www.w3.org/TR/uievents-key/#key-attribute-value}key attribute value} of [k]. {{:https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key}This value} is affected by the current
+        keyboard layout and modifier keys.
+    *)
 
     val code : t -> Jstr.t
     (** [code k] is a string that identifies the physical key of the
-        event. The value is not affected by the current keyboard
+        event.
+        {{:https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code}
+        This value} is affected by the current keyboard
         layout or modifier state. *)
 
     val location : t -> Location.t
