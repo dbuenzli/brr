@@ -400,10 +400,6 @@ val throw : ?name:Jstr.t -> Jstr.t -> 'a
 (** [throw ?name msg] throws a JavaScript exception with error object
     {!Jv.Error.v} [?name msg]. *)
 
-(**/**)
-val register_error_exception : unit -> unit
-(**/**)
-
 (** {1:iterators Iterator protocol} *)
 
 (** JavaScript iterator protocol. *)

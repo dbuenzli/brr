@@ -2,6 +2,7 @@ true : bin_annot, safe_string
 
 <_b0> : -traverse
 <src> : include
+<src/**>: package(js_of_ocaml-compiler.runtime)
 
 <src/note> : include
 <src/note/**> : package(note)
