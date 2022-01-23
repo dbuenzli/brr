@@ -1,4 +1,9 @@
 
+
+- Require `js_of_ocaml` 4.0.0. Allows `brr`, `js_of_ocaml`, 
+  and `gen_js_api` bindings to be used in the same program.
+  Thanks to Hugo Heuzard for making the ground work in 
+  `js_of_ocaml` and providing a patch. (#2, #33).
 - Add `Brr.Ev.beforeunload`.
 - Add `Brr.Ev.Pointer.as_mouse`.
 - Tweak `Brr.Ev.{Drag,Wheel}.as_mouse_event` into 

@@ -36,9 +36,6 @@ let top_init () =
             "#install_printer Brr_poke.pp_jv_error;;");
   ignore (Js_of_ocaml_toplevel.JsooTop.use ppf
             "#install_printer Brr_poke.pp_jv;;");
-  (* We are fighting with Js_of_ocaml's [Callback.register_exception]. We
-     should really solve https://github.com/dbuenzli/brr/issues/2 *)
-  Jv.register_error_exception ();
   ()
 
 let top_eval phrase =

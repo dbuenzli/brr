@@ -4,6 +4,9 @@ open B00_std
 (* OCaml library names *)
 
 let js_of_ocaml = B0_ocaml.libname "js_of_ocaml"
+let js_of_ocaml_compiler_runtime =
+  B0_ocaml.libname "js_of_ocaml-compiler.runtime"
+
 let js_of_ocaml_toplevel = B0_ocaml.libname "js_of_ocaml-toplevel"
 let note = B0_ocaml.libname "note"
 
@@ -18,7 +21,7 @@ let brr_poked = B0_ocaml.libname "brr.poked"
 
 let brr_lib =
   let srcs = Fpath.[ `Dir (v "src") ] in
-  let requires = [] in
+  let requires = [js_of_ocaml_compiler_runtime] in
   B0_ocaml.lib brr ~doc:"Brr JavaScript FFI and browser API" ~srcs ~requires
 
 let brr_note_lib =
@@ -183,8 +186,8 @@ let default =
       [ "ocaml", {|>= "4.08.0"|};
         "ocamlfind", {|build|};
         "ocamlbuild", {|build|};
-        "js_of_ocaml-compiler", {|>= "3.7.1"|};
-        "js_of_ocaml-toplevel", {|>= "3.7.1"|};
+        "js_of_ocaml-compiler", {|>= "4.0.0"|};
+        "js_of_ocaml-toplevel", {|>= "4.0.0"|};
         "note", "";
       ]
   in

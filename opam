@@ -12,8 +12,8 @@ tags: ["reactive" "declarative" "frp" "front-end" "browser" "org:erratique"]
 depends: ["ocaml" {>= "4.08.0"}
           "ocamlfind" {build}
           "ocamlbuild" {build}
-          "js_of_ocaml-compiler" {>= "3.7.1"}
-          "js_of_ocaml-toplevel" {>= "3.7.1"}
+          "js_of_ocaml-compiler" {>= "4.0.0"}
+          "js_of_ocaml-toplevel" {>= "4.0.0"}
           "note"]
 build: [["ocaml" "pkg/pkg.ml" "build" "--dev-pkg" "%{dev}%"]]
 description: """

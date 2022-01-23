@@ -172,13 +172,15 @@ module Error = struct
   | `Type_mismatch_error | `Url_mismatch_error | `Unknown_error
   | `Version_error | `Wrong_document_error | `Other ]
 
-  type t = jv
-  let v ?name msg =
+  type t = Jsoo_runtime.Error.t
+  let v ?name msg : t =
     let e = new' (get global "Error") [| of_jstr msg |] in
-    match name with None -> e | Some n -> set e "name" (of_jstr n); e
+    match name with
+    | None -> Obj.magic e
+    | Some n -> set e "name" (of_jstr n); Obj.magic e
 
-  let name e = to_jstr (get e "name")
-  let enum e = match to_string (get e "name") with
+  let name (e : t) = to_jstr (get (Obj.magic e) "name")
+  let enum e = match to_string (get (Obj.magic e) "name") with
   | "AbortError" -> `Abort_error
   | "ConstraintError" -> `Constraint_error
   | "DataCloneError" -> `Data_clone_error
@@ -212,8 +214,8 @@ module Error = struct
   | "WrongDocumentError" -> `Wrong_document_error
   | _ -> `Other
 
-  let message e = to_jstr (get e "message")
-  let stack e = to_jstr (get e "stack")
+  let message e = to_jstr (get (Obj.magic e) "message")
+  let stack e = to_jstr (get (Obj.magic e) "stack")
   let to_result e = Error e
 end
 
@@ -222,13 +224,9 @@ external to_error : t -> Error.t = "%identity"
 
 let throw ?name msg =
   let e = Error.v ?name msg in
-  (js_expr "(function (exn) { throw exn })" : jv -> 'a) e
+  (js_expr "(function (exn) { throw exn })" : Error.t -> 'a) e
 
-exception Error of Error.t
-let register_error_exception () =
-  Callback.register_exception "jsError" (Error (obj [||]))
-
-let () = register_error_exception ()
+exception Error = Jsoo_runtime.Error.Exn
 
 (* Iterable and iterator *)
 
