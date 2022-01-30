@@ -97,7 +97,7 @@ let setup_audio_dst cnv =
   let analyser, get_data = analyser c in
   let analyser = Audio.Node.Analyser.as_node analyser in
   let out = Audio.Context.Base.destination c in
-  Audio.Node.(connect_node analyser (Destination.as_node out));
+  Audio.Node.(connect_node analyser ~dst:(Destination.as_node out));
   draw_data cnv get_data;
   ctx_and_dst := Some (c, analyser)
 
@@ -117,7 +117,7 @@ let rec start_buzz cnv = match !ctx_and_dst with
     | None ->
         let b = buzz_node c in
         Audio.Node.Oscillator.start b;
-        Audio.Node.(connect_node (Oscillator.as_node b) dst);
+        Audio.Node.(connect_node (Oscillator.as_node b) ~dst);
         buzz := Some b
 
 let stop_buzz () = match !buzz with
@@ -139,13 +139,13 @@ let mic_node c =
   | Error _ as e -> Fut.return e
   | Ok stream ->
       let opts = Audio.Node.Media_stream_source.opts ~stream () in
-      Fut.ok (Audio.Node.Media_stream_source.create c opts)
+      Fut.ok (Audio.Node.Media_stream_source.create c ~opts)
 
 let rec start_mic cnv = match !ctx_and_dst with
 | None -> setup_audio_dst cnv; start_mic cnv
 | Some (c, dst) ->
     match !mic with
-    | Some m -> Audio.Node.(connect_node (Media_stream_source.as_node m) dst)
+    | Some m -> Audio.Node.(connect_node (Media_stream_source.as_node m) ~dst)
     | None -> (* racy *)
         Fut.await (mic_node c) @@ function
         | Error _ as e -> Console.log_if_error e ~use:()

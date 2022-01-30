@@ -95,14 +95,15 @@ module Form = struct
         let r = Jv.It.next it in
         if Jv.It.result_done r then false else
         let v = Jv.Jarray.get (Jv.It.get_result_value r) 1 in
-        if Jv.instanceof v (Jv.get Jv.global "File") then true else
+        if Jv.instanceof v ~cons:(Jv.get Jv.global "File") then true else
         loop it
       in
       loop (Jv.call d "entries" [||])
 
-    let entry_value v = match Jv.instanceof v (Jv.get Jv.global "File") with
-    | true -> `File (File.of_jv v)
-    | false -> `String (Jv.to_jstr v)
+    let entry_value v =
+      match Jv.instanceof v ~cons:(Jv.get Jv.global "File") with
+      | true -> `File (File.of_jv v)
+      | false -> `String (Jv.to_jstr v)
 
     let find d k = Jv.to_option entry_value @@ Jv.call d "get" [|Jv.of_jstr k|]
     let find_all d k =

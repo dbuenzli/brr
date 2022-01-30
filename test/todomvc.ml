@@ -256,7 +256,7 @@ fun todo ->
   let div = El.div ~at:div_at [done_editor; label; rem_but] in
   let li_at = At.(add_if done' (class' (Jstr.v "completed")) []) in
   let li = El.li ~at:li_at [div; ed] in
-  let () = Elr.set_class (Jstr.v "editing") editing li in
+  let () = Elr.set_class (Jstr.v "editing") ~on:editing li in
   E.select [edit; rem; set_done], li
 
 let todo_list :
@@ -303,7 +303,7 @@ let main ~add_todo ~rem_done ~todos ~filter =
   let toggle_set = todos |> S.map @@ fun ts ->
     Todos.(not (is_empty ts) && for_all Todo.done' ts)
   in
-  let toggle_all, toggle_el = toggle_all toggle_set in
+  let toggle_all, toggle_el = toggle_all ~set:toggle_set in
   let edit, items = todo_list todos ~filter in
   let at = At.[class' (Jstr.v "main")] in
   let sec = El.section ~at [toggle_el; items] in

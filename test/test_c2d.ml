@@ -21,12 +21,12 @@ let stripe_cnv_rect c ~x ~y ~w ~h =
       Tarray.set d (off + 2) 0x00
     done
   done;
-  C2d.put_image_data c idata x y
+  C2d.put_image_data c idata ~x ~y
 
 let draw_brr c ~x ~y =
   let size = truncate (96. *. Window.device_pixel_ratio G.window) in
   C2d.set_font c Jstr.(v "bold " + of_int size + v "px SourceSansPro");
-  C2d.fill_text c (Jstr.v " Brr!") x y
+  C2d.fill_text c (Jstr.v " Brr!") ~x ~y
 
 let draw_rect c ~x ~y ~w ~h =
   C2d.set_fill_style c (C2d.color (Jstr.v "#000"));

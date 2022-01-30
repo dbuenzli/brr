@@ -61,7 +61,7 @@ module History = struct
     let focus = Jstr.empty in
     { prev = List.rev (List.fold_left add [] prev) ; focus; next = [] }
 
-  let empty = v []
+  let empty = v ~prev:[]
   let push e es =
     if Jstr.is_empty e then es else match es with
     | e' :: _ when Jstr.equal e e' -> es
@@ -73,9 +73,9 @@ module History = struct
 
   let add h e =
     let e = Jstr.trim e in
-    if Jstr.is_empty e then h else v (push e (entries h))
+    if Jstr.is_empty e then h else v ~prev:(push e (entries h))
 
-  let restart h = v (entries h)
+  let restart h = v ~prev:(entries h)
   let prev h current = match h.prev with
   | [] -> None
   | p :: ps ->
@@ -94,7 +94,7 @@ module History = struct
   let sep sep = Jstr.(nl + sep + nl) (* FIXME windows ? *)
   let to_string ~sep:s h = Jstr.concat ~sep:(sep s) (entries h)
   let of_string ~sep:s hs =
-    v (List.map Jstr.trim (Jstr.cuts ~sep:(sep s) hs))
+    v ~prev:(List.map Jstr.trim (Jstr.cuts ~sep:(sep s) hs))
 end
 
 (* Code highlighting.
@@ -404,7 +404,7 @@ let create ?(store = Store.page (Storage.local G.window)) view =
   let output = El.ol [] in
   let spinner = Spinner.create () in
   let input = Text_input.create ~prompt:(prompt ()) () in
-  let r = { view; output; input; spinner; store; h = History.v [] } in
+  let r = { view; output; input; spinner; store; h = History.v ~prev:[] } in
   El.set_children view [output; Text_input.el input; Spinner.el spinner];
   El.set_class (Jstr.v "ocaml-ui") true view;
   let* () = history_load r in
