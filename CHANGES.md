@@ -1,9 +1,13 @@
 
+v0.0.3 2022-01-30 La Forclaz (VS)
+---------------------------------
 
 - Require `js_of_ocaml` 4.0.0:
+
   * Allows `brr`, `js_of_ocaml`, and `gen_js_api` bindings to be used in the 
     same program.
   * Adding `-no-check-prims` during bytecode linking is no longer required.
+
   Thanks to Hugo Heuzard for making the ground work in `js_of_ocaml` and 
   providing a patch (#2, #33).
   
