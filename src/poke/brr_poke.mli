@@ -15,7 +15,7 @@ val define : unit -> unit
 
     {b Limitation.} Due to {!Js_of_ocaml_toplevel.JsooTop}, this poke
     object sets channel flusher via
-    {!Js_of_ocaml.Sys.set_channel_flusher} for [stdout] and [stderr].
+    {!Jsoo_runtime.Sys.set_channel_output'} for [stdout] and [stderr].
     This will not work if your application makes use of these
     channels. It's unclear whether this limitation can be easily
     lifted. *)

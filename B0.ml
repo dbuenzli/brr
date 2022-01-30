@@ -4,10 +4,10 @@ open B00_std
 (* OCaml library names *)
 
 let js_of_ocaml = B0_ocaml.libname "js_of_ocaml"
+let js_of_ocaml_toplevel = B0_ocaml.libname "js_of_ocaml-toplevel"
 let js_of_ocaml_compiler_runtime =
   B0_ocaml.libname "js_of_ocaml-compiler.runtime"
 
-let js_of_ocaml_toplevel = B0_ocaml.libname "js_of_ocaml-toplevel"
 let note = B0_ocaml.libname "note"
 
 let brr = B0_ocaml.libname "brr"
@@ -43,7 +43,9 @@ let brr_ocaml_poke_ui_lib =
 
 let brr_poke_lib =
   let srcs = Fpath.[ `Dir (v "src/poke") ] in
-  let requires = [js_of_ocaml; js_of_ocaml_toplevel; brr] in
+  let requires =
+    [js_of_ocaml_compiler_runtime; js_of_ocaml; js_of_ocaml_toplevel; brr]
+  in
   let doc = "Poke explicitely" in
   B0_ocaml.lib brr_poke ~doc ~srcs ~requires
 
@@ -81,8 +83,8 @@ let top =
 (* FIXME js_of_ocaml chokes `File "src/console/highlight.pack.js"; *)
                      `File (v "src/console/ocaml_console.css") ] in
   let requires =
-    [ js_of_ocaml; js_of_ocaml_toplevel; brr; brr_note; brr_ocaml_poke_ui;
-      brr_poke; brr_ocaml_poke]
+    [ js_of_ocaml_compiler_runtime; js_of_ocaml_toplevel;
+      brr; brr_note; brr_ocaml_poke_ui; brr_poke; brr_ocaml_poke]
   in
   let comp_mode = `Whole in
   let meta = B0_jsoo.meta ~requires ~comp_mode ~toplevel:true () in
