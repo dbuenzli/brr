@@ -31,6 +31,9 @@
   --ocaml-color-code-keyword: #874aa9;
   --ocaml-color-code-type-id: #a9874a;
   --ocaml-color-code-string: #4aa987;
+
+  color: var(--ocaml-color-fg);
+  background-color: var(--ocaml-color-bg);
 }
 
 :root[theme='dark'] {
