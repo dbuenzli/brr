@@ -35,7 +35,7 @@ v}
 
 Compile your program to bytecode and then to JavaScript
 {v
-ocamlfind ocamlc -g -linkpkg -no-check-prims -package brr min.ml
+ocamlfind ocamlc -g -linkpkg -package brr min.ml
 js_of_ocaml a.out -o min.js
 v}
 Load the web page in your browser:
@@ -51,8 +51,7 @@ Poke your program by side effect by linking against the [brr.poked]
 library. Make sure everything gets in by using [-linkall].
 
 {[
-ocamlfind ocamlc -g -linkall -linkpkg -no-check-prims \
-                 -package brr,brr.poked min.ml
+ocamlfind ocamlc -g -linkall -linkpkg -package brr,brr.poked min.ml
 ]}
 
 Compile with [js_of_ocaml]. This time it needs to see the cmis and you need
@@ -77,7 +76,6 @@ cat - > dune <<EOF
 (executables
   (names min)
   (libraries brr)
-  (link_flags (:standard -no-check-prims))
   (modes js))
 
 (rule
@@ -119,7 +117,7 @@ cat - > dune <<EOF
 (executables
   (names min)
   (libraries brr brr.poked)
-  (link_flags (:standard -linkall -no-check-prims))
+  (link_flags (:standard -linkall))
   (modes byte))
 
 (rule

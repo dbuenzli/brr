@@ -14,7 +14,5 @@ true : bin_annot, safe_string
 <src/ocaml_poke_ui> : include
 
 <src/console> : include
-<src/console/**> : no_check_prims
 
 <test/**> : package(js_of_ocaml), package(note)
-<test/**> : no_check_prims

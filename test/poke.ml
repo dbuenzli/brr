@@ -1,7 +1,7 @@
 
 (* Compile with:
 
-   ocamlfind ocamlc -g -linkall -linkpkg -no-check-prims \
+   ocamlfind ocamlc -g -linkall -linkpkg \
                        -package brr,brr.note,brr.poked poke.ml
 
    js_of_ocaml $(ocamlfind query -r -i-format brr.poked) -I . \

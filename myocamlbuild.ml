@@ -23,5 +23,4 @@ let jsoo () =
 let () = Ocamlbuild_plugin.dispatch @@ function
 | After_rules ->
     jsoo ();
-    flag ["ocaml"; "byte"; "link"; "no_check_prims"] (A "-no-check-prims");
 | _ -> ()
