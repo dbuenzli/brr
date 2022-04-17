@@ -131,7 +131,8 @@ let test_media = test_module "Brr_io" "Media" [brr]
 let test_mouse = test_module "Brr_note_kit" "Mouse" [note; brr; brr_note]
 let test_notif = test_module "Brr_io" "Notification" [brr]
 let test_webaudio = test_module "Brr_webaudio" "Audio" [brr]
-let test_webcryto = test_module "Brr_webcrypto" "Crypto" [brr]
+let test_webcrypto = test_module "Brr_webcrypto" "Crypto" [brr]
+let test_webmidi = test_module "Brr_webmidi" "Midi" [brr]
 let test_worker = test_module "Brr" "Worker" [brr]
 
 let min =

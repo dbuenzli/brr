@@ -3375,7 +3375,8 @@ end
     {ul
     {- {!Brr_io.Clipboard.of_navigator}}
     {- {!Brr_io.Geolocation.of_navigator}}
-    {- {!Brr_io.Media.Devices.of_navigator}}} *)
+    {- {!Brr_io.Media.Devices.of_navigator}}
+    {- {!Brr_webmidi.Midi.Access.of_navigator}}} *)
 module Navigator : sig
 
   type t

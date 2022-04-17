@@ -40,6 +40,7 @@ Brr_canvas
 Brr_io
 Brr_webaudio
 Brr_webcrypto
+Brr_webmidi
 Brr_webworkers
 }
 
@@ -115,6 +116,7 @@ The following JavaScript and browser functionality is supported:
 {- The Web Audio API is in {!Brr_webaudio}.}
 {- The Web Crypto API is in {!Brr_webcrypto}.}
 {- The WebGL2 API is in {!Brr_canvas.Gl}.}
+{- The Web MIDI API is in {!Brr_webmidi}.}
 {- The Web Sockets API is in {!Brr_io.Websocket}.}
 {- The Web Storage API is in {!Brr_io.Storage}.}
 {- The Web Workers API is in {!Brr_webworkers.Worker}.}}

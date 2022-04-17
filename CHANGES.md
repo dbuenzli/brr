@@ -1,4 +1,7 @@
 
+
+- Add `Brr_webmidi`, bindings for Web MIDI.
+
 v0.0.3 2022-01-30 La Forclaz (VS)
 ---------------------------------
 
