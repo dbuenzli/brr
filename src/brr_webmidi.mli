@@ -38,6 +38,9 @@ module Midi : sig
     val name : t -> Jstr.t
     (** [name p] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/MIDIPort/name}name} of [p]. *)
 
+    val version : t -> Jstr.t
+    (** [version p] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/MIDIPort/version}version} of [p]. *)
+
     val type' : t -> Jstr.t
     (** [type' p] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/MIDIPort/type}type} of [p]. *)
 

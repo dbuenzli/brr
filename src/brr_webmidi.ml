@@ -14,12 +14,17 @@ module Midi = struct
     let open' p = Fut.of_promise ~ok:ignore @@ Jv.call p "open" [||]
     let close p = Fut.of_promise ~ok:ignore @@ Jv.call p "close" [||]
 
-    let id p = Jv.to_jstr @@ Jv.get p "id"
-    let manufacturer p = Jv.to_jstr @@ Jv.get p "manufacturer"
-    let name p = Jv.to_jstr @@ Jv.get p "name"
-    let type' p = Jv.to_jstr @@ Jv.get p "type'"
-    let state p = Jv.to_jstr @@ Jv.get p "state"
-    let connection p = Jv.to_jstr @@ Jv.get p "connection"
+    let[@inline] get_nullable p prop =
+      let v = Jv.get p prop in
+      if Jv.is_none v then Jstr.empty else Jv.to_jstr v
+
+    let id p = Jv.Jstr.get p "id"
+    let name p = get_nullable p "name"
+    let manufacturer p = get_nullable p "manufacturer"
+    let version p = get_nullable p "version"
+    let type' p = Jv.Jstr.get p "type'"
+    let state p = Jv.Jstr.get p "state"
+    let connection p = Jv.Jstr.get p "connection"
 
     let sub_of_port subp p =
       let t = type' p in
@@ -95,7 +100,6 @@ module Midi = struct
     let statechange = Ev.Type.create (Jstr.v "statechange")
   end
 end
-
 
 (*---------------------------------------------------------------------------
    Copyright (c) 2020 The brr programmers
