@@ -26,6 +26,9 @@ These manuals are available:
 {- The {{!page-ffi_cookbook}FFI cookbook} has off-the-shelf
    design answers for common JavaScript binding scenarios.}}
 
+Also the {{:https://github.com/dbuenzli/brr/tree/master/test}test directory}
+of Brr's repository has a few examples that use the APIs.
+
 {1:lib_brr Library [brr]}
 
 This library has the JavaScript FFI and the interfaces to the
@@ -40,6 +43,7 @@ Brr_canvas
 Brr_io
 Brr_webaudio
 Brr_webcrypto
+Brr_webgpu
 Brr_webmidi
 Brr_webworkers
 }
@@ -116,6 +120,7 @@ The following JavaScript and browser functionality is supported:
 {- The Web Audio API is in {!Brr_webaudio}.}
 {- The Web Crypto API is in {!Brr_webcrypto}.}
 {- The WebGL2 API is in {!Brr_canvas.Gl}.}
+{- The WebGPU API is in {!Brr_webgpu.Gpu}.}
 {- The Web MIDI API is in {!Brr_webmidi}.}
 {- The Web Sockets API is in {!Brr_io.Websocket}.}
 {- The Web Storage API is in {!Brr_io.Storage}.}

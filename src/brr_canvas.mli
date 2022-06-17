@@ -142,7 +142,9 @@ module Canvas : sig
       Context are obtained by the modules that handle them.
       {ul
       {- For the 2D context see {!C2d.get_context}.}
-      {- For the WebGL2 context see {!Gl.get_context}.}} *)
+      {- For the WebGL2 context see {!Gl.get_context}.}
+      {- For the WebGPU context see {!Brr_webgpu.Gpu.Canvas_context.get}.}}
+  *)
 
   (** {1:conv Converting} *)
 

@@ -131,6 +131,7 @@ let test_notif = test_module "Brr_io" "Notification" [brr]
 let test_webaudio = test_module "Brr_webaudio" "Audio" [brr]
 let test_webcrypto = test_module "Brr_webcrypto" "Crypto" [brr]
 let test_webmidi = test_module "Brr_webmidi" "Midi" [brr]
+let test_webgpu = test_module "Brr_webgpu" "Gpu" [brr]
 let test_worker = test_module "Brr" "Worker" [brr]
 
 let min =
