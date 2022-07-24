@@ -103,7 +103,6 @@ module Store = struct
     match find ~scope version with
     | None -> add ~scope version v
     | Some sv ->
-        Console.log ([v; sv]);
         if v <> sv then (clear ~scope (); add ~scope version v)
 
   let storage = Ev.Type.void (Jstr.v "storage")
