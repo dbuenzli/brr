@@ -329,7 +329,7 @@ module C2d = struct
 
   let reset_transform c = ignore @@ Jv.call c "resetTransform" [||]
   let transform c m =
-    ignore @@ Jv.call c "resetTransform"
+    ignore @@ Jv.call c "transform"
       Jv.[| of_float (Matrix4.a m); of_float (Matrix4.b m);
             of_float (Matrix4.c m); of_float (Matrix4.d m);
             of_float (Matrix4.e m); of_float (Matrix4.f m) |]

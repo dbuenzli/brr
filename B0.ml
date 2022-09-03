@@ -83,7 +83,7 @@ let top =
 (* FIXME js_of_ocaml chokes `File "src/console/highlight.pack.js"; *)
                      `File (v "src/console/ocaml_console.css") ] in
   let requires =
-    [ js_of_ocaml_compiler_runtime; js_of_ocaml_toplevel;
+    [ js_of_ocaml_compiler_runtime;
       brr; brr_note; brr_ocaml_poke_ui; brr_poke; brr_ocaml_poke]
   in
   let comp_mode = `Whole in

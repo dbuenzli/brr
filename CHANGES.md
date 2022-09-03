@@ -1,6 +1,8 @@
 
+- Fix `Brr_canvas.C2d.transform` binding to `resetTransform` instead
+  of `transform` (#38).
 - Add `Jstr.binary_{of,to}_octets` to convert between OCaml strings
-  as sequence of bytes and JavaScript binary strings.
+  as sequence of bytes and JavaScript binary strings (#18 again)
 - Add `Brr_webmidi`, bindings for Web MIDI.
 
 v0.0.3 2022-01-30 La Forclaz (VS)
