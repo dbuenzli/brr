@@ -327,12 +327,22 @@ module C2d = struct
   let set_transform c m =
     ignore @@ Jv.call c "setTransform" [| Matrix4.to_jv m |]
 
+  let set_transform' ctx ~a ~b ~c ~d ~e ~f =
+    ignore @@ Jv.call ctx "setTransform"
+      Jv.[| of_float a; of_float b; of_float c; of_float d;
+            of_float e; of_float f |]
+
   let reset_transform c = ignore @@ Jv.call c "resetTransform" [||]
   let transform c m =
     ignore @@ Jv.call c "transform"
       Jv.[| of_float (Matrix4.a m); of_float (Matrix4.b m);
             of_float (Matrix4.c m); of_float (Matrix4.d m);
             of_float (Matrix4.e m); of_float (Matrix4.f m) |]
+
+  let transform' ctx ~a ~b ~c ~d ~e ~f =
+    ignore @@ Jv.call ctx "transform"
+      Jv.[| of_float a; of_float b; of_float c; of_float d;
+            of_float e; of_float f |]
 
   let translate c ~x ~y =
     ignore @@ Jv.call c "translate" Jv.[| of_float x; of_float y |]

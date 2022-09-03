@@ -470,21 +470,31 @@ module C2d : sig
   (** [set_transform c m]
       {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform}sets} the current transformation matrix. *)
 
+  val set_transform' : t ->
+    a:float -> b:float -> c:float -> d:float -> e:float -> f:float -> unit
+  (** [set_transform' c ~a ~b ~c ~d ~e ~f]
+    {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform}sets} the current transformation matrix. *)
+
   val reset_transform : t -> unit
   (** [reset_transform c] {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/resetTransform}resets} the current transformation matrix to the identity. *)
 
   val transform : t -> Matrix4.t -> unit
   (** [transform c m] {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/transform}transforms} space by matrix [m]. *)
 
+  val transform' : t ->
+    a:float -> b:float -> c:float -> d:float -> e:float -> f:float -> unit
+  (** [transform' c ~a ~b ~c ~d ~e ~f]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/transform}transforms} space by matrix [m]. *)
+
   val translate : t -> x:float -> y:float -> unit
-  (** [translate c x y] {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/translate}translates} space by ([x],[y]). *)
+  (** [translate c ~x ~y] {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/translate}translates} space by ([x],[y]). *)
 
   val rotate : t -> float -> unit
   (** [rotate c r]
       {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate}rotates} space by [r] radians. *)
 
   val scale : t -> sx:float -> sy:float -> unit
-  (** [scale c sx sy] {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale}scales} space by ([sx], [sy]). *)
+  (** [scale c ~sx ~sy] {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale}scales} space by ([sx], [sy]). *)
 
   (** {1:fillstroke Style fills and strokes} *)
 

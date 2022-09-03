@@ -1,6 +1,8 @@
 
 - Fix `Brr_canvas.C2d.transform` binding to `resetTransform` instead
   of `transform` (#38).
+- Add `Brr_canvas.C2d.{set_transform',transform'}` taking matrix
+  components directly.
 - Add `Jstr.binary_{of,to}_octets` to convert between OCaml strings
   as sequence of bytes and JavaScript binary strings (#18 again)
 - Add `Brr_webmidi`, bindings for Web MIDI.
