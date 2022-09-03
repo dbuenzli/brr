@@ -144,6 +144,8 @@ let of_char c = jstr_of_uchar_int (Char.code c)
 
 external of_string : string -> t = "caml_jsstring_of_string"
 external to_string : t -> string = "caml_string_of_jsstring"
+external binary_to_octets : t -> string = "caml_string_of_jsbytes"
+external binary_of_octets : string -> t = "caml_jsbytes_of_string"
 
 let number = jv_get jv_global "Number"
 

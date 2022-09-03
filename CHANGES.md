@@ -1,5 +1,6 @@
 
-
+- Add `Jstr.binary_{of,to}_octets` to convert between OCaml strings
+  as sequence of bytes and JavaScript binary strings.
 - Add `Brr_webmidi`, bindings for Web MIDI.
 
 v0.0.3 2022-01-30 La Forclaz (VS)

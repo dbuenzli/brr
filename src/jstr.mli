@@ -213,6 +213,16 @@ external of_string : string -> t = "caml_jsstring_of_string"
 (** [of_string s] is the UTF-8 encoded OCaml string [s] as a JavaScript
     string. *)
 
+external binary_to_octets : t -> string = "caml_string_of_jsbytes"
+(** [binary_to_octets s] is the JavaScript binary string [s] as an
+    OCaml string of bytes. In [s] each 16-bit JavaScript character
+    encodes a byte. *)
+
+external binary_of_octets : string -> t = "caml_jsbytes_of_string"
+(** [binary_of_octets s] is the OCaml string of bytes [s] as a
+    JavaScript binary string in which each 16-bit character encodes
+    a byte. *)
+
 val to_int : ?base:int -> t -> int option
 (** [to_int s] is the integer resulting from parsing [s] as a number
     in base [base] (guessed by default). The function uses
