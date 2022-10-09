@@ -229,7 +229,7 @@ fun s ~on ->
 let bool_editor : bool -> bool event * El.t =
 fun b ->
   let at = At.[type' (Jstr.v "checkbox"); class' (Jstr.v "toggle")] in
-  let at = At.(add_if b checked at) in
+  let at = At.(if' b checked) :: at in
   let el = El.input ~at () in
   let click = Evr.on_el Ev.click Evr.unit el in
   let toggle = E.map (fun () -> El.prop El.Prop.checked el) click in
@@ -254,7 +254,7 @@ fun todo ->
   in
   let div_at = At.[class' (Jstr.v "view")] in
   let div = El.div ~at:div_at [done_editor; label; rem_but] in
-  let li_at = At.(add_if done' (class' (Jstr.v "completed")) []) in
+  let li_at = At.[if' done' (class' (Jstr.v "completed"))] in
   let li = El.li ~at:li_at [div; ed] in
   let () = Elr.set_class (Jstr.v "editing") ~on:editing li in
   E.select [edit; rem; set_done], li

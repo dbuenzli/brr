@@ -526,7 +526,7 @@ module Ui = struct
         ?class':cl ?(enabled = S.Bool.true') ?(action = E.never)
         ?(xdir_align = `Start) ?(dir_align = `Start) ~dir cs
       =
-      let at = At.(add_if_some Name.class' cl [class' ui_group]) in
+      let at = At.[if_some (Option.map class' cl); class' ui_group] in
       let el = El.div ~at [] in
       let () = Elr.def_children el cs
       and () = Elr.def_class ui_disabled (S.Bool.not enabled) el
@@ -548,7 +548,7 @@ module Ui = struct
   module Label = struct
     type t = { el : El.t; enabled : bool signal }
     let v ?class':cl ?(enabled = S.Bool.true') ?tip cs =
-      let at = At.(add_if_some Name.class' cl [class' ui_label]) in
+      let at = At.[if_some (Option.map class' cl); class' ui_label] in
       let el = El.div ~at [] in
       let () = Elr.def_children el cs
       and () = el_def_tip ~tip el
@@ -568,7 +568,7 @@ module Ui = struct
 
     let button_str = Jstr.v "button"
     let at_base cl =
-      At.(add_if_some Name.class' cl [type' button_str; class' ui_button])
+      At.[if_some (Option.map class' cl); type' button_str; class' ui_button]
 
     let v
         ?class':cl ?(active = S.Bool.false') ?(enabled = S.Bool.true') ?tip cs v
@@ -604,7 +604,7 @@ module Ui = struct
         | [] -> []
         | exts -> [ At.v accept_str (Jstr.v (String.concat "," exts)) ]
         in
-        let at = At.add_if multiple (At.v multiple_str Jstr.empty) @@ at in
+        let at = At.if' multiple (At.v multiple_str Jstr.empty) :: at in
         let at = At.type' file_str :: at in
         El.input ~at ()
       in
@@ -650,7 +650,7 @@ module Ui = struct
       let span = El.span [] in
       let editor = El.input ~at:At.[type' text_str] () in
       let div =
-        let at = At.(add_if_some Name.class' cl [class' ui_str_editor]) in
+        let at = At.[if_some (Option.map class' cl); class' ui_str_editor] in
         El.div ~at [span; editor]
       in
       let edit = E.select [E.stamp edit (); Evr.on_el Ev.click Evr.unit div] in
@@ -704,7 +704,7 @@ module Ui = struct
       let v ?class':cl ?(enabled = S.Bool.true') label choices sel =
         let select =
           let at = At.[class' ui_menu_selector; class' ui_button] in
-          let at = At.(add_if_some Name.class' cl at) in
+          let at = At.(if_some (Option.map class' cl)) :: at in
           El.select ~at []
         in
         let sel_idx_change =

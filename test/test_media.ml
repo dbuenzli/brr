@@ -44,7 +44,7 @@ let button ?at onclick label =
 
 let fullscreen_button ~view video =
   let no_fullscreen = not (Document.fullscreen_available G.document) in
-  let at = At.add_if no_fullscreen At.disabled [] in
+  let at = At.[if' no_fullscreen disabled] in
   let onclick () =
     ignore @@ Fut.map (handle_error ~view) (El.request_fullscreen video)
   in

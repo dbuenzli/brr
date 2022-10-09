@@ -1708,6 +1708,13 @@ module At : sig
   val v : name -> Jstr.t -> t
   (** [v n value] is an attribute named [n] with value [value]. *)
 
+  val void : t
+  (** [void] is an attribute that doesn't exist. It is ignored by
+      functions like {!El.v}. This is [v Jstr.empty Jstr.empty]. *)
+
+  val is_void : t -> bool
+  (** [is_void a] is [true] iff [a] is {!void}. *)
+
   val true' : name -> t
   (** [true' n] is [v n Jstr.empty]. This sets the
       {{:https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes}boolean attribute}
@@ -1716,16 +1723,24 @@ module At : sig
   val int : name -> int -> t
   (** [int n i] is [v n (Jstr.of_int i)]. *)
 
+  val if' : bool -> t -> t
+  (** [if' b a] is [a] if [b] is [true] and {!void} otherwise. *)
+
+  val if_some : t option -> t
+  (** [if_some o] is [a] if [o] is [Some a] and {!void} if [o] is [None]. *)
+
+  val to_pair : t -> Jstr.t * Jstr.t
+  (** [to_pair at] is [(n,v)] the name and value of the attribute. *)
+
   val add_if : bool -> t -> t list -> t list
+  [@@ocaml.deprecated "use Brr.At.if' instead."]
   (** [add_if c att atts] is [att :: atts] if [c] is [true] and [atts]
         otherwise. *)
 
   val add_if_some : name -> Jstr.t option -> t list -> t list
+  [@@ocaml.deprecated "use Brr.At.if_some instead."]
   (** [add_if_some n o atts] is [(v n value) :: atts] if [o] is [Some
       value] and [atts] otherwise. *)
-
-  val to_pair : t -> Jstr.t * Jstr.t
-  (** [to_pair at] is [(n,v)] the name and value of the attribute. *)
 
   (** {1:names_cons Attribute names and constructors}
 
@@ -2030,7 +2045,8 @@ module El : sig
 
   val set_at : At.name -> Jstr.t option -> t -> unit
   (** [set_at a v e] sets the attribute [a] of [e] to [v]. If [v]
-      is [None] the attribute is removed. *)
+      is [None] the attribute is removed. If [a] is empty, this has not
+      effect. *)
 
   (** Some attributes are reflected as JavaScript properties in
       elements see

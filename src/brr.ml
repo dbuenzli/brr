@@ -940,12 +940,16 @@ end
 module At = struct
   type name = Jstr.t
   type t = name * Jstr.t
-  let v n v = (n, v)
+  let[@inline] v n v = (n, v)
+  let void = (Jstr.empty, Jstr.empty)
+  let is_void (n, v) = Jstr.is_empty n && Jstr.is_empty v
+  let if' b at = if b then at else void
+  let if_some = function None -> void | Some at -> at
   let true' n = (n, Jstr.empty)
   let int n i = (n, Jstr.of_int i)
+  let to_pair = Fun.id
   let add_if b at l = if b then at :: l else l
   let add_if_some name o l = match o with None -> l | Some a -> (name, a) :: l
-  let to_pair = Fun.id
   module Name = struct
     let accesskey = Jstr.v "accesskey"
     let autofocus = Jstr.v "autofocus"
@@ -1035,10 +1039,12 @@ module El = struct
 
   let append_child e n = ignore (Jv.call e "appendChild" [| n |])
 
-  let set_at e (a, v) = match Jstr.equal a At.Name.class' with
-  | false -> ignore (Jv.call e "setAttribute" Jv.[|of_jstr a; of_jstr v|])
-  | true when Jstr.is_empty v -> ()
-  | true -> ignore (Jv.call (Jv.get e "classList") "add" [| Jv.of_jstr v |])
+  let set_at e (a, v) =
+    if Jstr.is_empty a then () else
+    match Jstr.equal a At.Name.class' with
+    | false -> ignore (Jv.call e "setAttribute" Jv.[|of_jstr a; of_jstr v|])
+    | true when Jstr.is_empty v -> ()
+    | true -> ignore (Jv.call (Jv.get e "classList") "add" [| Jv.of_jstr v |])
 
   let v ?(d = global_document) ?(at = []) name cs =
     let e = Jv.call d "createElement" [| Jv.of_jstr name |] in
@@ -1120,9 +1126,11 @@ module El = struct
   let at a e =
     Jv.to_option Jv.to_jstr (Jv.call e "getAttribute" [|Jv.of_jstr a|])
 
-  let set_at a v e = match v with
-  | None -> ignore (Jv.call e "removeAttribute" Jv.[|of_jstr a|])
-  | Some v -> ignore (Jv.call e "setAttribute" Jv.[|of_jstr a; of_jstr v|])
+  let set_at a v e =
+    if Jstr.is_empty a then () else
+    match v with
+    | None -> ignore (Jv.call e "removeAttribute" Jv.[|of_jstr a|])
+    | Some v -> ignore (Jv.call e "setAttribute" Jv.[|of_jstr a; of_jstr v|])
 
   (* Properties *)
 

@@ -1,4 +1,7 @@
 
+- Add `Brr.At.{void,is_void,if',if_some}` and deprecat
+  `Brr.At.{add_if,add_if_some}`. The new scheme if more convenient 
+  and clearer when working with list literals.
 - Fix `Brr_canvas.C2d.transform` binding to `resetTransform` instead
   of `transform` (#38).
 - Add `Brr_canvas.C2d.{set_transform',transform'}` taking matrix
