@@ -803,6 +803,10 @@ module File = struct
     Jv.new' file [|Blob.to_jv b; Jv.of_jstr name; init|]
 
   let name f = Jv.Jstr.get f "name"
+  let relative_path f =
+    let p = Jv.find_map Jv.to_jstr f "webkitRelativePath" in
+    Option.value ~default:Jstr.empty p
+
   let last_modified_ms f = Jv.Int.get f "lastModified"
   external as_blob : t -> Blob.t = "%identity"
 end

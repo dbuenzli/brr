@@ -472,6 +472,11 @@ module File : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/File/name}filename}
       of [f]. *)
 
+  val relative_path : t -> Jstr.t
+  (** [relative_path] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/File/webkitRelativePath}[webkitRelativePath]}
+      of [f]. *)
+
   val last_modified_ms : t -> int
   (** [last_modified_ms f] is the
       {{:https://developer.mozilla.org/en-US/docs/Web/API/File/lastModified}
