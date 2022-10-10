@@ -221,7 +221,7 @@ module Crypto_algo : sig
         to use. *)
   end
 
-  (** {1:rsa_pss RSA-OAEP} *)
+  (** {1:rsa_oaep RSA-OAEP} *)
 
   val rsa_oaep : Jstr.t
   (** The name for {{:https://www.w3.org/TR/WebCryptoAPI/#rsa-oaep}RSA-OAEP}. *)

@@ -388,7 +388,7 @@ module C2d : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasImageSource}
       these things}, no checks are performed. *)
 
-  (** {1:ctx Context attributes} *)
+  (** {1:ctx_attrs Context attributes} *)
 
   type attrs
   (** The type for {{:https://html.spec.whatwg.org/multipage/canvas.html#canvasrenderingcontext2dsettings}CanvasRenderingContext2DSettings}. *)
