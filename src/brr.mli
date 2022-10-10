@@ -1723,6 +1723,9 @@ module At : sig
   val int : name -> int -> t
   (** [int n i] is [v n (Jstr.of_int i)]. *)
 
+  val float : name -> float -> t
+  (** [float n f] is [v n (Jstr.of_float f)]. *)
+
   val if' : bool -> t -> t
   (** [if' b a] is [a] if [b] is [true] and {!void} otherwise. *)
 

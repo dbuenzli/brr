@@ -1,5 +1,6 @@
 
-- Add `Brr.At.{void,is_void,if',if_some}` and deprecat
+- Add `Brr.At.float`.
+- Add `Brr.At.{void,is_void,if',if_some}` and deprecate
   `Brr.At.{add_if,add_if_some}`. The new scheme if more convenient 
   and clearer when working with list literals.
 - Fix `Brr_canvas.C2d.transform` binding to `resetTransform` instead

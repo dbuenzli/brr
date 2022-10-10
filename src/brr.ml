@@ -947,6 +947,7 @@ module At = struct
   let if_some = function None -> void | Some at -> at
   let true' n = (n, Jstr.empty)
   let int n i = (n, Jstr.of_int i)
+  let float n f = (n, Jstr.of_float f)
   let to_pair = Fun.id
   let add_if b at l = if b then at :: l else l
   let add_if_some name o l = match o with None -> l | Some a -> (name, a) :: l
