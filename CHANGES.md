@@ -11,6 +11,12 @@
 - Add `Jstr.binary_{of,to}_octets` to convert between OCaml strings
   as sequence of bytes and JavaScript binary strings (#18 again)
 - Add `Brr_webmidi`, bindings for Web MIDI.
+- Make the modules' initialisation bits web worker safe.  We have
+  toplevel code that access properties of values that (e.g. `Brr.El`
+  accessing `document` or `Brr_note` accessing mutation
+  observers). These modules can't be used in web workers but they may
+  be linked in your web worker code (e.g. if you fork()-like your
+  workers) in which case toplevel initialisation bits do get executed.
 
 v0.0.3 2022-01-30 La Forclaz (VS)
 ---------------------------------

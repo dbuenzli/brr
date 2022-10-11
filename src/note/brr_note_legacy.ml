@@ -106,7 +106,10 @@ module Store = struct
         if v <> sv then (clear ~scope (); add ~scope version v)
 
   let storage = Ev.Type.void (Jstr.v "storage")
-  let ev = Evr.on_target storage (fun _ -> ()) (Window.as_target G.window)
+  let ev =
+    (* protect web workers *)
+    if Jv.is_none (Window.to_jv G.window) then E.never else
+    (Evr.on_target storage (fun _ -> ()) (Window.as_target G.window))
 end
 
 (*---------------------------------------------------------------------------

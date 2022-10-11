@@ -388,12 +388,16 @@ module Windowr = struct
     Option.is_some (Document.fullscreen_element G.document)
 
   let is_fullscreen =
+    (* protect web workers *)
+    if Jv.is_none (Document.to_jv G.document) then S.const false else
     let is_fullscreen, set_fullscreen = S.create (in_fullscreen ()) in
     let change _e = set_fullscreen (in_fullscreen ()) in
     Ev.listen Ev.fullscreenchange change (Document.as_target G.document);
     is_fullscreen
 
   let quit =
+    (* protect web workers *)
+    if Jv.is_none (Document.to_jv G.document) then E.never else
     let quit, send_quit = E.create () in
     let send_quit _e = send_quit () in
     Ev.listen Ev.unload send_quit (Document.as_target G.document);
@@ -510,7 +514,7 @@ module Ui = struct
     let xalign_cls =
       [ `Start, ui_xdir_align_start; `End, ui_xdir_align_end;
         `Center, ui_xdir_align_center; `Justify, ui_xdir_align_justify;
-        `Distribute, ui_xdir_align_distribute; `Stretch, ui_xdir_align_stretch; ]
+        `Distribute, ui_xdir_align_distribute; `Stretch, ui_xdir_align_stretch;]
 
     let set_class classes el v = El.set_class (List.assoc v classes) true el
 

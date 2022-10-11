@@ -1034,7 +1034,9 @@ module El = struct
 
   let global_document = Jv.get Jv.global "document"
   let document e = Jv.get e "ownerDocument"
-  let global_root = Jv.get global_document "documentElement"
+  let global_root =
+    if Jv.is_none global_document then (* e.g. web worker *) Jv.undefined else
+    Jv.get global_document "documentElement"
 
   let el_list_of_node_list nl =
     let acc = ref [] in
