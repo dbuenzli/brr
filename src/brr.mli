@@ -1761,30 +1761,44 @@ module At : sig
 
   (** Attribute names. *)
   module Name : sig
+    val accesskey : name
+    val action : name
+    val autocomplete : name
     val autofocus : name
     val charset : name
     val checked : name
     val class' : name
+    val cols : name
     val content : name
+    val contenteditable : name
     val defer : name
+    val dir : name
     val disabled : name
+    val draggable : name
     val for' : name
     val height : name
+    val hidden : name
     val href : name
     val id : name
     val lang : name
+    val list : name
     val media : name
+    val method' : name
     val name : name
     val placeholder : name
     val rel : name
     val required : name
+    val rows : name
+    val selected : name
+    val spellcheck : name
     val src : name
+    val style : name
     val tabindex : name
     val title : name
     val type' : name
     val value : name
-    val wrap : name
     val width : name
+    val wrap : name
   end
 
   type 'a cons = 'a -> t
@@ -1793,79 +1807,81 @@ module At : sig
   val accesskey : Jstr.t cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey}accesskey} *)
 
+  val action : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#attr-action}action} *)
+
+  val autocomplete : Jstr.t cons
+(** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete}autocomplete} *)
+
   val autofocus : t
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autofocus}
-      autofocus} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus}autofocus} *)
 
   val charset : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/charset}
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}
       charset} *)
 
   val checked : t
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/checked}
-      checked} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#checked}checked} *)
 
   val class' : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/class}
-      class} *)
-
-  val content : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/content}
-      content} *)
-
-  val contenteditable : bool cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable}contenteditable} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/class}class} *)
 
   val cols : int cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea#attr-cols}cols} *)
 
+  val content : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta#attr-content}content} *)
+
+  val contenteditable : bool cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable}contenteditable} *)
+
   val defer : t
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/defer}
-      defer} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attr-defer}defer} *)
+
+  val dir : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir}dir} *)
 
   val disabled : t
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled}
       disabled} *)
 
-  val dir : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir}dir} *)
-
   val draggable : bool cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable}draggable} *)
 
   val for' : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/for'}
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/for}
       for'} *)
 
   val height : int cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/height}
-      height} *)
-
-  val href : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/href}
-      href} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}height} *)
 
   val hidden : t
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden}hidden} *)
 
+  val href : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}href} *)
+
   val id : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/id}
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id}
       id} *)
 
   val lang : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/lang}
-      lang} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang}lang} *)
+
+  val list : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-list}list} *)
 
   val media : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/media}
-      media} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}media} *)
+
+  val method' : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#attr-method}method}. *)
 
   val name : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/name}
-      name} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}name} *)
 
   val placeholder : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/placeholder}
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}
       placeholder} *)
 
   val rel : Jstr.t cons
@@ -1879,34 +1895,36 @@ module At : sig
   val rows : int cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea#attr-rows}rows} *)
 
+  val selected : t
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option#attr-selected}selected} *)
+
   val spellcheck : Jstr.t cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/spellcheck}spellcheck} *)
 
   val src : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/src}
-      src} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}src} *)
+
+  val style : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/style}style} *)
 
   val tabindex : int cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/tabindex}
-      tabindex} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex}tabindex} *)
 
   val title : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/title}
-      title} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/title}title} *)
 
   val type' : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/type}
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}
       type} *)
 
   val value : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/value}
-      value} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}value} *)
 
   val wrap : Jstr.t cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea#attr-wrap}wrap} *)
 
   val width : int cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/width}
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}
       width} *)
 end
 
