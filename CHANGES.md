@@ -1,12 +1,16 @@
 
+- `Brr.El.v`, perform `At.style` attribute merging like we do with
+  `At.class`. This is a breaking change if you had `El.v` calls with 
+  multiple `style` attributes definition and expected the last one to 
+  take over. Note that the `At.style` value is introduced in this version.
 - `Brr.At`, add support for `accesskey`, `action`, `autocomplete`, 
   `autofocus`, `list`, `method`, `selected`, `style` attributes.
   Make sure MDN doc links do not 404.
-- Add `Brr.File.relative_path`.
 - Add `Brr.At.float`.
 - Add `Brr.At.{void,is_void,if',if_some}` and deprecate
   `Brr.At.{add_if,add_if_some}`. The new scheme if more convenient 
   and clearer when working with list literals.
+- Add `Brr.File.relative_path`.
 - Fix `Brr_canvas.C2d.transform` binding to `resetTransform` instead
   of `transform` (#38).
 - Add `Brr_canvas.C2d.{set_transform',transform'}` taking matrix

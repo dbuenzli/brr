@@ -1964,10 +1964,10 @@ module El : sig
   val v : ?d:document -> ?at:At.t list -> tag_name -> t list -> t
   (** [v ?d ?at name cs] is an element [name] with attribute [at]
       (defaults to [[]]) and children [cs]. If [at] specifies an
-      attribute more thanonce, the last one takes over with the
-      exception of {!At.class'} whose occurences accumulate to define
-      the final value. [d] is the document on which the element is
-      defined it defaults {!Brr.G.document}. *)
+      attribute more than once, the last one takes over with the
+      exception of {!At.class'} and {!At.style} whose occurences
+      accumulate to define the final value. [d] is the document on which the
+      element is defined it defaults {!Brr.G.document}. *)
 
   val txt : ?d:document -> Jstr.t -> t
   (** [txt s] is the text [s]. [d] is the document on which the element is

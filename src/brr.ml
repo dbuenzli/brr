@@ -1058,16 +1058,28 @@ module El = struct
 
   let append_child e n = ignore (Jv.call e "appendChild" [| n |])
 
-  let set_at e (a, v) =
-    if Jstr.is_empty a then () else
-    match Jstr.equal a At.Name.class' with
-    | false -> ignore (Jv.call e "setAttribute" Jv.[|of_jstr a; of_jstr v|])
-    | true when Jstr.is_empty v -> ()
-    | true -> ignore (Jv.call (Jv.get e "classList") "add" [| Jv.of_jstr v |])
+  let rec set_atts e ss = function
+  | (a, v) :: at ->
+      if Jstr.is_empty a then set_atts e ss at else
+      if Jstr.equal a At.Name.style then set_atts e (v :: ss) at else
+      if Jstr.equal a At.Name.class' then begin
+        if not (Jstr.is_empty v)
+        then (ignore (Jv.call (Jv.get e "classList") "add" [| Jv.of_jstr v |]));
+        set_atts e ss at
+      end else begin
+        ignore (Jv.call e "setAttribute" Jv.[|of_jstr a; of_jstr v|]);
+        set_atts e ss at
+      end
+  | [] ->
+      if ss <> [] then begin
+        let a = At.Name.style in
+        let v = Jstr.concat ~sep:(Jstr.v ";") (List.rev ss) in
+        ignore (Jv.call e "setAttribute" Jv.[|of_jstr a; of_jstr v|]);
+      end
 
   let v ?(d = global_document) ?(at = []) name cs =
     let e = Jv.call d "createElement" [| Jv.of_jstr name |] in
-    List.iter (set_at e) at;
+    set_atts e [] at;
     List.iter (append_child e) cs;
     e
 
