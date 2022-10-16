@@ -33,7 +33,7 @@ let draw_rect c ~x ~y ~w ~h =
   C2d.fill_rect c ~x ~y ~w ~h
 
 let draw cnv =
-  let c = C2d.create cnv in
+  let c = C2d.get_context cnv in
   let w = float @@ Canvas.w cnv in
   let h = float @@ Canvas.h cnv in
   C2d.stroke_rect c ~x:0. ~y:0. ~w ~h;

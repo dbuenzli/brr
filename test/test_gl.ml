@@ -117,7 +117,7 @@ let render c =
   delete_program c p; delete_geometry c va bufs;
   Ok ()
 
-let render cnv = match Gl.create cnv with
+let render cnv = match Gl.get_context cnv with
 | None ->
     let err = El.p [El.txt' "Could not get a WebGL2 context." ] in
     El.append_children (Document.body G.document) [err]

@@ -60,7 +60,7 @@ let freq_data c ~x ~y ~w ~h data =
   done
 
 let draw_sound_data cnv wave freq =
-  let c = C2d.create cnv in
+  let c = C2d.get_context cnv in
   let w = float @@ Canvas.w cnv in
   let h = float @@ Canvas.h cnv in
   let hh = 0.5 *. h in

@@ -139,10 +139,10 @@ module Canvas : sig
 
   (** {1:ctx Contexts}
 
-      Context are created by the modules that handle them.
+      Context are obtained by the modules that handle them.
       {ul
-      {- For the 2D context see {!C2d.create}.}
-      {- For the WebGL2 context see {!Gl.create}.}} *)
+      {- For the 2D context see {!C2d.get_context}.}
+      {- For the WebGL2 context see {!Gl.get_context}.}} *)
 
   (** {1:conv Converting} *)
 
@@ -407,9 +407,12 @@ module C2d : sig
   type t
   (** The type for {{:https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D}CanvasRenderingContext2D} objects. *)
 
-  val create : ?attrs:attrs -> Canvas.t -> t
-  (** [create ~attrs cnv] creates 2D context for canvas [cnv] with
+  val get_context : ?attrs:attrs -> Canvas.t -> t
+  (** [get_context ~attrs cnv] is a 2D context for canvas [cnv] with
       attributes [attrs]. *)
+
+  val create : ?attrs:attrs -> Canvas.t -> t
+  [@@ocaml.deprecated "use Brr_canvas.C2d.get_context instead."]
 
   val canvas : t -> Canvas.t option
   (** [canvas c] is the canvas element associated to the context
@@ -894,11 +897,14 @@ module Gl : sig
   (** The type for
       {{:https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext}[WebGL2RenderingContext]} objects *)
 
-  val create : ?attrs:Attrs.t -> ?v1:bool -> Canvas.t -> t option
-  (** [create ~attrs cnv] creates a WebGL2 context for canvas [cnv] with
+  val get_context : ?attrs:Attrs.t -> ?v1:bool -> Canvas.t -> t option
+  (** [get_context ~attrs cnv] is WebGL2 context for canvas [cnv] with
       attributes [attrs]. If [v1] is [true] (defaults to [false]) it will
-      create a WebGL1 context beware that some of the functions below do
+      be a WebGL1 context but beware that some of the functions below do
       not work on it. *)
+
+  val create : ?attrs:Attrs.t -> ?v1:bool -> Canvas.t -> t option
+  [@@ocaml.deprecated "use Brr_canvas.Gl.get_context instead."]
 
   val canvas : t -> Canvas.t option
   (** [canvas c] is the canvas element associated to the context

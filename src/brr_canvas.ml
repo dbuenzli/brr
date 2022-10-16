@@ -297,8 +297,10 @@ module C2d = struct
 
   type t = Jv.t
   include (Jv.Id : Jv.CONV with type t := t)
-  let create ?(attrs = Jv.undefined) cnv =
+  let get_context ?(attrs = Jv.undefined) cnv =
     Jv.call cnv "getContext" Jv.[| of_string "2d"; attrs |]
+
+  let create = get_context
 
   let canvas c = Jv.find_map Canvas.of_jv c "canvas"
   let attrs c = Jv.call c "getContextAttributes" [||]
@@ -601,10 +603,12 @@ module Gl = struct
   type t = Jv.t
   include (Jv.Id : Jv.CONV with type t := t)
 
-  let create ?(attrs = Jv.undefined) ?(v1 = false) cnv =
+  let get_context ?(attrs = Jv.undefined) ?(v1 = false) cnv =
     let webgl = Jv.of_string (if v1 then "webgl" else "webgl2") in
     Jv.to_option Fun.id @@
     Jv.call (Canvas.to_jv cnv) "getContext" Jv.[| webgl; attrs |]
+
+  let create = get_context
 
   let canvas c = Jv.find_map Canvas.of_jv c "canvas"
   let attrs c = Jv.call c "getContextAttributes" [||]

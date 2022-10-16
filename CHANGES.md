@@ -11,6 +11,8 @@
   `Brr.At.{add_if,add_if_some}`. The new scheme if more convenient 
   and clearer when working with list literals.
 - Add `Brr.File.relative_path`.
+- Add `Brr_canvas.{C2d,Gl}.get_context` and deprecate 
+  `Brr_canvas.{C2d,Gl}.create` whose names are misleading (#36).
 - Fix `Brr_canvas.C2d.transform` binding to `resetTransform` instead
   of `transform` (#38).
 - Add `Brr_canvas.C2d.{set_transform',transform'}` taking matrix
