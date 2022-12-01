@@ -155,6 +155,7 @@ external of_jstr_list : Jstr.t list -> t = "caml_list_to_js_array"
 (* Functions *)
 
 external apply : t -> t array -> 'a = "caml_js_fun_call"
+external callback : int -> (_ -> _) -> t = "caml_js_wrap_callback_strict"
 
 (* Errors *)
 
@@ -273,12 +274,15 @@ end
 module Promise = struct
   type t = jv
   let promise = get global "Promise"
-  let create f = new' promise [| repr f |]
+  let create f =
+    let g res rej =
+      f (fun x -> apply res [|repr x|]) (fun x -> apply rej [|repr x|]) in
+    new' promise [| callback 2 g |]
   let resolve v = call promise "resolve" [| repr v |]
   let reject v = call promise "reject" [| repr v |]
-  let await p k = ignore (call p "then" [| repr k |])
-  let bind p res = call p "then" [| repr res |]
-  let then' p res rej = call p "then" [| repr res; repr rej|]
+  let await p k = ignore (call p "then" [| callback 1 k |])
+  let bind p res = call p "then" [| callback 1 res |]
+  let then' p res rej = call p "then" [| callback 1 res; callback 1 rej|]
   let all arr = call promise "all" [| repr arr |]
 end
 

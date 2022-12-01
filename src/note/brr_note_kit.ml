@@ -392,7 +392,8 @@ module Windowr = struct
     if Jv.is_none (Document.to_jv G.document) then S.const false else
     let is_fullscreen, set_fullscreen = S.create (in_fullscreen ()) in
     let change _e = set_fullscreen (in_fullscreen ()) in
-    Ev.listen Ev.fullscreenchange change (Document.as_target G.document);
+    ignore
+      (Ev.listen Ev.fullscreenchange change (Document.as_target G.document));
     is_fullscreen
 
   let quit =
@@ -400,7 +401,7 @@ module Windowr = struct
     if Jv.is_none (Document.to_jv G.document) then E.never else
     let quit, send_quit = E.create () in
     let send_quit _e = send_quit () in
-    Ev.listen Ev.unload send_quit (Document.as_target G.document);
+    ignore (Ev.listen Ev.unload send_quit (Document.as_target G.document));
     quit
 end
 
@@ -621,7 +622,7 @@ module Ui = struct
           El.set_prop El.Prop.value Jstr.empty input;
           El.click input
         in
-        Ev.listen Ev.click forward (El.as_target el)
+        ignore (Ev.listen Ev.click forward (El.as_target el))
       and () =
         (* input at end for not applying * + el CSS rules, this will still disturb
            last-child and el + * though *)
@@ -841,7 +842,7 @@ module Ui = struct
         (* XXX isn't there a better way tabindex (-1) doesn't work
            also this is something that should be handled in the UI framework *)
         let unset_focus _ = El.set_has_focus false el in
-        Ev.listen Ev.focus unset_focus (El.as_target el)
+        ignore (Ev.listen Ev.focus unset_focus (El.as_target el))
       in
       { el; action; enabled }
 
