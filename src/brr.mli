@@ -857,14 +857,15 @@ module Ev : sig
          on the event. If it does nothing will happen (except maybe
          a console warning). Defaults to [false].}} *)
 
-  val listen : ?opts:listen_opts -> 'a type' -> ('a t -> unit) -> target -> unit
+  type key
+
+  val listen : ?opts:listen_opts -> 'a type' -> ('a t -> unit) -> target -> key
   (** [listen ~opts type' f t] listens for events of type [type'] on target
       [t] with function [f] and options [opts] (see {!val:listen_opts} for
       defaults). *)
 
-  val unlisten :
-    ?opts:listen_opts -> 'a type' -> ('a t -> unit) -> target -> unit
-  (** [unlisten ~opts type' f] stops the listening introduced by the
+  val unlisten : key -> unit
+  (** [unlisten key] stops the listening introduced by the
       corresponding {!listen} invocation. *)
 
   val next : ?capture:bool -> 'a type' -> target -> 'a t Fut.t

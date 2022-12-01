@@ -57,7 +57,7 @@ module Evr = struct
     | false -> None | true -> Some (Ev.listen_opts ~capture ())
     in
     let f ev = instruct ?propagate ?default ev; f ev in
-    Ev.listen ?opts type' f t
+    ignore (Ev.listen ?opts type' f t)
 
   (* Note events *)
 
@@ -67,7 +67,7 @@ module Evr = struct
     in
     let e, send_e = E.create () in
     let f ev = instruct ?propagate ?default ev; send_e (f ev) in
-    Ev.listen ?opts type' f t;
+    ignore (Ev.listen ?opts type' f t);
     e
 
   let on_targets ?(capture = false) ?propagate ?default type' f ts =
@@ -76,7 +76,7 @@ module Evr = struct
     in
     let e, send_e = E.create () in
     let f ev = instruct ?propagate ?default ev; send_e (f (Ev.target ev) ev) in
-    List.iter (Ev.listen ?opts type' f) ts;
+    List.iter (fun t -> ignore (Ev.listen ?opts type' f t)) ts;
     e
 
   let on_el ?capture ?propagate ?default type' f el =
@@ -91,7 +91,8 @@ module Evr = struct
       instruct ?propagate ?default ev;
       send_e (f (Obj.magic (* oh well *) (Ev.target ev) : El.t) ev)
     in
-    List.iter (fun el -> Ev.listen ?opts type' f (El.as_target el)) els;
+    List.iter
+      (fun el -> ignore (Ev.listen ?opts type' f (El.as_target el))) els;
     e
 
   let unit e = ()
@@ -101,8 +102,8 @@ module Evr = struct
     | false -> None | true -> Some (Ev.listen_opts ~capture ())
     in
     let f ev = instruct ?propagate ?default ev; f ev in
-    Ev.listen ?opts type' f t;
-    fun () -> Ev.unlisten ?opts type' f t
+    let k = Ev.listen ?opts type' f t in
+    fun () -> Ev.unlisten k
 end
 
 module Elr = struct

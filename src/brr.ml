@@ -71,18 +71,23 @@ module Ev = struct
     Jv.Bool.set_if_some o "passive" passive;
     o
 
-  let listen ?(opts = Jv.obj [||]) type' f t =
-    ignore @@ Jv.call t "addEventListener"
-      [|Jv.of_jstr type'; Jv.repr f; opts |]
+  type key = unit -> unit
 
-  let unlisten ?(opts = Jv.obj [||]) type' f t =
+  let listen ?(opts = Jv.obj [||]) type' f t =
+    let t = Jv.of_jstr type' in
+    let w = Jv.callback 1 f in
+    ignore @@ Jv.call t "addEventListener"
+      [|t; w; opts |];
+    fun () ->
     ignore @@ Jv.call t "removeEventListener"
-      [|Jv.of_jstr type'; Jv.repr f; opts |]
+      [|t; w; opts |]
+
+  let unlisten id = id ()
 
   let next ?capture type' t =
     let fut, set = Fut.create () in
     let opts = listen_opts ?capture ~once:true () in
-    listen ~opts type' set t;
+    ignore (listen ~opts type' set t : key);
     fut
 
   (* Event objects *)
@@ -578,39 +583,39 @@ module Tarray = struct
 
   let find sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    Jv.to_option Obj.magic (Jv.call a "find" Jv.[| repr sat |])
+    Jv.to_option Obj.magic (Jv.call a "find" Jv.[| callback 2 sat |])
 
   let find_index sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    let i = Jv.to_int (Jv.call a "findIndex" Jv.[| repr sat |]) in
+    let i = Jv.to_int (Jv.call a "findIndex" Jv.[| callback 2 sat |]) in
     if i = -1 then None else Some i
 
   let for_all sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    Jv.to_bool @@ Jv.call a "every" Jv.[| repr sat |]
+    Jv.to_bool @@ Jv.call a "every" Jv.[| callback 2 sat |]
 
   let exists sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    Jv.to_bool @@ Jv.call a "every" Jv.[| repr sat |]
+    Jv.to_bool @@ Jv.call a "every" Jv.[| callback 2 sat |]
 
   (* Traversals *)
 
   let filter sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    Jv.call a "filter" Jv.[| repr sat |]
+    Jv.call a "filter" Jv.[| callback 2 sat |]
 
   let iter f a =
     let f v i = f i v in
-    ignore @@ Jv.call a "forEach" Jv.[| repr f |]
+    ignore @@ Jv.call a "forEach" Jv.[| callback 2 f |]
 
-  let map f a = Jv.call a "map" Jv.[| repr f |]
+  let map f a = Jv.call a "map" Jv.[| callback 1 f |]
 
   let fold_left f acc a =
-    Obj.magic @@ Jv.call a "reduce" [|Jv.repr f; Jv.repr acc|]
+    Obj.magic @@ Jv.call a "reduce" [|Jv.callback 2 f; Jv.repr acc|]
 
   let fold_right f a acc =
     let f acc v = f v acc in
-    Obj.magic @@ Jv.call a "reduceRight" [|Jv.repr f; Jv.repr acc|]
+    Obj.magic @@ Jv.call a "reduceRight" [|Jv.callback 2 f; Jv.repr acc|]
 
   let reverse a = Jv.call a "reverse" Jv.[||]
 
@@ -780,8 +785,10 @@ module Blob = struct
     let ok _e = set_fut (Ok (Jv.Jstr.get reader "result")) in
     let error _e = set_fut (Error (Jv.to_error (Jv.get reader "error"))) in
     let t = Ev.target_of_jv reader in
-    Ev.listen ~opts:(Ev.listen_opts ~once:true ()) Ev.load ok t;
-    Ev.listen ~opts:(Ev.listen_opts ~once:true ()) Ev.error error t;
+    ignore
+      (Ev.listen ~opts:(Ev.listen_opts ~once:true ()) Ev.load ok t : Ev.key);
+    ignore
+      (Ev.listen ~opts:(Ev.listen_opts ~once:true ()) Ev.error error t : Ev.key);
     ignore (Jv.call reader "readAsDataURL" [| b |]);
     fut
 end
@@ -1285,16 +1292,15 @@ module El = struct
     let fut, set = Fut.create () in
     let d = (Obj.magic document e : Ev.target) in
     let opts = Ev.listen_opts ~once:true () in
-    let rec unlisten () =
-      Ev.unlisten ~opts Ev.pointerlockchange locked d;
-      Ev.unlisten ~opts Ev.pointerlockerror error d;
-    and locked _ev = set (Ok ()); unlisten ()
+    let unlisten = ref (fun () -> ()) in
+    let locked _ev = set (Ok ()); !unlisten ()
     and error _ev =
       let err = Jv.Error.v (Jstr.v "Could not lock pointer") in
-      set (Error err); unlisten ()
+      set (Error err); !unlisten ()
     in
-    Ev.listen ~opts Ev.pointerlockchange locked d;
-    Ev.listen ~opts Ev.pointerlockerror error d;
+    let k = Ev.listen ~opts Ev.pointerlockchange locked d in
+    let k' = Ev.listen ~opts Ev.pointerlockerror error d in
+    unlisten := (fun () -> Ev.unlisten k; Ev.unlisten k');
     ignore @@ Jv.call e "requestPointerLock" [||];
     fut
 
@@ -1947,10 +1953,12 @@ module G = struct
   type timer_id = int
 
   let set_timeout ~ms f =
-    Jv.to_int @@ Jv.call Jv.global "setTimeout" [| Jv.repr f; Jv.of_int ms |]
+    Jv.to_int @@
+    Jv.call Jv.global "setTimeout" [| Jv.callback 1 f; Jv.of_int ms |]
 
   let set_interval ~ms f =
-    Jv.to_int @@ Jv.call Jv.global "setInterval" [| Jv.repr f; Jv.of_int ms |]
+    Jv.to_int @@
+    Jv.call Jv.global "setInterval" [| Jv.callback 1 f; Jv.of_int ms |]
 
   let stop_timer tid =
     (* according to spec interval and timeout share the same ints *)
@@ -1961,7 +1969,7 @@ module G = struct
   type animation_frame_id = int
 
   let request_animation_frame f =
-    Jv.to_int @@ Jv.call Jv.global "requestAnimationFrame" [|Jv.repr f|]
+    Jv.to_int @@ Jv.call Jv.global "requestAnimationFrame" [|Jv.callback 1 f|]
 
   let cancel_animation_frame fid =
     ignore @@ Jv.call Jv.global "cancelAnimationFrame" [| Jv.of_int fid|]
