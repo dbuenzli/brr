@@ -5,7 +5,7 @@
                        -package brr,brr.note,brr.poked poke.ml
 
    js_of_ocaml $(ocamlfind query -r -i-format brr.poked) -I . \
-            --toplevel +toplevel.js +dynlink.js a.out -o poke.js *)
+            --toplevel a.out -o poke.js *)
 
 open Brr
 

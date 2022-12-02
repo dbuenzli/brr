@@ -48,7 +48,8 @@ v}
 {2:ocaml_console And the fancy OCaml console?}
 
 Poke your program by side effect by linking against the [brr.poked]
-library. Make sure everything gets in by using [-linkall].
+library. Make sure everything gets in by using [-linkall], the [-g]
+flag is also required.
 
 {[
 ocamlfind ocamlc -g -linkall -linkpkg -package brr,brr.poked min.ml
@@ -59,7 +60,7 @@ to add its toplevel and dynlink JavaScript support:
 
 {v
 js_of_ocaml $(ocamlfind query -r -i-format brr.poked) -I . \
-            --toplevel +toplevel.js +dynlink.js a.out -o min.js
+            --toplevel a.out -o min.js
 v}
 
 Make sure you have the OCaml console extension
@@ -125,7 +126,7 @@ cat - > dune <<EOF
  (action
     (run %{bin:js_of_ocaml}
          -I %{lib:brr:.} -I .min.eobjs/byte ; to see the program's cmis
-         --toplevel +toplevel.js +dynlink.js %{dep:min.bc} -o %{targets})))
+         --toplevel %{dep:min.bc} -o %{targets})))
 
 (alias
   (name app)
