@@ -2,7 +2,6 @@ open B0_kit.V000
 
 (* OCaml library names *)
 
-let js_of_ocaml = B0_ocaml.libname "js_of_ocaml"
 let js_of_ocaml_toplevel = B0_ocaml.libname "js_of_ocaml-toplevel"
 let js_of_ocaml_compiler_runtime =
   B0_ocaml.libname "js_of_ocaml-compiler.runtime"
@@ -43,7 +42,7 @@ let brr_ocaml_poke_ui_lib =
 let brr_poke_lib =
   let srcs = Fpath.[ `Dir (v "src/poke") ] in
   let requires =
-    [js_of_ocaml_compiler_runtime; js_of_ocaml; js_of_ocaml_toplevel; brr]
+    [js_of_ocaml_compiler_runtime; js_of_ocaml_toplevel; brr]
   in
   let doc = "Poke explicitely" in
   B0_ocaml.lib brr_poke ~doc ~srcs ~requires
@@ -188,8 +187,8 @@ let default =
       [ "ocaml", {|>= "4.08.0"|};
         "ocamlfind", {|build|};
         "ocamlbuild", {|build|};
-        "js_of_ocaml-compiler", {|>= "4.0.0"|};
-        "js_of_ocaml-toplevel", {|>= "4.0.0"|};
+        "js_of_ocaml-compiler", {|>= "4.1.0"|};
+        "js_of_ocaml-toplevel", {|>= "4.1.0"|};
         "note", "";
       ]
   in

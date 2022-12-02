@@ -58,9 +58,7 @@ let top_use phrases =
 
 let define () =
   let ocaml_version = Jstr.of_string Sys.ocaml_version in
-  (* Last use of Js_of_ocaml,
-     see https://github.com/ocsigen/js_of_ocaml/issues/1236  *)
-  let jsoo_version = Jstr.of_string Js_of_ocaml.Sys_js.js_of_ocaml_version in
+  let jsoo_version = Jstr.of_string Jsoo_runtime.Sys.version in
   let o =
     Jv.obj [| "version", Jv.of_int 0;
               "ocaml_version", Jv.of_jstr ocaml_version;

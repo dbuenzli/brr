@@ -43,7 +43,7 @@ package "poke" (
   directory = "poke"
   description = "Poke support"
   version = "%%VERSION_NUM%%"
-  requires = "brr js_of_ocaml js_of_ocaml-toplevel"
+  requires = "brr js_of_ocaml-toplevel"
   archive(byte) = "brr_poke.cma"
   archive(native) = "brr_poke.cmxa"
   plugin(byte) = "brr_poke.cma"

@@ -8,11 +8,11 @@ true : bin_annot, safe_string
 <src/note/**> : package(note)
 
 <src/poke> : include
-<src/poke/**> : package(js_of_ocaml), package(js_of_ocaml-toplevel)
+<src/poke/**> : package(js_of_ocaml-toplevel)
 <src/poked> : include
 <src/ocaml_poke> : include
 <src/ocaml_poke_ui> : include
 
 <src/console> : include
 
-<test/**> : package(js_of_ocaml), package(note)
+<test/**> : package(note)
