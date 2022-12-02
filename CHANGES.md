@@ -1,8 +1,7 @@
 
-- `Brr.El.v`, perform `At.style` attribute merging like we do with
-  `At.class`. This is a breaking change if you had `El.v` calls with 
-  multiple `style` attributes definition and expected the last one to 
-  take over. Note that the `At.style` value is introduced in this version.
+### Additions
+
+- Add `Brr_webmidi`, bindings for Web MIDI.
 - `Brr.At`, add support for `accesskey`, `action`, `autocomplete`, 
   `autofocus`, `list`, `method`, `selected`, `style` attributes.
   Make sure MDN doc links do not 404.
@@ -13,19 +12,33 @@
 - Add `Brr.File.relative_path`.
 - Add `Brr_canvas.{C2d,Gl}.get_context` and deprecate 
   `Brr_canvas.{C2d,Gl}.create` whose names are misleading (#36).
-- Fix `Brr_canvas.C2d.transform` binding to `resetTransform` instead
-  of `transform` (#38).
 - Add `Brr_canvas.C2d.{set_transform',transform'}` taking matrix
   components directly.
 - Add `Jstr.binary_{of,to}_octets` to convert between OCaml strings
   as sequence of bytes and JavaScript binary strings (#18 again)
-- Add `Brr_webmidi`, bindings for Web MIDI.
-- Make the modules' initialisation bits web worker safe.  We have
-  toplevel code that access properties of values that (e.g. `Brr.El`
-  accessing `document` or `Brr_note` accessing mutation
-  observers). These modules can't be used in web workers but they may
-  be linked in your web worker code (e.g. if you fork()-like your
-  workers) in which case toplevel initialisation bits do get executed.
+
+### Changes
+
+- `Brr.El.v`, perform `At.style` attribute merging like we do with
+  `At.class`. This is a breaking change if you had `El.v` calls with 
+  multiple `style` attributes definition and expected the last one to 
+  take over. Note that the `At.style` value is introduced in this version.
+
+### Fixes and internal cleanups
+
+- Fix `Brr_canvas.C2d.transform` it was binding to `resetTransform` 
+  instead of `transform` (#38).
+
+- Adapt to `js_of_ocaml-toplevel` changes.
+
+- Make the modules' initialisation bits web worker safe.
+
+  We had toplevel code that accessed properties of values that are not
+  allowed in workers (e.g. `Brr.El` accessing `document` or `Brr_note`
+  accessing mutation observers). These modules may still be linked in
+  your web worker code (e.g. if you fork()-like your workers) in which
+  case these toplevel initialisation bits would get executed and fail.
+
 
 v0.0.3 2022-01-30 La Forclaz (VS)
 ---------------------------------
