@@ -198,7 +198,7 @@ let default =
 (* Cmdlets *)
 
 let update_console =
-  B0_cmdlet.v ~doc:"Develop console" "dev-console" @@ fun env args ->
+  B0_cmdlet.v ~doc:"Update dev console" "update-dev-console" @@ fun env args ->
   B0_cmdlet.exit_of_result @@
   (* FIXME so much path boilerplate. Summon units/packs to be build
      and get info directly. *)
