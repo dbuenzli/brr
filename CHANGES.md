@@ -1,3 +1,21 @@
+### Important changes for upcoming effect support
+
+The following changes are needed for the upcoming effect support in
+`js_of_ocaml`. Thanks to Jérôme Vouillon for his help.
+
+- **Important** Add `Jv.callback`. When the effect support lands it
+  will no longer be possible to invoke an OCaml function `f` from
+  JavaScript by simply using `(Jv.repr f)` to get a `Jv.t` value as
+  was suggested in the cookbook. You have to use `(Jv.callback ~arity
+  f)` with `~arity` the arity of the function. The recipes of the
+  cookbook to deal with callbacks and exposing OCaml functions to
+  JavaScript have been updated accordingly.
+- `Brr.Ev.listen` no longer returns `unit` but an abstract value of type 
+  `Brr.Ev.listener`. If you don't need to unlisten you can simply `ignore` 
+  that value. If you do, see next point.
+- `Brr.Ev.unlisten` is changed to take a value of type `Brr.Ev.listener`. 
+   Previously you had to invoke it with the same arguments you gave to 
+   `Brr.Ev.listen`.
 
 ### Additions
 
@@ -17,14 +35,14 @@
 - Add `Jstr.binary_{of,to}_octets` to convert between OCaml strings
   as sequence of bytes and JavaScript binary strings (#18 again)
 
-### Changes
+### Breaking changes
 
 - `Brr.El.v`, perform `At.style` attribute merging like we do with
   `At.class`. This is a breaking change if you had `El.v` calls with 
   multiple `style` attributes definition and expected the last one to 
   take over. Note that the `At.style` value is introduced in this version.
 
-### Fixes and internal cleanups
+### Bug fixes and internal cleanups
 
 - Fix `Brr_canvas.C2d.transform` it was binding to `resetTransform` 
   instead of `transform` (#38).

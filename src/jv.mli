@@ -332,9 +332,12 @@ end
 
 external apply : t -> t array -> t = "caml_js_fun_call"
 (** [apply f args] calls function [f] with arguments [args].
-'    {{!page-ffi_manual.funcs}Lookup} functions names
-    in the {!Jv.global} object. *)
-external callback : int -> (_ -> _) -> t = "caml_js_wrap_callback_strict"
+    {{!page-ffi_manual.funcs}Lookup} functions names in the {!Jv.global}
+    object. *)
+
+external callback : arity:int -> (_ -> _) -> t = "caml_js_wrap_callback_strict"
+(** [callback ~arity f] makes function [f] with arity [arity] callable
+    from JavaScript. *)
 
 (** {1:exns Errors and exceptions} *)
 

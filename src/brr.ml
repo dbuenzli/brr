@@ -71,23 +71,23 @@ module Ev = struct
     Jv.Bool.set_if_some o "passive" passive;
     o
 
-  type key = unit -> unit
+  type listener = unit -> unit
 
   let listen ?(opts = Jv.obj [||]) type' f t =
-    let t = Jv.of_jstr type' in
-    let w = Jv.callback 1 f in
-    ignore @@ Jv.call t "addEventListener"
-      [|t; w; opts |];
-    fun () ->
-    ignore @@ Jv.call t "removeEventListener"
-      [|t; w; opts |]
+    let type' = Jv.of_jstr type' in
+    let f = Jv.callback ~arity:1 f in
+    let unlisten () =
+      ignore @@ Jv.call t "removeEventListener" [|type'; f; opts |]
+    in
+    ignore @@ Jv.call t "addEventListener" [|type'; f; opts |];
+    unlisten
 
-  let unlisten id = id ()
+  let unlisten unlisten = unlisten ()
 
   let next ?capture type' t =
     let fut, set = Fut.create () in
     let opts = listen_opts ?capture ~once:true () in
-    ignore (listen ~opts type' set t : key);
+    ignore (listen ~opts type' set t : listener);
     fut
 
   (* Event objects *)
@@ -118,7 +118,8 @@ module Ev = struct
       let get_file i = Jv.to_option Fun.id (Jv.call i "getAsFile" [||])
       let get_jstr i =
         let str, set_str = Fut.create () in
-        ignore (Jv.call i "getAsString" [| Jv.repr set_str |]);
+        let set_str = Jv.callback ~arity:1 set_str in
+        ignore (Jv.call i "getAsString" [| set_str |]);
         str
     end
     module Item_list = struct
@@ -583,39 +584,39 @@ module Tarray = struct
 
   let find sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    Jv.to_option Obj.magic (Jv.call a "find" Jv.[| callback 2 sat |])
+    Jv.to_option Obj.magic (Jv.call a "find" Jv.[| callback ~arity:2 sat |])
 
   let find_index sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    let i = Jv.to_int (Jv.call a "findIndex" Jv.[| callback 2 sat |]) in
+    let i = Jv.to_int (Jv.call a "findIndex" Jv.[| callback ~arity:2 sat |]) in
     if i = -1 then None else Some i
 
   let for_all sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    Jv.to_bool @@ Jv.call a "every" Jv.[| callback 2 sat |]
+    Jv.to_bool @@ Jv.call a "every" Jv.[| callback ~arity:2 sat |]
 
   let exists sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    Jv.to_bool @@ Jv.call a "every" Jv.[| callback 2 sat |]
+    Jv.to_bool @@ Jv.call a "every" Jv.[| callback ~arity:2 sat |]
 
   (* Traversals *)
 
   let filter sat a =
     let sat v i = Jv.of_bool (sat i v) in
-    Jv.call a "filter" Jv.[| callback 2 sat |]
+    Jv.call a "filter" Jv.[| callback ~arity:2 sat |]
 
   let iter f a =
     let f v i = f i v in
-    ignore @@ Jv.call a "forEach" Jv.[| callback 2 f |]
+    ignore @@ Jv.call a "forEach" Jv.[| callback ~arity:2 f |]
 
-  let map f a = Jv.call a "map" Jv.[| callback 1 f |]
+  let map f a = Jv.call a "map" Jv.[| callback ~arity:1 f |]
 
   let fold_left f acc a =
-    Obj.magic @@ Jv.call a "reduce" [|Jv.callback 2 f; Jv.repr acc|]
+    Obj.magic @@ Jv.call a "reduce" [|Jv.callback ~arity:2 f; Jv.repr acc|]
 
   let fold_right f a acc =
     let f acc v = f v acc in
-    Obj.magic @@ Jv.call a "reduceRight" [|Jv.callback 2 f; Jv.repr acc|]
+    Obj.magic @@ Jv.call a "reduceRight" [|Jv.callback ~arity:2 f; Jv.repr acc|]
 
   let reverse a = Jv.call a "reverse" Jv.[||]
 
@@ -785,10 +786,9 @@ module Blob = struct
     let ok _e = set_fut (Ok (Jv.Jstr.get reader "result")) in
     let error _e = set_fut (Error (Jv.to_error (Jv.get reader "error"))) in
     let t = Ev.target_of_jv reader in
-    ignore
-      (Ev.listen ~opts:(Ev.listen_opts ~once:true ()) Ev.load ok t : Ev.key);
-    ignore
-      (Ev.listen ~opts:(Ev.listen_opts ~once:true ()) Ev.error error t : Ev.key);
+    let opts = Ev.listen_opts ~once:true () in
+    ignore (Ev.listen ~opts Ev.load ok t : Ev.listener);
+    ignore (Ev.listen ~opts Ev.error error t : Ev.listener);
     ignore (Jv.call reader "readAsDataURL" [| b |]);
     fut
 end
@@ -1954,11 +1954,11 @@ module G = struct
 
   let set_timeout ~ms f =
     Jv.to_int @@
-    Jv.call Jv.global "setTimeout" [| Jv.callback 1 f; Jv.of_int ms |]
+    Jv.call Jv.global "setTimeout" [| Jv.callback ~arity:1 f; Jv.of_int ms |]
 
   let set_interval ~ms f =
     Jv.to_int @@
-    Jv.call Jv.global "setInterval" [| Jv.callback 1 f; Jv.of_int ms |]
+    Jv.call Jv.global "setInterval" [| Jv.callback ~arity:1 f; Jv.of_int ms |]
 
   let stop_timer tid =
     (* according to spec interval and timeout share the same ints *)
@@ -1969,7 +1969,8 @@ module G = struct
   type animation_frame_id = int
 
   let request_animation_frame f =
-    Jv.to_int @@ Jv.call Jv.global "requestAnimationFrame" [|Jv.callback 1 f|]
+    Jv.to_int @@ Jv.call Jv.global "requestAnimationFrame"
+      [|Jv.callback ~arity:1 f|]
 
   let cancel_animation_frame fid =
     ignore @@ Jv.call Jv.global "cancelAnimationFrame" [| Jv.of_int fid|]

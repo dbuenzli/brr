@@ -48,7 +48,7 @@ let try_await_inspected_document_complete eval =
 let reset_panel () =
   let reload = El.button El.[txt' "Reset panel"] in
   let reload_act _ = Window.reload G.window in
-  Ev.listen Ev.click reload_act (El.as_target reload);
+  ignore (Ev.listen Ev.click reload_act (El.as_target reload));
   reload
 
 let rec warn_no_poke panel ui =
@@ -58,7 +58,7 @@ let rec warn_no_poke panel ui =
   in
   let retry = El.button El.[txt' "Retry"] in
   let retry_connect _ = ignore (connect_poke panel) in
-  Ev.listen Ev.click retry_connect (El.as_target retry);
+  ignore (Ev.listen Ev.click retry_connect (El.as_target retry));
   Brr_ocaml_poke_ui.output ui ~kind:`Warning [El.pre [El.txt (Jstr.v msg)]];
   Brr_ocaml_poke_ui.output ui ~kind:`Info [retry];
   ()
@@ -86,7 +86,8 @@ and connect_poke panel =
 
 let listen ev func = match Jv.find_path Jv.global ev with
 | None -> ()
-| Some o -> ignore (Jv.call o "addListener" [|Jv.repr func|])
+| Some o ->
+    ignore (Jv.call o "addListener" [|Jv.callback ~arity:1 func|])
 
 let setup_reconnect_on_reload panel =
   let prefix = ["chrome"; "devtools"; "network"; ] in

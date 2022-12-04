@@ -118,7 +118,7 @@ module Canvas = struct
   let to_blob ?encode c =
     let fut, set = Fut.create () in
     let cb blob = set (Ok (Jv.to_option Blob.of_jv blob)) in
-    match enc c "toBlob" (Some (Jv.repr cb)) with
+    match enc c "toBlob" (Some (Jv.callback ~arity:1 cb)) with
     | exception Jv.Error e -> set (Error e); fut
     | _ -> fut
 

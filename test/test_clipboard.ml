@@ -31,7 +31,7 @@ let put_clipboard view () =
 
 let button ?at onclick label =
   let but = El.button ?at [El.txt (Jstr.v label)] in
-  Ev.listen Ev.click (fun _e -> onclick ()) (El.as_target but); but
+  ignore (Ev.listen Ev.click (fun _e -> onclick ()) (El.as_target but)); but
 
 let main () =
   let h1 = El.h1 [El.txt' "Clipboard test"] in

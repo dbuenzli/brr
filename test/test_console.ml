@@ -87,7 +87,7 @@ let test () =
 
 let button onclick label =
   let but = El.button [El.txt (Jstr.v label)] in
-  Ev.listen Ev.click onclick (El.as_target but); but
+  ignore (Ev.listen Ev.click onclick (El.as_target but)); but
 
 let main () =
   let h1 = El.h1 [El.txt' "Console test"] in

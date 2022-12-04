@@ -19,7 +19,7 @@ let toggle ?at onclick ~off:off_label ~on:on_label =
     on := not !on;
     El.set_children but [El.txt' (if !on then on_label else off_label)];
   in
-  Ev.listen Ev.click onclick (El.as_target but); but
+  ignore (Ev.listen Ev.click onclick (El.as_target but)); but
 
 (* Audio viz. *)
 

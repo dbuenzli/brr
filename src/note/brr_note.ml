@@ -162,7 +162,7 @@ module Elr = struct
     let mutation_observer = Jv.get Jv.global "MutationObserver" in
     if Jv.is_none mutation_observer || Jv.is_none (Document.to_jv G.document)
     then ((* protect web worker *)) else
-    let obs = Jv.new' mutation_observer [| Jv.repr obs |] in
+    let obs = Jv.new' mutation_observer [| Jv.callback ~arity:2 obs |] in
     let opts = Jv.obj [| "childList", Jv.true'; "subtree", Jv.true' |] in
     let root = El.to_jv @@ Document.root G.document in
     ignore @@ Jv.call obs "observe" [| root; opts |]

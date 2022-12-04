@@ -287,7 +287,7 @@ let history_clear_ui r =
   let clear_act _ =
     ignore @@ Fut.map (Console.log_if_error ~use:()) @@ history_clear r
   in
-  Ev.listen Ev.click clear_act (El.as_target clear);
+  ignore (Ev.listen Ev.click clear_act (El.as_target clear));
   clear
 
 let history_keyboard_moves r key =
@@ -379,8 +379,8 @@ let use_ml_ui r poke =
   let i = El.input ~at:At.[type' (Jstr.v "file")] () in
   let b = El.button [ El.txt' "#use \"…\"" ] in
   El.set_inline_style El.Style.display (Jstr.v "none") i;
-  Ev.listen Ev.click (fun e -> El.click i) (El.as_target b);
-  Ev.listen Ev.change (fun e -> on_change i) (El.as_target i);
+  ignore (Ev.listen Ev.click (fun e -> El.click i) (El.as_target b));
+  ignore (Ev.listen Ev.change (fun e -> on_change i) (El.as_target i));
   El.span [i; b]
 
 let use_ml_on_file_drag_and_drop ?drop_target r poke =
@@ -395,8 +395,9 @@ let use_ml_on_file_drag_and_drop ?drop_target r poke =
   in
   let on_dragover e = Ev.prevent_default e in
   let t = match drop_target with None -> El.as_target r.view | Some t -> t in
-  Ev.listen Ev.dragover on_dragover t;
-  Ev.listen Ev.drop on_drop t
+  ignore (Ev.listen Ev.dragover on_dragover t);
+  ignore (Ev.listen Ev.drop on_drop t);
+  ()
 
 (* Creating and running the ui *)
 
@@ -419,8 +420,8 @@ let buttons ?(buttons = []) r poke =
 
 let setup_poke_io ?drop_target r poke =
   let input = El.as_target (Text_input.input r.input) in
-  Ev.listen Ev.input (handle_text_input r poke) input;
-  Ev.listen Ev.keydown (history_keyboard_moves r) input;
+  ignore (Ev.listen Ev.input (handle_text_input r poke) input);
+  ignore (Ev.listen Ev.keydown (history_keyboard_moves r) input);
   use_ml_on_file_drag_and_drop ?drop_target r poke
 
 let run ?drop_target ?buttons:bs r poke =

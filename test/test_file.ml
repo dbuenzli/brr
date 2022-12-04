@@ -35,8 +35,9 @@ let file_selector ~on_change =
   let i = El.input ~at:At.[type' (Jstr.v "file")] () in
   let b = El.button [ El.txt' "Choose file…" ] in
   El.set_inline_style El.Style.display (Jstr.v "none") i;
-  Ev.listen Ev.click (fun e -> El.click i) (El.as_target b);
-  Ev.listen Ev.change (fun e -> on_change (El.Input.files i)) (El.as_target i);
+  ignore (Ev.listen Ev.click (fun e -> El.click i) (El.as_target b));
+  ignore (Ev.listen Ev.change (fun e -> on_change (El.Input.files i))
+            (El.as_target i));
   El.span [i; b]
 
 let main () =

@@ -40,7 +40,7 @@ let handle_error ~view = function
 
 let button ?at onclick label =
   let but = El.button ?at [El.txt (Jstr.v label)] in
-  Ev.listen Ev.click (fun _e -> onclick ()) (El.as_target but); but
+  ignore (Ev.listen Ev.click (fun _e -> onclick ()) (El.as_target but)); but
 
 let fullscreen_button ~view video =
   let no_fullscreen = not (Document.fullscreen_available G.document) in

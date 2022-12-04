@@ -16,7 +16,7 @@ let handle_error ~view = function
 
 let button ?at onclick label =
   let but = El.button ?at [El.txt (Jstr.v label)] in
-  Ev.listen Ev.click (fun _e -> onclick but) (El.as_target but); but
+  ignore (Ev.listen Ev.click (fun _e -> onclick but) (El.as_target but)); but
 
 let log_pos pos view =
   let label n = El.em El.[txt Jstr.(v n + v ":")] in
