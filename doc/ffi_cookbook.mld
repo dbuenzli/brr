@@ -369,15 +369,15 @@ if needed so:
 
 {2:callback Deal with callbacks to OCaml}
 
-You need to convert the callback to a JavaScript with the
+You need to convert the callback to a JavaScript [Jv.t] value with the
 {!Jv.callback} function.
 
 {[
 let set_timeout : ms:int -> (unit -> unit) -> unit =
   let set_timeout = Jv.get Jv.global "setTimeout" in
   fun ~ms f ->
-  let f = Jv.callback ~arity:1 f in
-  ignore @@ Jv.apply set_timeout Jv.[| f; of_int ms |]
+    let f = Jv.callback ~arity:1 f in
+    ignore @@ Jv.apply set_timeout Jv.[| f; of_int ms |]
 
 let () =
   let alert = Jv.get Jv.global "alert" in
