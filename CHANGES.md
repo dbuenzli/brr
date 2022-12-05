@@ -1,4 +1,7 @@
-### Important changes for upcoming effect support
+v0.0.4 2022-12-05 Zagreb 
+------------------------
+
+### Changes for upcoming `js_of_ocaml` effect support
 
 The following changes are needed for the upcoming effect support in
 `js_of_ocaml`. Thanks to Jérôme Vouillon for his help.
@@ -7,7 +10,7 @@ The following changes are needed for the upcoming effect support in
   will no longer be possible to invoke an OCaml function `f` from
   JavaScript by simply using `(Jv.repr f)` to get a `Jv.t` value as
   was suggested in the cookbook. You have to use `(Jv.callback ~arity
-  f)` with `~arity` the arity of the function. The recipes of the
+  f)` with `arity` the arity of the function. The recipes of the
   cookbook to deal with callbacks and exposing OCaml functions to
   JavaScript have been updated accordingly.
 - `Brr.Ev.listen` no longer returns `unit` but an abstract value of type 
@@ -15,7 +18,7 @@ The following changes are needed for the upcoming effect support in
   that value. If you do, see next point.
 - `Brr.Ev.unlisten` is changed to take a value of type `Brr.Ev.listener`. 
    Previously you had to invoke it with the same arguments you gave to 
-   `Brr.Ev.listen`.
+   `Brr.Ev.listen` like in JavaScript.
 
 ### Additions
 
@@ -42,15 +45,12 @@ The following changes are needed for the upcoming effect support in
   multiple `style` attributes definition and expected the last one to 
   take over. Note that the `At.style` value is introduced in this version.
 
-### Bug fixes and internal cleanups
+### Bug fixes and internal changes
 
 - Fix `Brr_canvas.C2d.transform` it was binding to `resetTransform` 
   instead of `transform` (#38).
-
 - Adapt to `js_of_ocaml-toplevel` changes.
-
 - Make the modules' initialisation bits web worker safe.
-
   We had toplevel code that accessed properties of values that are not
   allowed in workers (e.g. `Brr.El` accessing `document` or `Brr_note`
   accessing mutation observers). These modules may still be linked in

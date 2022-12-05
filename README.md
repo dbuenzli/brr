@@ -33,11 +33,15 @@ instructions.
 
 The documentation can be consulted [online][doc] or via `odig doc brr`.
 
+Questions are welcome but better asked on the [OCaml forum] than on 
+the issue tracker.
+
 [doc]: https://erratique.ch/software/brr/doc
+[OCaml forum]: https://discuss.ocaml.org/
 
 ## Sample programs
 
-Not much for now. A few basic programs are in the [test suite](test).
+A few basic programs are in the [test suite](test).
 
 An implementation of the [TodoMVC][todomvc] application with `brr.note` is 
 in [todomvc.ml](test/todomvc.ml).
