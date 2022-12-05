@@ -868,8 +868,7 @@ module Ev : sig
       {!unlisten}, if you don't need to, you can just `ignore` the result. *)
 
   val unlisten : listener -> unit
-  (** [unlisten key] stops the listening introduced by the
-      corresponding {!listen} invocation. *)
+  (** [unlisten l] stops the listening done by [l]. *)
 
   val next : ?capture:bool -> 'a type' -> target -> 'a t Fut.t
   (** [next type' t] is a future that determines the next event of
