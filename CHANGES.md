@@ -1,3 +1,9 @@
+
+
+
+- Make the `Brr_canvas.Gl` module initialisation bits safe when there is
+  no `WebGLRenderingContext`. Thanks to Haochen Kotoi-Xie for reporting.
+
 v0.0.4 2022-12-05 Zagreb 
 ------------------------
 
