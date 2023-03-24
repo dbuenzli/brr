@@ -1270,7 +1270,7 @@ module El = struct
   let scroll_h e = Jv.Float.get e "scrollHeight"
 
   let scroll_into_view ?(align_v = `Start) e =
-    let align = match align_v with `Start -> false | `End -> true in
+    let align = match align_v with `Start -> true | `End -> false in
     ignore @@ Jv.call e "scrollIntoView" [| Jv.of_bool align |]
 
   (* Focus *)
