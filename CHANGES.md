@@ -1,6 +1,8 @@
 
 
-
+- `Brr_io.Fetch.cache` becomes a function taking `unit`. It seems 
+  accessing it at initalisation time trips the (latest ?) Firefox 
+  webworkers.
 - Make the `Brr_canvas.Gl` module initialisation bits safe when there is
   no `WebGLRenderingContext`. Thanks to Haochen Kotoi-Xie for reporting.
 

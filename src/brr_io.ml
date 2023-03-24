@@ -440,7 +440,7 @@ module Fetch = struct
   let request r =
     Fut.of_promise ~ok:Response.of_jv @@ Jv.apply fetch [|Request.to_jv r|]
 
-  let caches = Jv.get Jv.global "caches"
+  let caches () = Jv.get Jv.global "caches"
 end
 
 (* Geolocation *)

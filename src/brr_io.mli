@@ -837,8 +837,8 @@ module Fetch : sig
   val request : Request.t -> Response.t Fut.or_error
   (** [request r] {{:https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch}fetches} request [r]. *)
 
-  val caches : Cache.Storage.t
-  (** [caches] is the global
+  val caches : unit -> Cache.Storage.t
+  (** [caches ()] is the global
       {{:https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/caches}[caches]} object. *)
 end
 
