@@ -580,7 +580,7 @@ end
     {{:http://tools.ietf.org/html/rfc3986}RFC 3986} terminology:
     we don't return separators like [':'], ['?']  and ['#'] in
     the data and we use [host] for what is [hostname] in the URL API.
-    Also the data we return is {{!Brr.Uri.decode}URL (percent) decoded}). *)
+    Also the data we return is {{!Brr.Uri.decode}URL (percent) decoded}. *)
 module Uri : sig
 
   (** {1:uris URIs} *)
@@ -679,12 +679,15 @@ module Uri : sig
 
   val encode : Jstr.t -> (Jstr.t, Jv.Error.t) result
   (** [encode s] URL encodes [s] by percent-encoding an UTF-8 representation
-      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI}encodeURI}. *)
+      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI}encodeURI}.
+
+      {b Warning.} This encodes according to RFC2396 not according to RFC3986 which
+      reserves a few more characters. *)
 
   val decode : Jstr.t -> (Jstr.t, Jv.Error.t) result
   (** [decode s] URL decodes [s] by percent-decoding an UTF-8 representation
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI}decodeURI}.
-*)
+  *)
 
   val encode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
   (** [encode s] URL encodes [s] by percent-encoding an UTF-8 representation
@@ -702,8 +705,8 @@ module Uri : sig
       errors. *)
 
   val to_jstr : t -> Jstr.t
-  (** [to_jstr u] is [u] as a JavaScript string. The result is URL
-      encoded.*)
+  (** [to_jstr u] is [u] as a JavaScript string. The result is {{!encode}URL
+      encoded}. *)
 
   (**/**)
   include Jv.CONV with type t := t
