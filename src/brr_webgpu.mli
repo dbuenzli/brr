@@ -908,8 +908,8 @@ module Gpu : sig
           [GPUShaderModuleDescriptor]} objects. *)
 
       val v :
-        ?label:Jstr.t -> ?source_map:Jv.t -> ?hints:Jv.t ->
-        code:Jstr.t -> unit -> t
+        ?label:Jstr.t -> ?source_map:Jv.t ->
+        ?hints:(Jstr.t * Compilation_hint.t) list -> code:Jstr.t -> unit -> t
       (** [v] constructs a
           {{:https://www.w3.org/TR/webgpu/#dictdef-gpushadermoduledescriptor}
           [GPUShaderModuleDescriptor]} object with given parameters. *)
@@ -1467,10 +1467,10 @@ module Gpu : sig
     (** Descriptors. *)
     module Descriptor : sig
       type t
-      (** The type for {{:https://www.w3.org/TR/webgpu/#dictdef-gpucomputepasstimestampwrites}[GPUComputePassDescriptor]} objects. *)
+      (** The type for {{:https://www.w3.org/TR/webgpu/#dictdef-gpucomputepassdescriptor}[GPUComputePassDescriptor]} objects. *)
 
-      val v : ?label:Jstr.t -> timestamp_writes:Jv.t -> unit -> t
-      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpucomputepasstimestampwrites}[GPUComputePassDescriptor]} object with given parameters. *)
+      val v : ?label:Jstr.t -> timestamp_writes:Timestamp_writes.t -> unit -> t
+      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpucomputepassdescriptor}[GPUComputePassDescriptor]} object with given parameters. *)
 
       (**/**) include Jv.CONV with type t := t (**/**)
     end
@@ -2103,9 +2103,9 @@ module Gpu : sig
           {{:https://www.w3.org/TR/webgpu/#enumdef-gpuerrorfilter}
           [GPUErrorFilter]} values *)
 
-      val validation : Jstr.t
-      val out_of_memory : Jstr.t
-      val internal : Jstr.t
+      val validation : t
+      val out_of_memory : t
+      val internal : t
     end
 
     type t

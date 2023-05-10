@@ -622,12 +622,18 @@ module Gpu = struct
     module Descriptor = struct
       type t = Jv.t
       include (Jv.Id : Jv.CONV with type t := t)
-      let v ?label ?source_map ?hints ~code () =
+      let hints_obj hints =
+        let c = Jv.obj [||] in
+        let set o (k, h) = Jv.set' o k (Compilation_hint.to_jv h) in
+        List.iter (set c) hints; c
+
+      let v ?label ?source_map ?(hints = []) ~code () =
+        let hints = hints_obj hints in
         let d = Jv.obj [||] in
         Jv.Jstr.set_if_some d "label" label;
         Jv.Jstr.set d "code" code;
         Jv.set_if_some d "sourceMap" source_map;
-        Jv.set_if_some d "hints" hints;
+        Jv.set d "hints" hints;
         d
     end
     type t = Jv.t

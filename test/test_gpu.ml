@@ -1,11 +1,13 @@
 (*---------------------------------------------------------------------------
-   Copyright (c) 2022 The brr programmers. All rights reserved.
+   Copyright (c) 2023 The brr programmers. All rights reserved.
    Distributed under the ISC license, see terms at the end of the file.
   ---------------------------------------------------------------------------*)
 
 open Brr
 open Brr_canvas
 open Brr_webgpu
+
+(* Draws THE triangle. *)
 
 (* Shaders *)
 
@@ -242,7 +244,7 @@ let main ()  =
 let () = ignore (main ())
 
 (*---------------------------------------------------------------------------
-   Copyright (c) 2022 The brr programmers
+   Copyright (c) 2023 The brr programmers
 
    Permission to use, copy, modify, and/or distribute this software for any
    purpose with or without fee is hereby granted, provided that the above
