@@ -1,3 +1,5 @@
+v0.0.5 2023-05-10 La Forclaz (VS)
+---------------------------------
 
 - Add `Brr_webgpu`, bindings for WebGPU. Supported by 
   a grant from the OCaml Software Foundation.
