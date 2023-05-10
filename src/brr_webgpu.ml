@@ -4,9 +4,6 @@
   ---------------------------------------------------------------------------*)
 
 module Gpu = struct
-
-  (* GPU colors, origins and extents *)
-
   module Origin_2d = struct
     type t = Jv.t
     include (Jv.Id : Jv.CONV with type t := t)
@@ -14,6 +11,7 @@ module Gpu = struct
       let o = Jv.obj [||] in
       Jv.Int.set o "x" x; Jv.Int.set o "y" y; o
   end
+
   module Origin_3d = struct
     type t = Jv.t
     include (Jv.Id : Jv.CONV with type t := t)
@@ -21,94 +19,111 @@ module Gpu = struct
       let o = Jv.obj [||] in
       Jv.Int.set o "x" x; Jv.Int.set o "y" y; Jv.Int.set o "z" z; o
   end
+
   module Extent_3d = struct
     type t = Jv.t
     include (Jv.Id : Jv.CONV with type t := t)
     let v ?(h = 1) ?(d = 1) ~w () =
       let o = Jv.obj [||] in
-      Jv.Int.set o "width" w;
-      Jv.Int.set o "height" h;
+      Jv.Int.set o "width" w; Jv.Int.set o "height" h;
       Jv.Int.set o "depthOrArrayLayers" d; o
   end
 
-  (* GPU supported limits *)
+  module Compare_function = struct
+    type t = Jstr.t
+    let never = Jstr.v "never"
+    let less = Jstr.v "less"
+    let equal = Jstr.v "equal"
+    let less_equal = Jstr.v "less-equal"
+    let greater = Jstr.v "greater"
+    let not_equal = Jstr.v "not-equal"
+    let greater_equal = Jstr.v "greater-equal"
+    let always = Jstr.v "always"
+  end
 
-  module Supported_limits = struct
+  module Buffer = struct
+    module Map_state = struct
+      type t = Jstr.t
+      let unmapped = Jstr.v "unmapped"
+      let pending = Jstr.v "pending"
+      let mapped = Jstr.v  "mapped"
+    end
+    module Map_mode = struct
+      type t = int
+      let read  = 0x0001
+      let write = 0x0002
+    end
+    module Usage = struct
+      type t = int
+      let map_read      = 0x0001
+      let map_write     = 0x0002
+      let copy_src      = 0x0004
+      let copy_dst      = 0x0008
+      let index         = 0x0010
+      let vertex        = 0x0020
+      let uniform       = 0x0040
+      let storage       = 0x0080
+      let indirect      = 0x0100
+      let query_resolve = 0x0200
+    end
+    module Descriptor = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ?label ?size ?usage ?mapped_at_creation () =
+        let d = Jv.obj [||] in
+        Jv.Jstr.set_if_some d "label" label;
+        Jv.Int.set_if_some d "size" size;
+        Jv.Int.set_if_some d "usage" usage;
+        Jv.Bool.set_if_some d "mappedAtCreation" mapped_at_creation;
+        d
+    end
     type t = Jv.t
     include (Jv.Id : Jv.CONV with type t := t)
-    let max_texture_dimension_1d l = Jv.Int.get l "maxTextureDimension1D"
-    let max_texture_dimension_2d l = Jv.Int.get l "maxTextureDimension2D"
-    let max_texture_dimension_3d l = Jv.Int.get l "maxTextureDimension3D"
-    let max_texture_array_layers l = Jv.Int.get l "maxTextureArrayLayers"
-    let max_bind_groups l = Jv.Int.get l "maxBindGroups"
-    let max_bind_groups_plus_vertex_buffers l =
-      Jv.Int.get l "maxBindGroupsPlusVertexBuffers"
-    let max_bindings_per_bind_group l = Jv.Int.get l "maxBindingsPerBindGroup"
-    let max_dynamic_uniform_buffers_per_pipeline_layout l =
-      Jv.Int.get l "maxDynamicUniformBuffersPerPipelineLayout"
-    let max_dynamic_storage_buffers_per_pipeline_layout l =
-      Jv.Int.get l "maxDynamicStorageBuffersPerPipelineLayout"
-    let max_sampled_textures_per_shader_stage l =
-      Jv.Int.get l "maxSampledTexturesPerShaderStage"
-    let max_samplers_per_shader_stage l =
-      Jv.Int.get l "maxSamplersPerShaderStage"
-    let max_storage_buffers_per_shader_stage l =
-      Jv.Int.get l "maxStorageBuffersPerShaderStage"
-    let max_storage_textures_per_shader_stage l =
-      Jv.Int.get l "maxStorageTexturesPerShaderStage"
-    let max_uniform_buffers_per_shader_stage l =
-      Jv.Int.get l "maxUniformBuffersPerShaderStage"
-    let max_uniform_buffer_binding_size l =
-      Jv.Int.get l "maxUniformBufferBindingSize"
-    let max_storage_buffer_binding_size l =
-      Jv.Int.get l "maxStorageBufferBindingSize"
-    let min_uniform_buffer_offset_alignment l =
-      Jv.Int.get l "minUniformBufferOffsetAlignment"
-    let min_storage_buffer_offset_alignment l =
-      Jv.Int.get l "minStorageBufferOffsetAlignment"
-    let max_vertex_buffers l = Jv.Int.get l "maxVertexBuffers"
-    let max_buffer_size l = Jv.Int.get l "maxBufferSize"
-    let max_vertex_attributes l = Jv.Int.get l "maxVertexAttributes"
-    let max_vertex_buffer_array_stride l =
-      Jv.Int.get l "maxVertexBufferArrayStride"
-    let max_inter_stage_shader_components l =
-      Jv.Int.get l "maxInterStageShaderComponents"
-    let max_inter_stage_shader_variables l =
-      Jv.Int.get l "maxInterStageShaderVariables"
-    let max_color_attachments l =
-      Jv.Int.get l "maxColorAttachments"
-    let max_color_attachment_bytes_per_sample l =
-      Jv.Int.get l "maxColorAttachmentBytesPerSample"
-    let max_compute_workgroup_storage_size l =
-      Jv.Int.get l "maxComputeWorkgroupStorageSize"
-    let max_compute_invocations_per_workgroup l =
-      Jv.Int.get l "maxComputeInvocationsPerWorkgroup"
-    let max_compute_workgroup_size_x l = Jv.Int.get l "maxComputeWorkgroupSizeX"
-    let max_compute_workgroup_size_y l = Jv.Int.get l "maxComputeWorkgroupSizeY"
-    let max_compute_workgroup_size_z l = Jv.Int.get l "maxComputeWorkgroupSizeZ"
-    let max_compute_workgroups_per_dimension l =
-      Jv.Int.get l "maxComputeWorkgroupsPerDimension"
+    let label b = Jv.Jstr.get b "label"
+    let size b = Jv.Int.get b "size"
+    let usage b = Jv.Int.get b "usage"
+    let map_state b = Jv.Jstr.get b "mapState"
+    let map_async ?size ?offset b mode =
+      let size = Jv.of_option ~none:Jv.undefined Jv.of_int size in
+      let offset = Jv.of_option ~none:Jv.undefined Jv.of_int offset in
+      let mode = Jv.of_int mode in
+      Fut.of_promise ~ok:ignore @@ Jv.call b "mapAsync" [|mode; offset; size|]
+
+    let get_mapped_range ?size ?offset b =
+      let size = Jv.of_option ~none:Jv.undefined Jv.of_int size in
+      let offset = Jv.of_option ~none:Jv.undefined Jv.of_int offset in
+      Brr.Tarray.Buffer.of_jv @@ Jv.call b "getMappedRange" [|size; offset|]
+
+    let unmap b = ignore @@ Jv.call b "unmap" [||]
+    let destroy b = ignore @@ Jv.call b "destroy" [||]
+
+    module Binding_type = struct
+      type t = Jstr.t
+      let uniform = Jstr.v "uniform"
+      let storage = Jstr.v "storage"
+      let read_only_storage = Jstr.v "read-only-storage"
+    end
+    module Binding_layout = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ?type' ?has_dynamic_offset ?min_binding_size () =
+        let l = Jv.obj [||] in
+        Jv.Jstr.set_if_some l "type" type';
+        Jv.Bool.set_if_some l "hasDynamicOffset" has_dynamic_offset;
+        Jv.Int.set_if_some l "minBindingSize" min_binding_size;
+        l
+    end
+    module Binding = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ?offset ?size ~buffer () =
+        let b = Jv.obj [||] in
+        Jv.set b "buffer" buffer;
+        Jv.Int.set_if_some b "offset" offset;
+        Jv.Int.set_if_some b "size" size;
+        b
+    end
   end
-
-  (* GPU feature names *)
-
-  module Feature_name = struct
-    type t = Jstr.t
-    let depth_clip_control = Jstr.v "depth-clip-control"
-    let depth32float_stencil8 = Jstr.v "depth32float-stencil8"
-    let texture_compression_bc = Jstr.v "texture-compression-bc"
-    let texture_compression_etc2 = Jstr.v "texture-compression-etc2"
-    let texture_compression_astc = Jstr.v "texture-compression-astc"
-    let timestamp_query = Jstr.v "timestamp-query"
-    let indirect_first_instance = Jstr.v "indirect-first-instance"
-    let shader_f16 = Jstr.v "shader-f16"
-    let rg11b10ufloat_renderable = Jstr.v "rg11b10ufloat-renderable"
-    let bgra8unorm_storage = Jstr.v "bgra8unorm-storage"
-    let float32_filterable = Jstr.v "float32-filterable"
-    include (Jv.Id : Jv.CONV with type t := t)
-  end
-
-  (* GPU textures *)
 
   module Texture = struct
     module Format = struct
@@ -352,18 +367,65 @@ module Gpu = struct
     let usage t = Jv.Int.get t "usage"
   end
 
-  (* GPU Samplers *)
-
-  module Compare_function = struct
-    type t = Jstr.t
-    let never = Jstr.v "never"
-    let less = Jstr.v "less"
-    let equal = Jstr.v "equal"
-    let less_equal = Jstr.v "less-equal"
-    let greater = Jstr.v "greater"
-    let not_equal = Jstr.v "not-equal"
-    let greater_equal = Jstr.v "greater-equal"
-    let always = Jstr.v "always"
+  module Image = struct
+    module Data_layout = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ?offset ?bytes_per_row ?rows_per_image () =
+        let d = Jv.obj [||] in
+        Jv.Int.set_if_some d "offset" offset;
+        Jv.Int.set_if_some d "bytesPerRow" bytes_per_row;
+        Jv.Int.set_if_some d "rowsPerImage" rows_per_image;
+        d
+    end
+    module Copy_buffer = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ?offset ?bytes_per_row ?rows_per_image ~buffer () =
+        let d = Jv.obj [||] in
+        Jv.set d "buffer" (Buffer.to_jv buffer);
+        Jv.Int.set_if_some d "offset" offset;
+        Jv.Int.set_if_some d "bytesPerRow" bytes_per_row;
+        Jv.Int.set_if_some d "rowsPerImage" rows_per_image;
+        d
+    end
+    module Copy_texture = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ?mip_level ?(origin = Jv.undefined) ?aspect ~texture () =
+        let d = Jv.obj [||] in
+        Jv.set d "texture" (Texture.to_jv texture);
+        Jv.Int.set_if_some d "mipLevel" mip_level;
+        Jv.set d "origin" origin;
+        Jv.Jstr.set_if_some d "aspect" aspect;
+        d
+    end
+    module Copy_texture_tagged = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v
+          ?mip_level ?(origin = Jv.undefined) ?aspect ?color_space
+          ?premultiplied_alpha ~texture ()
+        =
+        let d = Jv.obj [||] in
+        Jv.set d "texture" (Texture.to_jv texture);
+        Jv.Int.set_if_some d "mipLevel" mip_level;
+        Jv.set d "origin" origin;
+        Jv.Jstr.set_if_some d "aspect" aspect;
+        Jv.Jstr.set_if_some d "colorSpace" color_space;
+        Jv.Bool.set_if_some d "premultipliedAlpha" premultiplied_alpha;
+        d
+    end
+    module Copy_external_image = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ?(origin = Jv.undefined) ?flip_y ~source () =
+        let d = Jv.obj [||] in
+        Jv.set d "source" source;
+        Jv.set d "origin" origin;
+        Jv.Bool.set_if_some d "flipY" flip_y;
+        d
+    end
   end
 
   module Sampler = struct
@@ -400,9 +462,9 @@ module Gpu = struct
       type t = Jv.t
       include (Jv.Id : Jv.CONV with type t := t)
       let v
-          ?address_mode_u ?address_mode_v ?address_mode_w
-          ?mag_filter ?min_filter ?mipmap_filter ?lod_min_clamp
-          ?lod_max_clamp ?compare ?max_anisotropy ()
+          ?address_mode_u ?address_mode_v ?address_mode_w ?mag_filter
+          ?min_filter ?mipmap_filter ?lod_min_clamp ?lod_max_clamp ?compare
+          ?max_anisotropy ()
         =
         let d = Jv.obj [||] in
         Jv.Jstr.set_if_some d "addressModeU" address_mode_u;
@@ -410,7 +472,7 @@ module Gpu = struct
         Jv.Jstr.set_if_some d "addressModeW" address_mode_w;
         Jv.Jstr.set_if_some d "magFilter" mag_filter;
         Jv.Jstr.set_if_some d "minFilter" min_filter;
-        Jv.Jstr.set_if_some d "mipmapFitler" mipmap_filter;
+        Jv.Jstr.set_if_some d "mipmapFilter" mipmap_filter;
         Jv.Float.set_if_some d "lodMinClamp" lod_min_clamp;
         Jv.Float.set_if_some d "lodMaxClamp" lod_max_clamp;
         Jv.Jstr.set_if_some d "compare" compare;
@@ -422,95 +484,9 @@ module Gpu = struct
     let label s = Jv.Jstr.get s "label"
   end
 
-  (* GPU Buffers. *)
+  (* Pipelines *)
 
-  module Buffer = struct
-    module Map_state = struct
-      type t = Jstr.t
-      let unmapped = Jstr.v "unmapped"
-      let pending = Jstr.v "pending"
-      let mapped = Jstr.v  "mapped"
-    end
-    module Map_mode = struct
-      type t = int
-      let read  = 0x0001
-      let write = 0x0002
-    end
-    module Usage = struct
-      type t = int
-      let map_read      = 0x0001
-      let map_write     = 0x0002
-      let copy_src      = 0x0004
-      let copy_dst      = 0x0008
-      let index         = 0x0010
-      let vertex        = 0x0020
-      let uniform       = 0x0040
-      let storage       = 0x0080
-      let indirect      = 0x0100
-      let query_resolve = 0x0200
-    end
-    module Descriptor = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v ?label ?size ?usage ?mapped_at_creation () =
-        let d = Jv.obj [||] in
-        Jv.Jstr.set_if_some d "label" label;
-        Jv.Int.set_if_some d "size" size;
-        Jv.Int.set_if_some d "usage" usage;
-        Jv.Bool.set_if_some d "mappedAtCreation" mapped_at_creation;
-        d
-    end
-
-    type t = Jv.t
-    include (Jv.Id : Jv.CONV with type t := t)
-    let label b = Jv.Jstr.get b "label"
-    let size b = Jv.Int.get b "size"
-    let usage b = Jv.Int.get b "usage"
-    let map_state b = Jv.Jstr.get b "mapState"
-
-    let map_async ?size ?offset b mode =
-      let size = Jv.of_option ~none:Jv.undefined Jv.of_int size in
-      let offset = Jv.of_option ~none:Jv.undefined Jv.of_int offset in
-      let mode = Jv.of_int mode in
-      Fut.of_promise ~ok:ignore @@ Jv.call b "mapAsync" [|mode; offset; size|]
-
-    let get_mapped_range ?size ?offset b =
-      let size = Jv.of_option ~none:Jv.undefined Jv.of_int size in
-      let offset = Jv.of_option ~none:Jv.undefined Jv.of_int offset in
-      Brr.Tarray.Buffer.of_jv @@ Jv.call b "getMappedRange" [|size; offset|]
-
-    let unmap b = ignore @@ Jv.call b "unmap" [||]
-    let destroy b = ignore @@ Jv.call b "destroy" [||]
-
-    module Binding_type = struct
-      type t = Jstr.t
-      let uniform = Jstr.v "uniform"
-      let storage = Jstr.v "storage"
-      let read_only_storage = Jstr.v "read-only-storage"
-    end
-    module Binding_layout = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v ?type' ?has_dynamic_offset ?min_binding_size () =
-        let l = Jv.obj [||] in
-        Jv.Jstr.set_if_some l "type" type';
-        Jv.Bool.set_if_some l "hasDynamicOffset" has_dynamic_offset;
-        Jv.Int.set_if_some l "minBindingSize" min_binding_size;
-        l
-    end
-    module Binding = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v ?offset ?size ~buffer () =
-        let b = Jv.obj [||] in
-        Jv.set b "buffer" buffer;
-        Jv.Int.set_if_some b "offset" offset;
-        Jv.Int.set_if_some b "size" size;
-        b
-    end
-  end
-
-  (* GPU bind group *)
+  (* Shaders *)
 
   module Bind_group = struct
     module Layout = struct
@@ -552,7 +528,6 @@ module Gpu = struct
       include (Jv.Id : Jv.CONV with type t := t)
       let label l = Jv.Jstr.get l "label"
     end
-
     module Entry = struct
       type t = Jv.t
       include (Jv.Id : Jv.CONV with type t := t)
@@ -602,15 +577,12 @@ module Gpu = struct
         let ls = Jv.of_list Bind_group.Layout.to_jv bind_group_layouts in
         Jv.Jstr.set_if_some d "label" label;
         Jv.set d "bindGroupLayouts" ls;
-          d
+        d
     end
     type t = Jv.t
     include (Jv.Id : Jv.CONV with type t := t)
-
     let label l = Jv.Jstr.get l "label"
   end
-
-  (* GPU shader modules *)
 
   module Shader_module = struct
     module Compilation_message = struct
@@ -682,7 +654,7 @@ module Gpu = struct
       p
   end
 
-  (* GPU compute pipeline *)
+  (* Compute pipelines *)
 
   module Compute_pipeline = struct
     module Descriptor = struct
@@ -698,7 +670,6 @@ module Gpu = struct
         Jv.set d "compute" (Programmable_stage.to_jv compute);
         d
     end
-
     type t = Jv.t
     include (Jv.Id : Jv.CONV with type t := t)
     let label p = Jv.Jstr.get p "label"
@@ -706,12 +677,123 @@ module Gpu = struct
       Bind_group.Layout.of_jv @@ Jv.call p "getBindGroupLayout" [|Jv.of_int i|]
   end
 
-  (* GPU render pipeline *)
+  (* Render pipeline *)
 
   module Index_format = struct
     type t = Jstr.t
     let uint16 = Jstr.v "uint16"
     let uint32 = Jstr.v "uint32"
+  end
+
+  module Primitive = struct
+    module Topology = struct
+      type t = Jstr.t
+      let point_list = Jstr.v "point-list"
+      let line_list = Jstr.v "line-list"
+      let line_strip = Jstr.v "line-strip"
+      let triangle_list = Jstr.v "triangle-list"
+      let triangle_strip = Jstr.v "triangle-strip"
+    end
+    module Front_face = struct
+      type t = Jstr.t
+      let ccw = Jstr.v "ccw"
+      let cw = Jstr.v "cw"
+    end
+    module Cull_mode = struct
+      type t = Jstr.t
+      let none = Jstr.v "none"
+      let front = Jstr.v "front"
+      let back = Jstr.v "back"
+    end
+    module State = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v
+          ?topology ?strip_index_format ?front_face ?cull_mode
+          ?unclipped_depth ()
+        =
+        let s = Jv.obj [||] in
+        Jv.Jstr.set_if_some s "topology" topology;
+        Jv.Jstr.set_if_some s "stripIndexFormat" strip_index_format;
+        Jv.Jstr.set_if_some s "fontFace" front_face;
+        Jv.Jstr.set_if_some s "cullMode" cull_mode;
+        Jv.Bool.set_if_some s "unclippedDepth" unclipped_depth;
+        s
+    end
+  end
+
+  module Vertex = struct
+    module Format = struct
+      type t = Jstr.t
+      let uint8x2 = Jstr.v "uint8x2"
+      let uint8x4 = Jstr.v "uint8x4"
+      let sint8x2 = Jstr.v "sint8x2"
+      let sint8x4 = Jstr.v "sint8x4"
+      let unorm8x2 = Jstr.v "unorm8x2"
+      let unorm8x4 = Jstr.v "unorm8x4"
+      let snorm8x2 = Jstr.v "snorm8x2"
+      let snorm8x4 = Jstr.v "snorm8x4"
+      let uint16x2 = Jstr.v "uint16x2"
+      let uint16x4 = Jstr.v "uint16x4"
+      let sint16x2 = Jstr.v "sint16x2"
+      let sint16x4 = Jstr.v "sint16x4"
+      let unorm16x2 = Jstr.v "unorm16x2"
+      let unorm16x4 = Jstr.v "unorm16x4"
+      let snorm16x2 = Jstr.v "snorm16x2"
+      let snorm16x4 = Jstr.v "snorm16x4"
+      let float16x2 = Jstr.v "float16x2"
+      let float16x4 = Jstr.v "float16x4"
+      let float32 = Jstr.v "float32"
+      let float32x2 = Jstr.v "float32x2"
+      let float32x3 = Jstr.v "float32x3"
+      let float32x4 = Jstr.v "float32x4"
+      let uint32 = Jstr.v "uint32"
+      let uint32x2 = Jstr.v "uint32x2"
+      let uint32x3 = Jstr.v "uint32x3"
+      let uint32x4 = Jstr.v "uint32x4"
+      let sint32 = Jstr.v "sint32"
+      let sint32x2 = Jstr.v "sint32x2"
+      let sint32x3 = Jstr.v "sint32x3"
+      let sint32x4 = Jstr.v "sint32x4"
+    end
+    module Step_mode = struct
+      type t = Jstr.t
+      let vertex = Jstr.v "vertex"
+      let instance = Jstr.v "instance"
+    end
+    module Attribute = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ~format ~offset ~shader_location () =
+        let a = Jv.obj [||] in
+        Jv.Jstr.set a "format" format;
+        Jv.Int.set a "offset" offset;
+        Jv.Int.set a "shaderLocation" shader_location;
+        a
+    end
+    module Buffer_layout = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ?step_mode ~array_stride ~attributes () =
+        let attributes = Jv.of_list Attribute.to_jv attributes in
+        let l = Jv.obj [||] in
+        Jv.Jstr.set_if_some l "stepMode" step_mode;
+        Jv.set l "attributes" attributes;
+        Jv.Int.set l "arrayStride" array_stride;
+        l
+    end
+    module State = struct
+      type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
+      let v ?(constants = []) ~buffers ~module' ~entry_point () =
+        let buffers = Jv.of_list Buffer_layout.to_jv buffers in
+        let p = Jv.obj [||] in
+        Jv.set p "buffers" buffers;
+        Jv.set p "module" module';
+        Jv.Jstr.set p "entryPoint" entry_point;
+        Jv.set p "constants" (Programmable_stage.constants_obj constants);
+        p
+    end
   end
 
   module Blend = struct
@@ -787,43 +869,6 @@ module Gpu = struct
       Jv.Float.set c "a" a; c
   end
 
-  module Primitive = struct
-    module Topology = struct
-      type t = Jstr.t
-      let point_list = Jstr.v "point-list"
-      let line_list = Jstr.v "line-list"
-      let line_strip = Jstr.v "line-strip"
-      let triangle_list = Jstr.v "triangle-list"
-      let triangle_strip = Jstr.v "triangle-strip"
-    end
-    module Front_face = struct
-      type t = Jstr.t
-      let ccw = Jstr.v "ccw"
-      let cw = Jstr.v "cw"
-    end
-    module Cull_mode = struct
-      type t = Jstr.t
-      let none = Jstr.v "none"
-      let front = Jstr.v "front"
-      let back = Jstr.v "back"
-    end
-    module State = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v
-          ?topology ?strip_index_format ?front_face ?cull_mode
-          ?unclipped_depth ()
-        =
-        let s = Jv.obj [||] in
-        Jv.Jstr.set_if_some s "topology" topology;
-        Jv.Jstr.set_if_some s "stripIndexFormat" strip_index_format;
-        Jv.Jstr.set_if_some s "fontFace" front_face;
-        Jv.Jstr.set_if_some s "cullMode" cull_mode;
-        Jv.Bool.set_if_some s "unclippedDepth" unclipped_depth;
-        s
-    end
-  end
-
   module Stencil = struct
     module Operation = struct
       type t = Jstr.t
@@ -895,84 +940,6 @@ module Gpu = struct
       p
   end
 
-  module Vertex = struct
-    module Format = struct
-      type t = Jstr.t
-      let uint8x2 = Jstr.v "uint8x2"
-      let uint8x4 = Jstr.v "uint8x4"
-      let sint8x2 = Jstr.v "sint8x2"
-      let sint8x4 = Jstr.v "sint8x4"
-      let unorm8x2 = Jstr.v "unorm8x2"
-      let unorm8x4 = Jstr.v "unorm8x4"
-      let snorm8x2 = Jstr.v "snorm8x2"
-      let snorm8x4 = Jstr.v "snorm8x4"
-      let uint16x2 = Jstr.v "uint16x2"
-      let uint16x4 = Jstr.v "uint16x4"
-      let sint16x2 = Jstr.v "sint16x2"
-      let sint16x4 = Jstr.v "sint16x4"
-      let unorm16x2 = Jstr.v "unorm16x2"
-      let unorm16x4 = Jstr.v "unorm16x4"
-      let snorm16x2 = Jstr.v "snorm16x2"
-      let snorm16x4 = Jstr.v "snorm16x4"
-      let float16x2 = Jstr.v "float16x2"
-      let float16x4 = Jstr.v "float16x4"
-      let float32 = Jstr.v "float32"
-      let float32x2 = Jstr.v "float32x2"
-      let float32x3 = Jstr.v "float32x3"
-      let float32x4 = Jstr.v "float32x4"
-      let uint32 = Jstr.v "uint32"
-      let uint32x2 = Jstr.v "uint32x2"
-      let uint32x3 = Jstr.v "uint32x3"
-      let uint32x4 = Jstr.v "uint32x4"
-      let sint32 = Jstr.v "sint32"
-      let sint32x2 = Jstr.v "sint32x2"
-      let sint32x3 = Jstr.v "sint32x3"
-      let sint32x4 = Jstr.v "sint32x4"
-    end
-
-    module Step_mode = struct
-      type t = Jstr.t
-      let vertex = Jstr.v "vertex"
-      let instance = Jstr.v "instance"
-    end
-
-    module Attribute = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v ~format ~offset ~shader_location () =
-        let a = Jv.obj [||] in
-        Jv.Jstr.set a "format" format;
-        Jv.Int.set a "offset" offset;
-        Jv.Int.set a "shaderLocation" shader_location;
-        a
-    end
-
-    module Buffer_layout = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v ?step_mode ~array_stride ~attributes () =
-        let attributes = Jv.of_list Attribute.to_jv attributes in
-        let l = Jv.obj [||] in
-        Jv.Jstr.set_if_some l "stepMode" step_mode;
-        Jv.set l "attributes" attributes;
-        Jv.Int.set l "arrayStride" array_stride;
-        l
-    end
-
-    module State = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v ?(constants = []) ~buffers ~module' ~entry_point () =
-        let buffers = Jv.of_list Buffer_layout.to_jv buffers in
-        let p = Jv.obj [||] in
-        Jv.set p "buffers" buffers;
-        Jv.set p "module" module';
-        Jv.Jstr.set p "entryPoint" entry_point;
-        Jv.set p "constants" (Programmable_stage.constants_obj constants);
-        p
-    end
-  end
-
   module Render_pipeline = struct
     module Descriptor = struct
       type t = Jv.t
@@ -1004,6 +971,10 @@ module Gpu = struct
       Bind_group.Layout.of_jv @@ Jv.call p "getBindGroupLayout" [|Jv.of_int i|]
   end
 
+  (* Issuing commands *)
+
+  (* Queries *)
+
   module Query = struct
     module Type = struct
       type t = Jstr.t
@@ -1029,6 +1000,8 @@ module Gpu = struct
       let destroy s = ignore @@ Jv.call s "destroy" [||]
     end
   end
+
+  (* Passes *)
 
   module Compute_pass = struct
     module Timestamp_writes = struct
@@ -1086,7 +1059,7 @@ module Gpu = struct
         let offsets_start = Jv.of_int offsets_start in
         let offsets_length = Jv.of_int offsets_length in
         ignore @@ Jv.call e "setBindGroup"
-          [|index; group; dynamic_offsets; offsets_start; offsets_length |]
+          [| index; group; dynamic_offsets; offsets_start; offsets_length |]
 
       let push_debug_group e label =
         ignore @@ Jv.call e "pushDebugGroup" [| Jv.of_jstr label |]
@@ -1098,68 +1071,6 @@ module Gpu = struct
     end
   end
 
-  module Image = struct
-    module Data_layout = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v ?offset ?bytes_per_row ?rows_per_image () =
-        let d = Jv.obj [||] in
-        Jv.Int.set_if_some d "offset" offset;
-        Jv.Int.set_if_some d "bytesPerRow" bytes_per_row;
-        Jv.Int.set_if_some d "rowsPerImage" rows_per_image;
-        d
-    end
-    module Copy_buffer = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v ?offset ?bytes_per_row ?rows_per_image ~buffer () =
-        let d = Jv.obj [||] in
-        Jv.set d "buffer" (Buffer.to_jv buffer);
-        Jv.Int.set_if_some d "offset" offset;
-        Jv.Int.set_if_some d "bytesPerRow" bytes_per_row;
-        Jv.Int.set_if_some d "rowsPerImage" rows_per_image;
-        d
-    end
-    module Copy_texture = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v
-          ?mip_level ?(origin = Jv.undefined) ?aspect ~texture ()
-        =
-        let d = Jv.obj [||] in
-        Jv.set d "texture" (Texture.to_jv texture);
-        Jv.Int.set_if_some d "mipLevel" mip_level;
-        Jv.set d "origin" origin;
-        Jv.Jstr.set_if_some d "aspect" aspect;
-        d
-    end
-    module Copy_texture_tagged = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v
-          ?mip_level ?(origin = Jv.undefined) ?aspect ?color_space
-          ?premultiplied_alpha ~texture ()
-        =
-        let d = Jv.obj [||] in
-        Jv.set d "texture" (Texture.to_jv texture);
-        Jv.Int.set_if_some d "mipLevel" mip_level;
-        Jv.set d "origin" origin;
-        Jv.Jstr.set_if_some d "aspect" aspect;
-        Jv.Jstr.set_if_some d "colorSpace" color_space;
-        Jv.Bool.set_if_some d "premultipliedAlpha" premultiplied_alpha;
-        d
-    end
-    module Copy_external_image = struct
-      type t = Jv.t
-      include (Jv.Id : Jv.CONV with type t := t)
-      let v ?(origin = Jv.undefined) ?flip_y ~source () =
-        let d = Jv.obj [||] in
-        Jv.set d "source" source;
-        Jv.set d "origin" origin;
-        Jv.Bool.set_if_some d "flipY" flip_y;
-        d
-    end
-  end
   module Render_bundle = struct
     module Descriptor = struct
       type t = Jv.t
@@ -1360,7 +1271,6 @@ module Gpu = struct
       let set_pipeline e p =
         ignore @@ Jv.call e "setPipeline" [| Compute_pipeline.to_jv p |]
 
-
       let end' e = ignore @@ Jv.call e "end" [||]
       let set_viewport e ~x ~y ~w ~h ~min_depth ~max_depth =
         let x = Jv.of_float x and y = Jv.of_float y in
@@ -1395,20 +1305,20 @@ module Gpu = struct
         let offsets_start = Jv.of_int offsets_start in
         let offsets_length = Jv.of_int offsets_length in
         ignore @@ Jv.call e "setBindGroup"
-          [|index; group; dynamic_offsets; offsets_start; offsets_length |]
+          [| index; group; dynamic_offsets; offsets_start; offsets_length |]
 
       let set_index_buffer ?(offset = 0) ?size e buffer ~format =
         let buffer = Buffer.to_jv buffer and format = Jv.of_jstr format in
         let offset = Jv.of_int offset in
         let size = Jv.of_option ~none:Jv.undefined Jv.of_int size in
-        ignore @@ Jv.call e "setIndexBuffer" [|buffer; format; offset; size|]
+        ignore @@ Jv.call e "setIndexBuffer" [| buffer; format; offset; size |]
 
       let set_vertex_buffer ?buffer ?(offset = 0) ?size e ~slot =
         let slot = Jv.of_int slot in
         let buffer = Jv.of_option ~none:Jv.undefined Buffer.to_jv buffer in
         let offset = Jv.of_int offset in
         let size = Jv.of_option ~none:Jv.undefined Jv.of_int size in
-        ignore @@ Jv.call e "setVertexBuffer" [|slot; buffer; offset; size|]
+        ignore @@ Jv.call e "setVertexBuffer" [| slot; buffer; offset; size |]
 
       let begin_occlusion_query e i =
         ignore @@ Jv.call e "beginOcclusionQuery" [| Jv.of_int i |]
@@ -1428,7 +1338,7 @@ module Gpu = struct
         let first_vertex = Jv.of_int first_vertex in
         let first_instance = Jv.of_int first_instance in
         ignore @@ Jv.call e "draw"
-          [|vertex_count; instance_count; first_vertex; first_instance|]
+          [| vertex_count; instance_count; first_vertex; first_instance |]
 
       let draw_indexed
           ?(first_instance = 0) ?(base_vertex = 0) ?(first_index = 0)
@@ -1440,16 +1350,16 @@ module Gpu = struct
         let base_vertex = Jv.of_int base_vertex in
         let first_instance = Jv.of_int first_instance in
         ignore @@ Jv.call e "drawIndexed"
-          [|index_count; instance_count; first_index; base_vertex;
-            first_instance|]
+          [| index_count; instance_count; first_index; base_vertex;
+             first_instance |]
 
       let draw_indirect e buffer ~offset =
         let buffer = Buffer.to_jv buffer and offset = Jv.of_int offset in
-        ignore @@ Jv.call e "drawIndirect" [|buffer; offset|]
+        ignore @@ Jv.call e "drawIndirect" [| buffer; offset |]
 
       let draw_indexed_indirect e buffer ~offset =
         let buffer = Buffer.to_jv buffer and offset = Jv.of_int offset in
-        ignore @@ Jv.call e "drawIndexedIndirect" [|buffer; offset|]
+        ignore @@ Jv.call e "drawIndexedIndirect" [| buffer; offset |]
 
       let push_debug_group e label =
         ignore @@ Jv.call e "pushDebugGroup" [| Jv.of_jstr label |]
@@ -1460,6 +1370,8 @@ module Gpu = struct
         ignore @@ Jv.call e "insertDebugMarker" [| Jv.of_jstr marker |]
     end
   end
+
+  (* Commands and queues *)
 
   module Command = struct
     module Buf = Buffer
@@ -1505,30 +1417,30 @@ module Gpu = struct
         let dst = Buf.to_jv dst and dst_offset = Jv.of_int dst_offset in
         let size = Jv.of_int size in
         ignore @@ Jv.call e "copyBufferToBuffer"
-          [| src; src_offset; dst; dst_offset; size|]
+          [| src; src_offset; dst; dst_offset; size |]
 
       let copy_buffer_to_texture e ~src ~dst ~size =
         let src = Image.Copy_buffer.to_jv src in
         let dst = Image.Copy_texture.to_jv dst in
         let size = Extent_3d.to_jv size in
-        ignore @@ Jv.call e "copyBufferToTexture" [|src; dst; size|]
+        ignore @@ Jv.call e "copyBufferToTexture" [| src; dst; size |]
 
       let copy_texture_to_buffer e ~src ~dst ~size =
         let src = Image.Copy_texture.to_jv src in
         let dst = Image.Copy_buffer.to_jv dst in
         let size = Extent_3d.to_jv size in
-        ignore @@ Jv.call e "copyTextureToBuffer" [|src; dst; size|]
+        ignore @@ Jv.call e "copyTextureToBuffer" [| src; dst; size |]
 
       let copy_texture_to_texture e ~src ~dst ~size =
         let src = Image.Copy_texture.to_jv src in
         let dst = Image.Copy_texture.to_jv dst in
         let size = Extent_3d.to_jv size in
-        ignore @@ Jv.call e "TextureToTexture" [|src; dst; size|]
+        ignore @@ Jv.call e "TextureToTexture" [| src; dst; size |]
 
       let clear_buffer ?size ?(offset = 0) e buffer  =
         let buffer = Buf.to_jv buffer and offset = Jv.of_int offset in
         let size = Jv.of_option ~none:Jv.undefined Jv.of_int size in
-        ignore @@ Jv.call e "clearBuffer" [|buffer; offset; size |]
+        ignore @@ Jv.call e "clearBuffer" [| buffer; offset; size |]
 
       let write_timestamp e qs i =
         let qs = Query.Set.to_jv qs and i = Jv.of_int i in
@@ -1539,7 +1451,7 @@ module Gpu = struct
         let first = Jv.of_int first and count = Jv.of_int count in
         let dst = Buf.to_jv dst and dst_offset = Jv.of_int dst_offset in
         ignore @@ Jv.call e "resolveQuerySet"
-          [|qs; first; count; dst; dst_offset|]
+          [| qs; first; count; dst; dst_offset |]
 
       let push_debug_group e label =
         ignore @@ Jv.call e "pushDebugGroup" [| Jv.of_jstr label |]
@@ -1598,7 +1510,80 @@ module Gpu = struct
       ignore @@ Jv.call q "copyExternalImageToTexture" [|src; dst; size|]
   end
 
-  (* GPU devices *)
+  (* Adapters and devices *)
+
+  module Supported_limits = struct
+    type t = Jv.t
+    include (Jv.Id : Jv.CONV with type t := t)
+    let max_texture_dimension_1d l = Jv.Int.get l "maxTextureDimension1D"
+    let max_texture_dimension_2d l = Jv.Int.get l "maxTextureDimension2D"
+    let max_texture_dimension_3d l = Jv.Int.get l "maxTextureDimension3D"
+    let max_texture_array_layers l = Jv.Int.get l "maxTextureArrayLayers"
+    let max_bind_groups l = Jv.Int.get l "maxBindGroups"
+    let max_bind_groups_plus_vertex_buffers l =
+      Jv.Int.get l "maxBindGroupsPlusVertexBuffers"
+    let max_bindings_per_bind_group l = Jv.Int.get l "maxBindingsPerBindGroup"
+    let max_dynamic_uniform_buffers_per_pipeline_layout l =
+      Jv.Int.get l "maxDynamicUniformBuffersPerPipelineLayout"
+    let max_dynamic_storage_buffers_per_pipeline_layout l =
+      Jv.Int.get l "maxDynamicStorageBuffersPerPipelineLayout"
+    let max_sampled_textures_per_shader_stage l =
+      Jv.Int.get l "maxSampledTexturesPerShaderStage"
+    let max_samplers_per_shader_stage l =
+      Jv.Int.get l "maxSamplersPerShaderStage"
+    let max_storage_buffers_per_shader_stage l =
+      Jv.Int.get l "maxStorageBuffersPerShaderStage"
+    let max_storage_textures_per_shader_stage l =
+      Jv.Int.get l "maxStorageTexturesPerShaderStage"
+    let max_uniform_buffers_per_shader_stage l =
+      Jv.Int.get l "maxUniformBuffersPerShaderStage"
+    let max_uniform_buffer_binding_size l =
+      Jv.Int.get l "maxUniformBufferBindingSize"
+    let max_storage_buffer_binding_size l =
+      Jv.Int.get l "maxStorageBufferBindingSize"
+    let min_uniform_buffer_offset_alignment l =
+      Jv.Int.get l "minUniformBufferOffsetAlignment"
+    let min_storage_buffer_offset_alignment l =
+      Jv.Int.get l "minStorageBufferOffsetAlignment"
+    let max_vertex_buffers l = Jv.Int.get l "maxVertexBuffers"
+    let max_buffer_size l = Jv.Int.get l "maxBufferSize"
+    let max_vertex_attributes l = Jv.Int.get l "maxVertexAttributes"
+    let max_vertex_buffer_array_stride l =
+      Jv.Int.get l "maxVertexBufferArrayStride"
+    let max_inter_stage_shader_components l =
+      Jv.Int.get l "maxInterStageShaderComponents"
+    let max_inter_stage_shader_variables l =
+      Jv.Int.get l "maxInterStageShaderVariables"
+    let max_color_attachments l =
+      Jv.Int.get l "maxColorAttachments"
+    let max_color_attachment_bytes_per_sample l =
+      Jv.Int.get l "maxColorAttachmentBytesPerSample"
+    let max_compute_workgroup_storage_size l =
+      Jv.Int.get l "maxComputeWorkgroupStorageSize"
+    let max_compute_invocations_per_workgroup l =
+      Jv.Int.get l "maxComputeInvocationsPerWorkgroup"
+    let max_compute_workgroup_size_x l = Jv.Int.get l "maxComputeWorkgroupSizeX"
+    let max_compute_workgroup_size_y l = Jv.Int.get l "maxComputeWorkgroupSizeY"
+    let max_compute_workgroup_size_z l = Jv.Int.get l "maxComputeWorkgroupSizeZ"
+    let max_compute_workgroups_per_dimension l =
+      Jv.Int.get l "maxComputeWorkgroupsPerDimension"
+  end
+
+  module Feature_name = struct
+    type t = Jstr.t
+    let depth_clip_control = Jstr.v "depth-clip-control"
+    let depth32float_stencil8 = Jstr.v "depth32float-stencil8"
+    let texture_compression_bc = Jstr.v "texture-compression-bc"
+    let texture_compression_etc2 = Jstr.v "texture-compression-etc2"
+    let texture_compression_astc = Jstr.v "texture-compression-astc"
+    let timestamp_query = Jstr.v "timestamp-query"
+    let indirect_first_instance = Jstr.v "indirect-first-instance"
+    let shader_f16 = Jstr.v "shader-f16"
+    let rg11b10ufloat_renderable = Jstr.v "rg11b10ufloat-renderable"
+    let bgra8unorm_storage = Jstr.v "bgra8unorm-storage"
+    let float32_filterable = Jstr.v "float32-filterable"
+    include (Jv.Id : Jv.CONV with type t := t)
+  end
 
   module Error = struct
     module Filter = struct
@@ -1829,16 +1814,14 @@ module Gpu = struct
     end
   end
 
-  (* GPU adapters *)
-
   module Adapter = struct
     module Info = struct
       type t = Jv.t
+      include (Jv.Id : Jv.CONV with type t := t)
       let vendor i = Jv.Jstr.get i "vendor"
       let architecture i = Jv.Jstr.get i "architecture"
       let device i = Jv.Jstr.get i "device"
       let description i = Jv.Jstr.get i "description"
-      include (Jv.Id : Jv.CONV with type t := t)
     end
 
     type t = Jv.t
@@ -1902,6 +1885,7 @@ module Gpu = struct
     end
 
     type t = Jv.t
+    include (Jv.Id : Jv.CONV with type t := t)
 
     let get cnv =
       let webgpu = Jstr.v "webgpu" in
@@ -1928,16 +1912,8 @@ module Gpu = struct
     let unconfigure ctx = ignore @@ Jv.call ctx "unconfigure" [||]
     let get_current_texture ctx =
       Texture.of_jv @@ Jv.call ctx "getCurrentTexture" [||]
-
-    include (Jv.Id : Jv.CONV with type t := t)
   end
-
 end
-
-(*
-*)
-
-
 
 (*---------------------------------------------------------------------------
    Copyright (c) 2023 The brr programmers

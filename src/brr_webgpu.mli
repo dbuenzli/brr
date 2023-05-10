@@ -61,66 +61,154 @@ module Gpu : sig
     (**/**) include Jv.CONV with type t := t (**/**)
   end
 
-  (** Supported limits. *)
-  module Supported_limits : sig
-    type t
+  (** Compare functions. *)
+  module Compare_function : sig
+    type t = Jstr.t
     (** The type for
-        {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUSupportedLimits}
-        [GPUSupportedLimits]} objects. *)
+        {{:https://www.w3.org/TR/webgpu/#enumdef-gpucomparefunction}
+        [GPUCompareFunction]} values. *)
 
-    val max_texture_dimension_1d : t -> int
-    val max_texture_dimension_2d : t -> int
-    val max_texture_dimension_3d : t -> int
-    val max_texture_array_layers : t -> int
-    val max_bind_groups : t -> int
-    val max_bind_groups_plus_vertex_buffers : t -> int
-    val max_bindings_per_bind_group : t -> int
-    val max_dynamic_uniform_buffers_per_pipeline_layout : t -> int
-    val max_dynamic_storage_buffers_per_pipeline_layout : t -> int
-    val max_sampled_textures_per_shader_stage : t -> int
-    val max_samplers_per_shader_stage : t -> int
-    val max_storage_buffers_per_shader_stage : t -> int
-    val max_storage_textures_per_shader_stage : t -> int
-    val max_uniform_buffers_per_shader_stage : t -> int
-    val max_uniform_buffer_binding_size : t -> int
-    val max_storage_buffer_binding_size : t -> int
-    val min_uniform_buffer_offset_alignment : t -> int
-    val min_storage_buffer_offset_alignment : t -> int
-    val max_vertex_buffers : t -> int
-    val max_buffer_size : t -> int
-    val max_vertex_attributes : t -> int
-    val max_vertex_buffer_array_stride : t -> int
-    val max_inter_stage_shader_components : t -> int
-    val max_inter_stage_shader_variables : t -> int
-    val max_color_attachments : t -> int
-    val max_color_attachment_bytes_per_sample : t -> int
-    val max_compute_workgroup_storage_size : t -> int
-    val max_compute_invocations_per_workgroup : t -> int
-    val max_compute_workgroup_size_x : t -> int
-    val max_compute_workgroup_size_y : t -> int
-    val max_compute_workgroup_size_z : t -> int
-    val max_compute_workgroups_per_dimension : t -> int
-
-    (**/**) include Jv.CONV with type t := t (**/**)
+    val never : t
+    val less : t
+    val equal : t
+    val less_equal : t
+    val greater : t
+    val not_equal : t
+    val greater_equal : t
+    val always : t
   end
 
-  (** Features names. *)
-  module Feature_name : sig
-    type t = Jstr.t
-    (** The type for the {{:https://www.w3.org/TR/webgpu/#gpufeaturename}
-        [GPUFeatureName]} enum. *)
+    (** GPU buffers. *)
+  module Buffer : sig
 
-    val depth_clip_control : t
-    val depth32float_stencil8 : t
-    val texture_compression_bc : t
-    val texture_compression_etc2 : t
-    val texture_compression_astc : t
-    val timestamp_query : t
-    val indirect_first_instance : t
-    val shader_f16 : t
-    val rg11b10ufloat_renderable : t
-    val bgra8unorm_storage : t
-    val float32_filterable : t
+    (** Map states. *)
+    module Map_state : sig
+      type t = Jstr.t
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#enumdef-gpubuffermapstate}
+          [GPUBufferMapState]} values. *)
+
+      val unmapped : t
+      val pending : t
+      val mapped : t
+    end
+
+    (** Map mode flags. *)
+    module Map_mode : sig
+      type t = int
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#namespacedef-gpumapmode}[GPUMapMode]}
+          values. *)
+      val read : int
+      val write : int
+    end
+
+    (** Usage flags. *)
+    module Usage : sig
+      type t = int
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#buffer-usage}[GPUBufferUsage]}
+          values. *)
+      val map_read : int
+      val map_write : int
+      val copy_src : int
+      val copy_dst : int
+      val index : int
+      val vertex : int
+      val uniform : int
+      val storage : int
+      val indirect : int
+      val query_resolve : int
+    end
+
+    (** Buffer descriptors. *)
+    module Descriptor : sig
+      type t
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#gpubufferdescriptor}
+          [GPUBufferDescriptor]} objects. *)
+
+      val v :
+        ?label:Jstr.t -> ?size:int -> ?usage:Usage.t ->
+        ?mapped_at_creation:bool -> unit -> t
+      (** [v] constructs a
+          {{:https://www.w3.org/TR/webgpu/#gpubufferdescriptor}
+          [GPUBufferDescriptor]} object.
+
+          See the
+          {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBuffer#validation}validation rules}. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+
+    type t
+    (** The type for {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer}[GPUBuffer]} objects. *)
+
+    val label : t -> Jstr.t
+    (** [label b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/label}label} of [b]. *)
+
+    val size : t -> int
+    (** [size b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/size}size} of [b]. *)
+
+    val usage : t -> int
+    (** [usage b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/usage}usage} of [b]. *)
+
+    val map_state : t -> Map_state.t
+    (** [map_state b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/mapState}map state} of [b]. *)
+
+    val map_async :
+      ?size:int -> ?offset:int -> t -> Map_mode.t -> unit Fut.or_error
+    (** [map_async b] {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/mapAsync}maps} [b]. *)
+
+    val get_mapped_range :
+      ?size:int -> ?offset:int -> t -> Brr.Tarray.Buffer.t
+    (** [get_mapped_range b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/getMappedRange}mapped range} of [b]. *)
+
+    val unmap : t -> unit
+    (** [unmap b] {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/unmap}unmaps} [b]. *)
+
+    val destroy : t -> unit
+    (** [destroy b] {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/destroy}destroys} [b]. *)
+
+    (** {1:binding Binding} *)
+
+    (** Binding types. *)
+    module Binding_type : sig
+      type t = Jstr.t
+      val uniform : t
+      val storage : t
+      val read_only_storage : t
+    end
+
+    (** Binding layouts *)
+    module Binding_layout : sig
+      type t
+      (** The type for {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBindGroupLayout#resource_layout_objects}
+          [GPUBufferBindingLayout]} objects. *)
+
+      val v :
+        ?type':Binding_type.t -> ?has_dynamic_offset:bool ->
+        ?min_binding_size:int -> unit -> t
+      (** [v] contsructs a {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBindGroupLayout#resource_layout_objects}
+          [GPUBufferBindingLayout]} object. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+
+    (** Bindings. *)
+    module Binding : sig
+      type buffer := t
+
+      type t
+      (** The type for {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBindGroup#gpubufferbinding_objects}[GPUBufferBinding]} objects. *)
+
+      val v : ?offset:int -> ?size:int -> buffer:buffer -> unit -> t
+      (** [v] constructs a {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBindGroup#gpubufferbinding_objects}[GPUBufferBinding]} object
+          with given parameters. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+
     (**/**) include Jv.CONV with type t := t (**/**)
   end
 
@@ -445,21 +533,96 @@ module Gpu : sig
     (**/**) include Jv.CONV with type t := t (**/**)
   end
 
-  (** Compare functions. *)
-  module Compare_function : sig
-    type t = Jstr.t
-    (** The type for
-        {{:https://www.w3.org/TR/webgpu/#enumdef-gpucomparefunction}
-        [GPUCompareFunction]} values. *)
+  (** Images. *)
+  module Image : sig
 
-    val never : t
-    val less : t
-    val equal : t
-    val less_equal : t
-    val greater : t
-    val not_equal : t
-    val greater_equal : t
-    val always : t
+    (** Data layouts. *)
+    module Data_layout : sig
+      type t
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#gpuimagedatalayout}
+          [GPUImageDataLayout]} objects. *)
+
+      val v :
+        ?offset:int ->
+        ?bytes_per_row:int -> ?rows_per_image:int -> unit -> t
+      (** [v] constructs a
+          {{:https://www.w3.org/TR/webgpu/#gpuimagedatalayout}
+          [GPUImageDataLayout]} object with given parameters. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+
+    (** Buffer copies. *)
+    module Copy_buffer : sig
+      type t
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#gpuimagecopybuffer}
+          [GPUImageCopyBuffer]} objects. *)
+
+      val v :
+        ?offset:int ->
+        ?bytes_per_row:int ->
+        ?rows_per_image:int -> buffer:Buffer.t -> unit -> t
+      (** [v] constructs a
+          {{:https://www.w3.org/TR/webgpu/#gpuimagecopybuffer}
+          [GPUImageCopyBuffer]} object with given parameters. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+
+    (** Texture copies. *)
+    module Copy_texture : sig
+      type t
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#gpuimagecopytexture}
+          [GPUImageCopyTexture]} objects. *)
+
+      val v :
+        ?mip_level:int ->
+        ?origin:Origin_3d.t -> ?aspect:Texture.Aspect.t ->
+        texture:Texture.t -> unit -> t
+      (** [v] constructs a
+          {{:https://www.w3.org/TR/webgpu/#gpuimagecopytexture}
+          [GPUImageCopyTexture]} object with given parameters. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+
+    (** Tagged texture copies. *)
+    module Copy_texture_tagged : sig
+      type t
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#gpuimagecopytexturetagged}
+          [GPUImageCopyTextureTagged]} objects. *)
+
+      val v :
+        ?mip_level:int ->
+        ?origin:Origin_3d.t ->
+        ?aspect:Texture.Aspect.t ->
+        ?color_space:Jstr.t ->
+        ?premultiplied_alpha:bool -> texture:Texture.t -> unit -> t
+      (** [v] constructs a
+          {{:https://www.w3.org/TR/webgpu/#gpuimagecopytexturetagged}
+          [GPUImageCopyTextureTagged]} object with given parameters. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+
+    (** External image copies. *)
+    module Copy_external_image : sig
+      type t
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#gpuimagecopyexternalimage}
+          [GPUImageCopyExternalImage]} objects. *)
+
+      val v : ?origin:Origin_2d.t -> ?flip_y:bool -> source:Jv.t -> unit -> t
+      (** [v] constructs a
+          {{:https://www.w3.org/TR/webgpu/#gpuimagcecopyexternalimage}
+          [GPUImageCopyExternalImage]} object with given parameters. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
   end
 
   (** Samplers. *)
@@ -557,139 +720,9 @@ module Gpu : sig
     (**/**) include Jv.CONV with type t := t (**/**)
   end
 
-  (** GPU buffers. *)
-  module Buffer : sig
+  (** {1:pipelines Pipelines} *)
 
-    (** Map states. *)
-    module Map_state : sig
-      type t = Jstr.t
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#enumdef-gpubuffermapstate}
-          [GPUBufferMapState]} values. *)
-
-      val unmapped : t
-      val pending : t
-      val mapped : t
-    end
-
-    (** Map mode flags. *)
-    module Map_mode : sig
-      type t = int
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#namespacedef-gpumapmode}[GPUMapMode]}
-          values. *)
-      val read : int
-      val write : int
-    end
-
-    (** Usage flags. *)
-    module Usage : sig
-      type t = int
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#buffer-usage}[GPUBufferUsage]}
-          values. *)
-      val map_read : int
-      val map_write : int
-      val copy_src : int
-      val copy_dst : int
-      val index : int
-      val vertex : int
-      val uniform : int
-      val storage : int
-      val indirect : int
-      val query_resolve : int
-    end
-
-    (** Buffer descriptors. *)
-    module Descriptor : sig
-      type t
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#gpubufferdescriptor}
-          [GPUBufferDescriptor]} objects. *)
-
-      val v :
-        ?label:Jstr.t -> ?size:int -> ?usage:Usage.t ->
-        ?mapped_at_creation:bool -> unit -> t
-      (** [v] constructs a
-          {{:https://www.w3.org/TR/webgpu/#gpubufferdescriptor}
-          [GPUBufferDescriptor]} object.
-
-          See the
-          {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBuffer#validation}validation rules}. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-
-    type t
-    (** The type for {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer}[GPUBuffer]} objects. *)
-
-    val label : t -> Jstr.t
-    (** [label b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/label}label} of [b]. *)
-
-    val size : t -> int
-    (** [size b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/size}size} of [b]. *)
-
-    val usage : t -> int
-    (** [usage b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/usage}usage} of [b]. *)
-
-    val map_state : t -> Map_state.t
-    (** [map_state b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/mapState}map state} of [b]. *)
-
-    val map_async :
-      ?size:int -> ?offset:int -> t -> Map_mode.t -> unit Fut.or_error
-    (** [map_async b] {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/mapAsync}maps} [b]. *)
-
-    val get_mapped_range :
-      ?size:int -> ?offset:int -> t -> Brr.Tarray.Buffer.t
-    (** [get_mapped_range b] is the {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/getMappedRange}mapped range} of [b]. *)
-
-    val unmap : t -> unit
-    (** [unmap b] {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/unmap}unmaps} [b]. *)
-
-    val destroy : t -> unit
-    (** [destroy b] {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/destroy}destroys} [b]. *)
-
-    (** {1:binding Binding} *)
-
-    (** Binding types. *)
-    module Binding_type : sig
-      type t = Jstr.t
-      val uniform : t
-      val storage : t
-      val read_only_storage : t
-    end
-
-    (** Binding layouts *)
-    module Binding_layout : sig
-      type t
-      (** The type for {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBindGroupLayout#resource_layout_objects}
-          [GPUBufferBindingLayout]} objects. *)
-
-      val v :
-        ?type':Binding_type.t -> ?has_dynamic_offset:bool ->
-        ?min_binding_size:int -> unit -> t
-      (** [v] contsructs a {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBindGroupLayout#resource_layout_objects}
-          [GPUBufferBindingLayout]} object. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-
-    (** Bindings. *)
-    module Binding : sig
-      type buffer := t
-
-      type t
-      (** The type for {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBindGroup#gpubufferbinding_objects}[GPUBufferBinding]} objects. *)
-
-      val v : ?offset:int -> ?size:int -> buffer:buffer -> unit -> t
-      (** [v] constructs a {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/createBindGroup#gpubufferbinding_objects}[GPUBufferBinding]} object
-          with given parameters. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-
-    (**/**) include Jv.CONV with type t := t (**/**)
-  end
+  (** {2:shader Shaders} *)
 
   (** Bind groups. *)
   module Bind_group : sig
@@ -912,6 +945,8 @@ module Gpu : sig
     (**/**) include Jv.CONV with type t := t (**/**)
   end
 
+  (** {2:compute_pipelines Compute pipelines} *)
+
   (** Compute pipelines. *)
   module Compute_pipeline : sig
 
@@ -944,6 +979,8 @@ module Gpu : sig
 
     (**/**) include Jv.CONV with type t := t (**/**)
   end
+
+  (** {2:render_pipelines Render pipelines} *)
 
   (** Index buffer format. *)
   module Index_format : sig
@@ -1005,202 +1042,7 @@ module Gpu : sig
     end
   end
 
-  (** Blend state. *)
-  module Blend : sig
-
-    (** Blend factors. *)
-    module Factor : sig
-      type t = Jstr.t
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#enumdef-gpublendfactor}
-          [GPUBlendFactor]} values. *)
-
-      val zero : t
-      val one : t
-      val src : t
-      val one_minus_src : t
-      val src_alpha : t
-      val one_minus_src_alpha : t
-      val dst : t
-      val one_minus_dst : t
-      val dst_alpha : t
-      val one_minus_dst_alpha : t
-      val src_alpha_saturated : t
-      val constant : t
-      val one_minus_constant : t
-    end
-
-    (** Blend operations. *)
-    module Operation : sig
-      type t = Jstr.t
-      (** The type for {{:https://www.w3.org/TR/webgpu/#enumdef-gpublendoperation}[GPUBlendOperation]} values. *)
-
-      val add : t
-      val subtract : t
-      val reverse_subtract : t
-      val min : t
-      val max : t
-    end
-
-    (** Blend components. *)
-    module Component : sig
-      type t
-(** The type for
-    {{:https://www.w3.org/TR/webgpu/#dictdef-gpublendcomponent}[GPUBlendComponent]} objects. *)
-
-      val v :
-        ?operation:Operation.t -> ?src_factor:Factor.t ->
-        ?dst_factor:Factor.t -> unit -> t
-      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpublendcomponent}[GPUBlendComponent]} object with given parameters. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-
-    (** Blend state. *)
-    module State : sig
-      type t
-      (** The type for {{:https://www.w3.org/TR/webgpu/#dictdef-gpublendstate}[GPUBlendState]} objects. *)
-
-      val v : ?color:Component.t -> ?alpha:Component.t -> unit -> t
-      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpublendstate}[GPUBlendState]} object with given parameters. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-  end
-
-  (** Stencil state and operations. *)
-  module Stencil : sig
-
-    (** Stencil operations. *)
-    module Operation : sig
-      type t = Jstr.t
-      (** The type for {{:https://www.w3.org/TR/webgpu/#enumdef-gpustenciloperation}[GPUStencilOperation]} values. *)
-
-      val keep : t
-      val zero : t
-      val replace : t
-      val invert : t
-      val increment_clamp : t
-      val decrement_clamp : t
-      val increment_wrap : t
-      val decrement_wrap : t
-    end
-
-    (** Stencil face states. *)
-    module Face_state : sig
-      type t
-      (** The type for {{:https://www.w3.org/TR/webgpu/#dictdef-gpustencilfacestate}[GPUStencilFaceState]} objects. *)
-
-      val v :
-        ?compare:Compare_function.t -> ?fail_op:Operation.t ->
-        ?depth_fail_op:Operation.t -> ?pass_op:Operation.t -> unit -> t
-      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpustencilfacestate}[GPUStencilFaceState]} with given parameters. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-  end
-
-  (** Depth stencil state. *)
-  module Depth_stencil_state : sig
-    type t
-    (** The type for
-        {{:https://www.w3.org/TR/webgpu/#dictdef-gpudepthstencilstate}
-        [GPUDepthStencilState]} objects. *)
-
-    val v :
-      ?stencil_front:Stencil.Face_state.t ->
-      ?stencil_back:Stencil.Face_state.t ->
-      ?stencil_read_mask:int ->
-      ?stencil_write_mask:int ->
-      ?depth_bias:int ->
-      ?depth_bias_slope_scale:int ->
-      ?depth_bias_clamp:int ->
-      format:Texture.Format.t ->
-      depth_write_enabled:bool -> depth_compare:Compare_function.t -> unit -> t
-    (** [v] constructs a
-        {{:https://www.w3.org/TR/webgpu/#dictdef-gpudepthstencilstate}
-          [GPUDepthStencilState]} object with given parameters. *)
-
-    (**/**) include Jv.CONV with type t := t (**/**)
-  end
-
-  (** Colors and color state.  *)
-  module Color : sig
-
-    (** Color write flags. *)
-    module Write : sig
-      type t = int
-      (** The type for {{:https://www.w3.org/TR/webgpu/#typedefdef-gpucolorwriteflags}[GPUColorWriteFlags]}. *)
-
-      val red : int
-      val green : int
-      val blue : int
-      val alpha : int
-      val all : int
-    end
-
-    (** Color target states. *)
-    module Target_state : sig
-      type t
-      (** The type for {{:https://www.w3.org/TR/webgpu/#dictdef-gpucolortargetstate}[GPUColorTargetState]} objects. *)
-
-      val v :
-        ?blend:Blend.State.t ->
-        ?write_mask:Write.t -> format:Texture.Format.t -> unit -> t
-      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpucolortargetstate}[GPUColorTargetState]} object. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-
-
-    type t
-    (** The type for
-        {{:https://www.w3.org/TR/webgpu/#typedefdef-gpucolor}[GPUColor]}
-        objects. *)
-
-    val v : r:float -> g:float -> b:float -> a:float -> t
-    (** [v] constructs a
-        {{:https://www.w3.org/TR/webgpu/#typedefdef-gpucolor}
-        [GPUColor]} object with given parameters. *)
-
-    (**/**) include Jv.CONV with type t := t (**/**)
-  end
-
-  (** Multisample states. *)
-  module Multisample_state : sig
-    type t
-    (** The type for
-        {{:https://www.w3.org/TR/webgpu/#dictdef-gpumultisamplestate}
-        [GPUMultisample]} objects. *)
-
-    val v :
-      ?count:int -> ?mask:int -> ?alpha_to_coverage_enabled:bool -> unit -> t
-    (** [v] constructs a
-        {{:https://www.w3.org/TR/webgpu/#dictdef-gpumultisamplestate}
-        [GPUMultisample]} object with given parameters. *)
-
-    (**/**) include Jv.CONV with type t := t (**/**)
-  end
-
-  (** Fragment states. *)
-  module Fragment_state : sig
-    type t
-    (** The type for
-        {{:https://www.w3.org/TR/webgpu/#dictdef-gpumultisamplestate}
-        [GPUFragmentState]} objects. *)
-
-    val v :
-      ?constants:(Jstr.t * float) list ->
-      targets:Color.Target_state.t list ->
-      module':Shader_module.t -> entry_point:Jstr.t -> unit -> t
-    (** [v] constructs a
-        {{:https://www.w3.org/TR/webgpu/#dictdef-gpumultisamplestate}
-        [GPUFragmentState]} object with given parameters. *)
-
-    (**/**) include Jv.CONV with type t := t (**/**)
-  end
-
-  (** Vertex states. *)
+    (** Vertex states. *)
   module Vertex : sig
 
     (** Vertex formats. *)
@@ -1303,6 +1145,201 @@ module Gpu : sig
     end
   end
 
+  (** Blend state. *)
+  module Blend : sig
+
+    (** Blend factors. *)
+    module Factor : sig
+      type t = Jstr.t
+      (** The type for
+          {{:https://www.w3.org/TR/webgpu/#enumdef-gpublendfactor}
+          [GPUBlendFactor]} values. *)
+
+      val zero : t
+      val one : t
+      val src : t
+      val one_minus_src : t
+      val src_alpha : t
+      val one_minus_src_alpha : t
+      val dst : t
+      val one_minus_dst : t
+      val dst_alpha : t
+      val one_minus_dst_alpha : t
+      val src_alpha_saturated : t
+      val constant : t
+      val one_minus_constant : t
+    end
+
+    (** Blend operations. *)
+    module Operation : sig
+      type t = Jstr.t
+      (** The type for {{:https://www.w3.org/TR/webgpu/#enumdef-gpublendoperation}[GPUBlendOperation]} values. *)
+
+      val add : t
+      val subtract : t
+      val reverse_subtract : t
+      val min : t
+      val max : t
+    end
+
+    (** Blend components. *)
+    module Component : sig
+      type t
+(** The type for
+    {{:https://www.w3.org/TR/webgpu/#dictdef-gpublendcomponent}[GPUBlendComponent]} objects. *)
+
+      val v :
+        ?operation:Operation.t -> ?src_factor:Factor.t ->
+        ?dst_factor:Factor.t -> unit -> t
+      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpublendcomponent}[GPUBlendComponent]} object with given parameters. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+
+    (** Blend state. *)
+    module State : sig
+      type t
+      (** The type for {{:https://www.w3.org/TR/webgpu/#dictdef-gpublendstate}[GPUBlendState]} objects. *)
+
+      val v : ?color:Component.t -> ?alpha:Component.t -> unit -> t
+      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpublendstate}[GPUBlendState]} object with given parameters. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+  end
+
+  (** Colors and color state.  *)
+  module Color : sig
+
+    (** Color write flags. *)
+    module Write : sig
+      type t = int
+      (** The type for {{:https://www.w3.org/TR/webgpu/#typedefdef-gpucolorwriteflags}[GPUColorWriteFlags]}. *)
+
+      val red : int
+      val green : int
+      val blue : int
+      val alpha : int
+      val all : int
+    end
+
+    (** Color target states. *)
+    module Target_state : sig
+      type t
+      (** The type for {{:https://www.w3.org/TR/webgpu/#dictdef-gpucolortargetstate}[GPUColorTargetState]} objects. *)
+
+      val v :
+        ?blend:Blend.State.t ->
+        ?write_mask:Write.t -> format:Texture.Format.t -> unit -> t
+      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpucolortargetstate}[GPUColorTargetState]} object. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+
+
+    type t
+    (** The type for
+        {{:https://www.w3.org/TR/webgpu/#typedefdef-gpucolor}[GPUColor]}
+        objects. *)
+
+    val v : r:float -> g:float -> b:float -> a:float -> t
+    (** [v] constructs a
+        {{:https://www.w3.org/TR/webgpu/#typedefdef-gpucolor}
+        [GPUColor]} object with given parameters. *)
+
+    (**/**) include Jv.CONV with type t := t (**/**)
+  end
+
+  (** Stencil state and operations. *)
+  module Stencil : sig
+
+    (** Stencil operations. *)
+    module Operation : sig
+      type t = Jstr.t
+      (** The type for {{:https://www.w3.org/TR/webgpu/#enumdef-gpustenciloperation}[GPUStencilOperation]} values. *)
+
+      val keep : t
+      val zero : t
+      val replace : t
+      val invert : t
+      val increment_clamp : t
+      val decrement_clamp : t
+      val increment_wrap : t
+      val decrement_wrap : t
+    end
+
+    (** Stencil face states. *)
+    module Face_state : sig
+      type t
+      (** The type for {{:https://www.w3.org/TR/webgpu/#dictdef-gpustencilfacestate}[GPUStencilFaceState]} objects. *)
+
+      val v :
+        ?compare:Compare_function.t -> ?fail_op:Operation.t ->
+        ?depth_fail_op:Operation.t -> ?pass_op:Operation.t -> unit -> t
+      (** [v] constructs a {{:https://www.w3.org/TR/webgpu/#dictdef-gpustencilfacestate}[GPUStencilFaceState]} with given parameters. *)
+
+      (**/**) include Jv.CONV with type t := t (**/**)
+    end
+  end
+
+  (** Depth stencil state. *)
+  module Depth_stencil_state : sig
+    type t
+    (** The type for
+        {{:https://www.w3.org/TR/webgpu/#dictdef-gpudepthstencilstate}
+        [GPUDepthStencilState]} objects. *)
+
+    val v :
+      ?stencil_front:Stencil.Face_state.t ->
+      ?stencil_back:Stencil.Face_state.t ->
+      ?stencil_read_mask:int ->
+      ?stencil_write_mask:int ->
+      ?depth_bias:int ->
+      ?depth_bias_slope_scale:int ->
+      ?depth_bias_clamp:int ->
+      format:Texture.Format.t ->
+      depth_write_enabled:bool -> depth_compare:Compare_function.t -> unit -> t
+    (** [v] constructs a
+        {{:https://www.w3.org/TR/webgpu/#dictdef-gpudepthstencilstate}
+          [GPUDepthStencilState]} object with given parameters. *)
+
+    (**/**) include Jv.CONV with type t := t (**/**)
+  end
+
+  (** Multisample states. *)
+  module Multisample_state : sig
+    type t
+    (** The type for
+        {{:https://www.w3.org/TR/webgpu/#dictdef-gpumultisamplestate}
+        [GPUMultisample]} objects. *)
+
+    val v :
+      ?count:int -> ?mask:int -> ?alpha_to_coverage_enabled:bool -> unit -> t
+    (** [v] constructs a
+        {{:https://www.w3.org/TR/webgpu/#dictdef-gpumultisamplestate}
+        [GPUMultisample]} object with given parameters. *)
+
+    (**/**) include Jv.CONV with type t := t (**/**)
+  end
+
+  (** Fragment states. *)
+  module Fragment_state : sig
+    type t
+    (** The type for
+        {{:https://www.w3.org/TR/webgpu/#dictdef-gpumultisamplestate}
+        [GPUFragmentState]} objects. *)
+
+    val v :
+      ?constants:(Jstr.t * float) list ->
+      targets:Color.Target_state.t list ->
+      module':Shader_module.t -> entry_point:Jstr.t -> unit -> t
+    (** [v] constructs a
+        {{:https://www.w3.org/TR/webgpu/#dictdef-gpumultisamplestate}
+        [GPUFragmentState]} object with given parameters. *)
+
+    (**/**) include Jv.CONV with type t := t (**/**)
+  end
+
   (** Render pipelines. *)
   module Render_pipeline : sig
 
@@ -1343,6 +1380,10 @@ module Gpu : sig
 
     (**/**) include Jv.CONV with type t := t (**/**)
   end
+
+  (** {1:issuing_commands Issuing commands} *)
+
+  (** {2:queries Queries} *)
 
   (** Queries. *)
   module Query : sig
@@ -1402,6 +1443,8 @@ module Gpu : sig
       (**/**) include Jv.CONV with type t := t (**/**)
     end
   end
+
+  (** {2:passes Passes} *)
 
   (** Compute passes. *)
   module Compute_pass : sig
@@ -1486,98 +1529,6 @@ module Gpu : sig
 
       val insert_debug_marker : t -> Jstr.t -> unit
       (** [insert_debug_marker e l] {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUComputePassEncoder/insertDebugMarker}marks} a point [l] in [e]. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-  end
-
-  (** Images. *)
-  module Image : sig
-
-    (** Data layouts. *)
-    module Data_layout : sig
-      type t
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#gpuimagedatalayout}
-          [GPUImageDataLayout]} objects. *)
-
-      val v :
-        ?offset:int ->
-        ?bytes_per_row:int -> ?rows_per_image:int -> unit -> t
-      (** [v] constructs a
-          {{:https://www.w3.org/TR/webgpu/#gpuimagedatalayout}
-          [GPUImageDataLayout]} object with given parameters. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-
-    (** Buffer copies. *)
-    module Copy_buffer : sig
-      type t
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#gpuimagecopybuffer}
-          [GPUImageCopyBuffer]} objects. *)
-
-      val v :
-        ?offset:int ->
-        ?bytes_per_row:int ->
-        ?rows_per_image:int -> buffer:Buffer.t -> unit -> t
-      (** [v] constructs a
-          {{:https://www.w3.org/TR/webgpu/#gpuimagecopybuffer}
-          [GPUImageCopyBuffer]} object with given parameters. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-
-    (** Texture copies. *)
-    module Copy_texture : sig
-      type t
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#gpuimagecopytexture}
-          [GPUImageCopyTexture]} objects. *)
-
-      val v :
-        ?mip_level:int ->
-        ?origin:Origin_3d.t -> ?aspect:Texture.Aspect.t ->
-        texture:Texture.t -> unit -> t
-      (** [v] constructs a
-          {{:https://www.w3.org/TR/webgpu/#gpuimagecopytexture}
-          [GPUImageCopyTexture]} object with given parameters. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-
-    (** Tagged texture copies. *)
-    module Copy_texture_tagged : sig
-      type t
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#gpuimagecopytexturetagged}
-          [GPUImageCopyTextureTagged]} objects. *)
-
-      val v :
-        ?mip_level:int ->
-        ?origin:Origin_3d.t ->
-        ?aspect:Texture.Aspect.t ->
-        ?color_space:Jstr.t ->
-        ?premultiplied_alpha:bool -> texture:Texture.t -> unit -> t
-      (** [v] constructs a
-          {{:https://www.w3.org/TR/webgpu/#gpuimagecopytexturetagged}
-          [GPUImageCopyTextureTagged]} object with given parameters. *)
-
-      (**/**) include Jv.CONV with type t := t (**/**)
-    end
-
-    (** External image copies. *)
-    module Copy_external_image : sig
-      type t
-      (** The type for
-          {{:https://www.w3.org/TR/webgpu/#gpuimagecopyexternalimage}
-          [GPUImageCopyExternalImage]} objects. *)
-
-      val v : ?origin:Origin_2d.t -> ?flip_y:bool -> source:Jv.t -> unit -> t
-      (** [v] constructs a
-          {{:https://www.w3.org/TR/webgpu/#gpuimagecopyexternalimage}
-          [GPUImageCopyExternalImage]} object with given parameters. *)
 
       (**/**) include Jv.CONV with type t := t (**/**)
     end
@@ -1904,6 +1855,8 @@ module Gpu : sig
     end
   end
 
+  (** {2:commands_queues Commands and queues} *)
+
   (** Command buffers and encoders. *)
   module Command :  sig
 
@@ -2072,6 +2025,71 @@ module Gpu : sig
     (** [copy_external_image_to_texture]
         {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUQueue/copyExternalImageToTexture}copies} an image to a texture. *)
 
+    (**/**) include Jv.CONV with type t := t (**/**)
+  end
+
+  (** {1:devices_and_adapters Adapters and devices}  *)
+
+    (** Supported limits. *)
+  module Supported_limits : sig
+    type t
+    (** The type for
+        {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUSupportedLimits}
+        [GPUSupportedLimits]} objects. *)
+
+    val max_texture_dimension_1d : t -> int
+    val max_texture_dimension_2d : t -> int
+    val max_texture_dimension_3d : t -> int
+    val max_texture_array_layers : t -> int
+    val max_bind_groups : t -> int
+    val max_bind_groups_plus_vertex_buffers : t -> int
+    val max_bindings_per_bind_group : t -> int
+    val max_dynamic_uniform_buffers_per_pipeline_layout : t -> int
+    val max_dynamic_storage_buffers_per_pipeline_layout : t -> int
+    val max_sampled_textures_per_shader_stage : t -> int
+    val max_samplers_per_shader_stage : t -> int
+    val max_storage_buffers_per_shader_stage : t -> int
+    val max_storage_textures_per_shader_stage : t -> int
+    val max_uniform_buffers_per_shader_stage : t -> int
+    val max_uniform_buffer_binding_size : t -> int
+    val max_storage_buffer_binding_size : t -> int
+    val min_uniform_buffer_offset_alignment : t -> int
+    val min_storage_buffer_offset_alignment : t -> int
+    val max_vertex_buffers : t -> int
+    val max_buffer_size : t -> int
+    val max_vertex_attributes : t -> int
+    val max_vertex_buffer_array_stride : t -> int
+    val max_inter_stage_shader_components : t -> int
+    val max_inter_stage_shader_variables : t -> int
+    val max_color_attachments : t -> int
+    val max_color_attachment_bytes_per_sample : t -> int
+    val max_compute_workgroup_storage_size : t -> int
+    val max_compute_invocations_per_workgroup : t -> int
+    val max_compute_workgroup_size_x : t -> int
+    val max_compute_workgroup_size_y : t -> int
+    val max_compute_workgroup_size_z : t -> int
+    val max_compute_workgroups_per_dimension : t -> int
+
+    (**/**) include Jv.CONV with type t := t (**/**)
+  end
+
+  (** Features names. *)
+  module Feature_name : sig
+    type t = Jstr.t
+    (** The type for the {{:https://www.w3.org/TR/webgpu/#gpufeaturename}
+        [GPUFeatureName]} enum. *)
+
+    val depth_clip_control : t
+    val depth32float_stencil8 : t
+    val texture_compression_bc : t
+    val texture_compression_etc2 : t
+    val texture_compression_astc : t
+    val timestamp_query : t
+    val indirect_first_instance : t
+    val shader_f16 : t
+    val rg11b10ufloat_renderable : t
+    val bgra8unorm_storage : t
+    val float32_filterable : t
     (**/**) include Jv.CONV with type t := t (**/**)
   end
 

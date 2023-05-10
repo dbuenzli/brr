@@ -1,9 +1,11 @@
 
+- Add `Brr_webgpu`, bindings for WebGPU. Supported by 
+  a grant from the OCaml Software Foundation.
 - `Brr.El.scroll_into_view`, make `align_v` align according
   to specification (did the exact converse).
 - `Brr_io.Fetch.cache` becomes a function taking `unit`. It seems 
   accessing it at initalisation time trips the (latest ?) Firefox 
-  webworkers.
+  WebWorkers.
 - Make the `Brr_canvas.Gl` module initialisation bits safe when there is
   no `WebGLRenderingContext`. Thanks to Haochen Kotoi-Xie for reporting.
 
