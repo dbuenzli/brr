@@ -12,7 +12,7 @@ type t
 type jv = t
 
 external equal : t -> t -> bool = "caml_js_equals"
-let strict_equal = ( == )
+external strict_equal : t -> t -> bool = "caml_js_strict_equals"
 external typeof : t -> Jstr.t = "caml_js_typeof"
 external instanceof : t -> cons:t -> bool = "caml_js_instanceof"
 external repr : 'a -> t = "%identity"
@@ -21,8 +21,8 @@ external repr : 'a -> t = "%identity"
 
 let null = pure_js_expr "null"
 let undefined = pure_js_expr "undefined"
-let is_null v = v == null
-let is_undefined v = v == undefined
+let is_null v = strict_equal v null
+let is_undefined v = strict_equal v undefined
 let is_none v = is_null v || is_undefined v
 let is_some v = not (is_none v)
 let to_option conv v = if is_none v then None else Some (conv v)
