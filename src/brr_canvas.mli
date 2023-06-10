@@ -395,14 +395,22 @@ module C2d : sig
   type attrs
   (** The type for {{:https://html.spec.whatwg.org/multipage/canvas.html#canvasrenderingcontext2dsettings}CanvasRenderingContext2DSettings}. *)
 
-  val attrs : ?alpha:bool -> ?desynchronized:bool -> unit -> attrs
+  val attrs :
+    ?alpha:bool -> ?color_space:Jstr.t -> ?desynchronized:bool -> unit -> attrs
   (** [attrs ()] are {!type-attrs} with the given attributes. *)
 
   val attrs_alpha : attrs -> bool
   (** [attrs_alpha a] is the [alpha] attribute of [a]. *)
 
+  val attrs_color_space : attrs -> Jstr.t
+  (** [attrs_color_space a] is the [colorSpace] attribute of [a]. *)
+
   val attrs_desynchronized : attrs -> bool
   (** [attrs_desynchronized a] is the [desynchronized] attribute of [a]. *)
+
+  val attrs_will_read_frequently : attrs -> bool
+  (** [attrs_will_read_frequenty a] is the [willReadFrequently] attribute of
+      [a]. *)
 
   (** {1:ctx Context} *)
 
@@ -787,10 +795,13 @@ module C2d : sig
         {{:https://developer.mozilla.org/en-US/docs/Web/API/ImageData}
         ImageData} objects. *)
 
-    val create : ?data:Tarray.uint8_clamped -> w:int -> h:int -> unit -> t
+    val create :
+      ?color_space:Jstr.t -> ?data:Tarray.uint8_clamped -> w:int -> h:int ->
+      unit -> t
     (** [create ~data ~w ~h ()] is the image data [data] for an image of
         width [w] and height [h]. If [data] is unspecified it is created
-        as a transparent black rectangle. Raises if [data] is specified
+        as a transparent black rectangle. If [color_space] is specified
+        the given color space is requested. Raises if [data] is specified
         and its length is not [4 * w * h]. *)
 
     val w : t -> int
@@ -802,16 +813,21 @@ module C2d : sig
     val data : t -> Tarray.uint8_clamped
     (** [data d] is the image data of size [4 * w d * h d]. *)
 
+    val color_space : t -> Jstr.t
+    (** [color_space d] is the color space of {!data}. *)
+
     (**/**)
     include Jv.CONV with type t := t
     (**/**)
   end
 
-  val create_image_data  : t -> w:int -> h:int -> Image_data.t
+  val create_image_data :
+    ?color_space:Jstr.t -> t -> w:int -> h:int -> Image_data.t
   (** [create_image_data c ~w ~h] is a new image data of [w]x[h] transparent
       black pixels. *)
 
-  val get_image_data : t -> x:int -> y:int -> w:int -> h:int -> Image_data.t
+  val get_image_data :
+    ?color_space:Jstr.t -> t -> x:int -> y:int -> w:int -> h:int -> Image_data.t
   (** [get_image_data c x y ~w ~h] are the pixels of canvas [c] in the
       image space rectangle with top-left corner ([x],[y]) and
       bottom-right corner ([x+w], [y+h]). *)

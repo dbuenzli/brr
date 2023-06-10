@@ -1,3 +1,11 @@
+
+
+Add canvas color space support (note: unsupported on Firefox for now).
+
+- `C2d.attrs`, add `color_space` and `will_read_frequently` attributes.
+- Add `C2d.Image_data.color_space` and a `?color_space` optional argument
+  to `C2d.{create,get}_image_data` and `C2d.Image_data.create`.
+
 v0.0.5 2023-05-10 La Forclaz (VS)
 ---------------------------------
 

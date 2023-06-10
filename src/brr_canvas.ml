@@ -286,14 +286,21 @@ module C2d = struct
 
   type attrs = Jv.t
 
-  let attrs ?(alpha = true) ?(desynchronized = false) () =
+  let attrs ?alpha ?color_space ?desynchronized ?will_read_frequently () =
     let o = Jv.obj [||] in
-    Jv.Bool.set o "alpha" alpha;
-    Jv.Bool.set o "desynchronized" desynchronized;
+    Jv.Bool.set_if_some o "alpha" alpha;
+    Jv.Jstr.set_if_some o "colorSpace" color_space;
+    Jv.Bool.set_if_some o "desynchronized" desynchronized;
+    Jv.Bool.set_if_some o "willReadFrequently" will_read_frequently;
     o
 
   let attrs_alpha o = Jv.Bool.get o "alpha"
+  let attrs_color_space o =
+    (* This can be get once FF supports the property. *)
+    Option.value ~default:Jstr.empty (Jv.Jstr.find o "colorSpace")
+
   let attrs_desynchronized o = Jv.Bool.get o "desynchronized"
+  let attrs_will_read_frequently o = Jv.Bool.get o "willReadFrequently"
 
   type t = Jv.t
   include (Jv.Id : Jv.CONV with type t := t)
@@ -528,25 +535,39 @@ module C2d = struct
     type t = Jv.t
     include (Jv.Id : Jv.CONV with type t := t)
 
+    let settings ?color_space () = match color_space with
+    | None -> Jv.undefined
+    | Some cs ->
+        let o = Jv.obj [||] in
+        Jv.Jstr.set o "colorSpace" cs; o
+
     let image_data = Jv.get Jv.global "ImageData"
-    let create ?data ~w ~h () =
+    let create ?color_space ?data ~w ~h () =
+      let settings = settings ?color_space () in
       let args = match data with
-      | None -> Jv.[|of_int w; of_int h|]
-      | Some data -> Jv.[|Tarray.to_jv data; of_int w; of_int h|]
+      | None -> Jv.[|of_int w; of_int h; settings|]
+      | Some data -> Jv.[|Tarray.to_jv data; of_int w; of_int h; settings|]
       in
       Jv.new' image_data args
 
     let w d = Jv.Int.get d "width"
     let h d = Jv.Int.get d "height"
+    let color_space d =
+      (* Can become Jv.Jstr.get once firefox supports the property. *)
+      Option.value ~default:Jstr.empty (Jv.Jstr.find d "colorSpace")
+
     let data d = Tarray.of_jv @@ Jv.get d "data"
   end
 
-  let create_image_data c ~w ~h =
-    Image_data.of_jv @@ Jv.call c "createImageData" Jv.[| of_int w; of_int h |]
+  let create_image_data ?color_space c ~w ~h =
+    let settings = Image_data.settings ?color_space () in
+    Image_data.of_jv @@ Jv.call c "createImageData"
+      Jv.[| of_int w; of_int h; settings |]
 
-  let get_image_data c ~x ~y ~w ~h =
+  let get_image_data ?color_space c ~x ~y ~w ~h =
+    let settings = Image_data.settings ?color_space () in
     Image_data.of_jv @@ Jv.call c "getImageData"
-      Jv.[|of_int x; of_int y; of_int w; of_int h|]
+      Jv.[|of_int x; of_int y; of_int w; of_int h; settings|]
 
   let put_image_data c d ~x ~y =
     ignore @@ Jv.call c "putImageData"
