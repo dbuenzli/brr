@@ -86,14 +86,14 @@ external delete : t -> prop -> unit = "caml_js_delete"
     becomes {!undefined}. *)
 
 val find : t -> prop -> t option
-(** [find p o] is property [p] of [o]. If the property is {!null} or
+(** [find o p] is property [p] of [o]. If the property is {!null} or
      {!undefined}, the result is [None]. See also {!get}. *)
 
 val find_map : (t -> 'a) -> t -> prop -> 'a option
-(** [find_map f p o] is Option.map f (find p o). *)
+(** [find_map f o p] is Option.map f (find o p). *)
 
 val find_path : t -> prop list -> t option
-(** [find_path o p] looks up the path [l] in [o]. This returns [None]
+(** [find_path o l] looks up the path [l] in [o]. This returns [None]
     if any segment is {!null} or {!undefined}. {b Note.} Useful for
     probing for functionality but rather inefficient. *)
 
