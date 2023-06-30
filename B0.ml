@@ -64,7 +64,7 @@ let console =
   in
   let requires = [brr; brr_ocaml_poke; brr_ocaml_poke_ui] in
   let comp_mode = `Whole and source_map = Some `Inline in
-  let comp = Cmd.(atom "--pretty") in
+  let comp = Cmd.(arg "--pretty") in
   let meta = B0_jsoo.meta ~requires ~comp ~comp_mode ~source_map () in
   let doc = "Browser developer tool OCaml console" in
   B0_jsoo.web "ocaml_console" ~doc ~srcs ~meta
@@ -102,7 +102,7 @@ let test_module ?doc top m requires  =
   let test = Fmt.str "test_%s" (String.Ascii.uncapitalize m) in
   let doc = Fmt.str "Test %s.%s module" top m in
   let srcs = `File (Fpath.v (Fmt.str "test/%s.ml" test)) :: test_assets in
-  let comp = Cmd.(atom "--pretty") in
+  let comp = Cmd.(arg "--pretty") in
   let meta = B0_jsoo.meta ~requires ~comp () in
   B0_jsoo.web test ~doc ~srcs ~meta
 
@@ -210,6 +210,6 @@ let update_console =
   let src = Fpath.(unit_dir / "ocaml_console.js") in
   let dst = Fpath.(v "src" / "console" / "ocaml_console.js") in
   let dst = B0_cmdlet.in_scope_dir env dst in
-  let cmd = Cmd.(atom "b0" % "-u" % "ocaml_console" % "-u" % "poke") in
+  let cmd = Cmd.(arg "b0" % "-u" % "ocaml_console" % "-u" % "poke") in
   Result.bind (Os.Cmd.run cmd) @@ fun () ->
   Os.File.copy ~force:true ~make_path:false ~src dst
