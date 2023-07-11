@@ -423,10 +423,10 @@ module Tarray = struct
       Jv.to_int @@ Jv.call b "getInt16" Jv.[| of_int i; Jv.true' |]
 
     let get_int32_be b i =
-      Obj.magic @@ Jv.call b "getInt32" Jv.[| of_int i |]
+      Jv.to_int32 @@ Jv.call b "getInt32" Jv.[| of_int i |]
 
     let get_int32_le b i =
-      Obj.magic @@ Jv.call b "getInt32" Jv.[| of_int i; Jv.true' |]
+      Jv.to_int32 @@ Jv.call b "getInt32" Jv.[| of_int i; Jv.true' |]
 
     let get_uint8 b i =
       Jv.to_int @@ Jv.call b "getUint8" Jv.[| of_int i |]
@@ -438,10 +438,10 @@ module Tarray = struct
       Jv.to_int @@ Jv.call b "getUint16" Jv.[| of_int i; Jv.true' |]
 
     let get_uint32_be b i =
-      Obj.magic @@ Jv.call b "getUint32" Jv.[| of_int i |]
+      Jv.to_int32 @@ Jv.call b "getUint32" Jv.[| of_int i |]
 
     let get_uint32_le b i =
-      Obj.magic @@ Jv.call b "getUint32" Jv.[| of_int i; Jv.true' |]
+      Jv.to_int32 @@ Jv.call b "getUint32" Jv.[| of_int i; Jv.true' |]
 
     let get_float32_be b i =
       Jv.to_float @@ Jv.call b "getFloat32" Jv.[| of_int i |]
@@ -465,10 +465,10 @@ module Tarray = struct
       ignore @@ Jv.call b "setInt16" Jv.[| of_int i; of_int v; Jv.true' |]
 
     let set_int32_be b i v =
-      ignore @@ Jv.call b "setInt32" Jv.[| of_int i; Obj.magic v |]
+      ignore @@ Jv.call b "setInt32" Jv.[| of_int i; of_int32 v |]
 
     let set_int32_le b i v =
-      ignore @@ Jv.call b "setInt32" Jv.[| of_int i; Obj.magic v; Jv.true' |]
+      ignore @@ Jv.call b "setInt32" Jv.[| of_int i; of_int32 v; Jv.true' |]
 
     let set_uint8 b i v =
       ignore @@ Jv.call b "setUint8" Jv.[| of_int i; of_int v |]
@@ -480,10 +480,10 @@ module Tarray = struct
       ignore @@ Jv.call b "setUint16" Jv.[| of_int i; of_int v; Jv.true' |]
 
     let set_uint32_be b i v =
-      ignore @@ Jv.call b "setUint32" Jv.[| of_int i; Obj.magic v |]
+      ignore @@ Jv.call b "setUint32" Jv.[| of_int i; of_int32 v |]
 
     let set_uint32_le b i v =
-      ignore @@ Jv.call b "setUint32" Jv.[| of_int i; Obj.magic v; Jv.true' |]
+      ignore @@ Jv.call b "setUint32" Jv.[| of_int i; of_int32 v; Jv.true' |]
 
     let set_float32_be b i v =
       ignore @@ Jv.call b "setFloat32" Jv.[| of_int i; of_float v |]
