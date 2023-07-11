@@ -90,6 +90,17 @@ module Float = struct
   let set_if_some o p = function None -> () | Some f -> set o p f
 end
 
+(* Int32 *)
+
+external to_int32 : t -> int32 = "caml_js_to_int32"
+external of_int32 : int32 -> t = "caml_js_from_int32"
+module Int32 = struct
+  let find o p = let f = get o p in if is_none f then None else Some(to_int32 f)
+  let get o p = to_int32 (get o p)
+  let set o p b = set o p (of_int32 b)
+  let set_if_some o p = function None -> () | Some f -> set o p f
+end
+
 (* Jstr *)
 
 external to_jstr : t -> Jstr.t = "%identity"
