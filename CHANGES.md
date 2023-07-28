@@ -1,5 +1,6 @@
 
 
+- Updated developer tool console to Manifest V3 (#44).
 - Fix encoding mess in `Brr.Uri` which tried to expose a model that is
   not workable in practice due to the way the URI standard is defined.
   
