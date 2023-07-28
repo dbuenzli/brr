@@ -111,7 +111,8 @@ arguments and call {!Jv.apply}.
 The following is a binding to the
 {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt}parseInt}
 JavaScript function. We handle JavaScript exceptions and map them on
-the OCaml [result] type.
+the OCaml [result] type (in practice [parseInt] never raises, this
+is for demonstration purpose only).
 
 {[
 let parse_int' = Jv.get Jv.global "parseInt"
