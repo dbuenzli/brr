@@ -6,17 +6,6 @@ archive(native) = "brr.cmxa"
 plugin(byte) = "brr.cma"
 plugin(native) = "brr.cmxs"
 
-package "note" (
-  directory = "note"
-  description = "Brr note support"
-  version = "%%VERSION_NUM%%"
-  requires = "note brr"
-  archive(byte) = "brr_note.cma"
-  archive(native) = "brr_note.cmxa"
-  plugin(byte) = "brr_note.cma"
-  plugin(native) = "brr_note.cmxs"
-)
-
 package "ocaml_poke" (
   directory = "ocaml_poke"
   description = "OCaml poke interaction"

@@ -6,9 +6,9 @@ open Topkg
 let () =
   Pkg.describe "brr" @@ fun c ->
   Ok [ Pkg.mllib "src/brr.mllib";
-       Pkg.mllib "src/note/brr_note.mllib" ~dst_dir:"note/";
        Pkg.mllib "src/ocaml_poke/brr_ocaml_poke.mllib" ~dst_dir:"ocaml_poke/";
-       Pkg.mllib "src/ocaml_poke_ui/brr_ocaml_poke_ui.mllib" ~dst_dir:"ocaml_poke_ui/";
+       Pkg.mllib "src/ocaml_poke_ui/brr_ocaml_poke_ui.mllib"
+         ~dst_dir:"ocaml_poke_ui/";
        Pkg.mllib "src/poke/brr_poke.mllib" ~dst_dir:"poke/";
        Pkg.mllib "src/poked/brr_poked.mllib" ~dst_dir:"poked/";
        Pkg.share "src/console/devtools.html" ~dst:"console/";
@@ -29,6 +29,5 @@ let () =
        Pkg.doc "doc/ffi_cookbook.mld" ~dst:"odoc-pages/ffi_cookbook.mld";
        Pkg.doc "doc/ocaml_console.mld" ~dst:"odoc-pages/ocaml_console.mld";
        Pkg.doc "doc/web_page_howto.mld" ~dst:"odoc-pages/web_page_howto.mld";
-       Pkg.doc ~built:false "doc/note_ui_sample.png" ~dst:"odoc-assets/";
        Pkg.doc ~built:false "doc/ocaml_console.png" ~dst:"odoc-assets/";
      ]

@@ -6,10 +6,7 @@ let js_of_ocaml_toplevel = B0_ocaml.libname "js_of_ocaml-toplevel"
 let js_of_ocaml_compiler_runtime =
   B0_ocaml.libname "js_of_ocaml-compiler.runtime"
 
-let note = B0_ocaml.libname "note"
-
 let brr = B0_ocaml.libname "brr"
-let brr_note = B0_ocaml.libname "brr.note"
 let brr_ocaml_poke = B0_ocaml.libname "brr.ocaml_poke"
 let brr_ocaml_poke_ui = B0_ocaml.libname "brr.ocaml_poke_ui"
 let brr_poke = B0_ocaml.libname "brr.poke"
@@ -21,11 +18,6 @@ let brr_lib =
   let srcs = Fpath.[ `Dir (v "src") ] in
   let requires = [js_of_ocaml_compiler_runtime] in
   B0_ocaml.lib brr ~doc:"Brr JavaScript FFI and browser API" ~srcs ~requires
-
-let brr_note_lib =
-  let srcs = Fpath.[ `Dir (v "src/note") ] in
-  let requires = [brr; note] in
-  B0_ocaml.lib brr_note ~doc:"Brr Note support" ~srcs ~requires
 
 let brr_ocaml_poke_lib =
   let srcs = Fpath.[ `Dir (v "src/ocaml_poke") ] in
@@ -71,7 +63,7 @@ let console =
 
 let poke =
   let srcs = Fpath.[ `File (v "test/poke.ml"); `File (v "test/base.css") ] in
-  let requires = [brr; brr_note; brr_poked] in
+  let requires = [brr; brr_poked] in
   let meta = B0_jsoo.meta ~requires ~toplevel:true () in
   let doc = "OCaml console test" in
   B0_jsoo.web "poke" ~doc ~srcs ~meta
@@ -82,7 +74,7 @@ let top =
                      `File (v "src/console/ocaml_console.css") ] in
   let requires =
     [ js_of_ocaml_compiler_runtime;
-      brr; brr_note; brr_ocaml_poke_ui; brr_poke; brr_ocaml_poke]
+      brr; brr_ocaml_poke_ui; brr_poke; brr_ocaml_poke]
   in
   let comp_mode = `Whole in
   let meta = B0_jsoo.meta ~requires ~comp_mode ~toplevel:true () in
@@ -107,15 +99,6 @@ let test_module ?doc top m requires  =
   B0_jsoo.web test ~doc ~srcs ~meta
 
 let hello = test "test_hello" ~doc:"Brr console hello size"
-
-let test_mutobs =
-  let doc = "Test use of MutationObservers by Brr_note" in
-  test "test_mutobs" ~doc
-
-let test_leak =
-  let requires = [note; brr; brr_note] in
-  test "test_leak" ~requires ~doc:"Tests reactive DOM gc strategy"
-
 let test_base64 = test_module "Brr" "Base64" [brr]
 let test_c2d = test_module "Brr_canvas" "C2d" [brr]
 let test_clipboard = test_module "Brr_io" "Clipboard" [brr]
@@ -124,9 +107,7 @@ let test_file = test_module "Brr" "File" [brr]
 let test_geo = test_module "Brr_io" "Geolocation" [brr]
 let test_gl = test_module "Brr_canvas" "Gl" [brr]
 let test_history = test_module "Brr" "History" [brr]
-let test_key = test_module "Brr_note_kit" "Key" [note; brr; brr_note]
 let test_media = test_module "Brr_io" "Media" [brr]
-let test_mouse = test_module "Brr_note_kit" "Mouse" [note; brr; brr_note]
 let test_notif = test_module "Brr_io" "Notification" [brr]
 let test_webaudio = test_module "Brr_webaudio" "Audio" [brr]
 let test_webcrypto = test_module "Brr_webcrypto" "Crypto" [brr]
@@ -144,14 +125,6 @@ let nop =
   let srcs = Fpath.[ `File (v "test/nop.ml") ] in
   let meta = B0_jsoo.meta ~requires:[] () in
   B0_jsoo.web "nop" ~doc:"js_of_ocaml nop web page" ~srcs ~meta
-
-let todomvc =
-  let srcs = Fpath.[ `File (v "test/todomvc.ml");
-                     `File (v "test/todomvc.html"); ]
-  in
-  let requires = [note; brr; brr_note;] in
-  let meta = B0_jsoo.meta ~requires () in
-  B0_jsoo.web "todomvc" ~doc:"TodoMVC app" ~srcs ~meta
 
 (* Packs *)
 
@@ -190,7 +163,6 @@ let default =
         "ocamlbuild", {|build|};
         "js_of_ocaml-compiler", {|>= "4.1.0"|};
         "js_of_ocaml-toplevel", {|>= "4.1.0"|};
-        "note", "";
       ]
   in
   B0_pack.v "default" ~doc:"brr package" ~meta ~locked:true @@

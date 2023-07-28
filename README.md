@@ -6,19 +6,17 @@ Brr is a toolkit for programming browsers in OCaml with the
 [`js_of_ocaml`][jsoo] compiler. It provides:
 
 * Interfaces to a selection of browser APIs.
-* Note based reactive support (optional and experimental).
 * An OCaml console developer tool for live interaction 
   with programs running in web pages.
 * A JavaScript FFI for idiomatic OCaml programming.
 
-Brr is distributed under the ISC license. It depends on [Note][note]
-and on the `js_of_ocaml` compiler and runtime – but not on its
-libraries or syntax extension.
+Brr is distributed under the ISC license. It depends on the
+`js_of_ocaml` compiler and runtime – but not on its libraries or
+syntax extension.
 
-[note]: https://erratique.ch/software/note
 [jsoo]: https://ocsigen.org/js_of_ocaml
 
-Homepage: https://erratique.ch/software/brr  
+Homepage: <https://erratique.ch/software/brr>  
 
 ## Installation
 
@@ -31,19 +29,18 @@ instructions.
 
 ## Documentation
 
-The documentation can be consulted [online][doc] or via `odig doc brr`.
+The documentation can be consulted [online] or via `odig doc brr`.
 
 Questions are welcome but better asked on the [OCaml forum] than on 
 the issue tracker.
 
-[doc]: https://erratique.ch/software/brr/doc
+[online]: https://erratique.ch/software/brr/doc
 [OCaml forum]: https://discuss.ocaml.org/
 
 ## Sample programs
 
-A few basic programs are in the [test suite](test).
+A few basic programs can be found in the [test suite](test).
 
-An implementation of the [TodoMVC][todomvc] application with `brr.note` is 
-in [todomvc.ml](test/todomvc.ml).
+You can run them with for example `b0 -- test_audio`, see 
+`b0 list` for the list of tests.
 
-[todomvc]: http://todomvc.com/

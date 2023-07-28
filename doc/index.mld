@@ -5,7 +5,6 @@ Brr is a toolkit for programming browsers in OCaml with the
 
 {ul
 {- Interfaces to a {{!supported_apis}selection} of browser APIs.}
-{- {!Note} based {{!lib_note}reactive support} (optional and experimental).}
 {- An {{!page-ocaml_console}OCaml console} developer tool for live interaction
    with programs running in web pages.}
 {- A {{!page-ffi_manual}JavaScript FFI} for idiomatic OCaml programming.}}
@@ -46,19 +45,6 @@ Brr_webcrypto
 Brr_webgpu
 Brr_webmidi
 Brr_webworkers
-}
-
-{1:lib_note Library [brr.note]}
-
-This library has the {!Note} reactive infrastructure for browsers and a
-few higher-level APIs.
-
-{b Experimental, will break in the future}.
-
-{!modules:
-Brr_note
-Brr_note_kit
-Brr_note_legacy
 }
 
 {1:lib_poke Libraries [brr.poke[d]] and [brr.ocaml_poke[_ui]]}

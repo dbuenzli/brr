@@ -2204,8 +2204,6 @@ module El : sig
     val bottom : prop
     val color : prop
     val cursor : prop
-    (** See {!Brr_note_kit.Mouse.Cursor} for property values. *)
-
     val display : prop
     val height : prop
     val left : prop

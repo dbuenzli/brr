@@ -3,16 +3,9 @@ true : bin_annot, safe_string
 <_b0> : -traverse
 <src> : include
 <src/**>: package(js_of_ocaml-compiler.runtime)
-
-<src/note> : include
-<src/note/**> : package(note)
-
 <src/poke> : include
 <src/poke/**> : package(js_of_ocaml-toplevel)
 <src/poked> : include
 <src/ocaml_poke> : include
 <src/ocaml_poke_ui> : include
-
 <src/console> : include
-
-<test/**> : package(note)
