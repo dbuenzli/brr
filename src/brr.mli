@@ -576,11 +576,10 @@ end
 
     {!Uri.t} values are
     {{:https://developer.mozilla.org/en-US/docs/Web/API/URL}URL}
-    objects but we tweak the API to return data according to
-    {{:http://tools.ietf.org/html/rfc3986}RFC 3986} terminology:
-    we don't return separators like [':'], ['?']  and ['#'] in
-    the data and we use [host] for what is [hostname] in the URL API.
-    Also the data we return is {{!Brr.Uri.decode}URL (percent) decoded}. *)
+    objects but we tweak the API to use
+    {{:http://tools.ietf.org/html/rfc3986}RFC 3986} terminology and in
+    contrast to the URL API we return component data without including
+    separators like [':'], ['?']  and ['#'] in the results. *)
 module Uri : sig
 
   (** {1:uris URIs} *)
@@ -595,31 +594,75 @@ module Uri : sig
       with user input. *)
 
   val scheme : t -> Jstr.t
-  (** [scheme u] is the scheme of [u]. *)
+  (** [scheme u] is the scheme of [u]. This is what the URL API calls
+      the {{:https://developer.mozilla.org/en-US/docs/Web/API/URL/protocol}
+      [protocol]} but without including the trailing [':']. *)
 
   val host : t -> Jstr.t
-  (** [host u] is the host of [u]. {b Warning} this is what
-      the URL API calls [hostname]. *)
+  (** [host u] is the host of [u]. This is not percent-decoded and
+      what the URL API calls the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/URL/hostname}
+      [hostname]}. *)
 
   val port : t -> int option
-  (** [port u] is the port of [u]. *)
+  (** [port u] is the port of [u], if any. Parsed from the URL API's
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/URL/port}port}. *)
 
   val path : t -> Jstr.t
-  (** [path u] is the path of [u]. Note that this ["/"] if there is no
-      path. *)
+  (** [path u] is the path of [u]. This is ["/"] if there is no path
+      in [u]: no distinction is made between [http://example.org] and
+      [http://example.org/]. This is not percent-decoded and what the
+      URL API calls
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname}
+      [pathname]}. Use {!path_segments} for decoding the path. *)
 
   val query : t -> Jstr.t
-  (** [query u] is the query of [u] (without the leading ['?']). *)
+  (** [query u] is the query of [u]. This not percent-decoded and
+      what the URL API calls the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/URL/search}
+      [search]} but without including the leading ['?']. Use
+      {!query_params} to decode key-value parameters. *)
 
   val fragment : t -> Jstr.t
-  (** [fragment u] is fragment of [u] (withouth the leading ['#']). *)
+  (** [fragment u] is fragment of [u]. This is not percent-decoded and
+      what the URL API calls the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/URL/hash}[hash]}
+      but without including the leading ['#']. Use {!fragment_params} to
+      decode key-value parameters. *)
 
   val with_uri :
     ?scheme:Jstr.t -> ?host:Jstr.t -> ?port:int option -> ?path:Jstr.t ->
     ?query:Jstr.t -> ?fragment:Jstr.t -> t -> (t, Jv.Error.t) result
-  (** [with_uri u] is [u] with the specified components updated.
-      The given parameters are {{!Brr.Uri.encode}URL (percent) encoded}
-      by the function. *)
+  (** [with_uri u] is [u] with the specified components updated. The components
+      are assumed to be appropriately {{!encode_component}percent-encoded}.
+      See also {!with_path_segments}, {!with_query_params} and
+      {!with_fragment_params}. *)
+
+  (** {1:path_segs Path segments} *)
+
+  type path = Jstr.t list
+  (** The type for absolute URI paths represented as {e non-empty}
+      lists of {e percent-decoded} path segments. The empty list
+      denotes the absence of a path.
+
+      Path segments can be {!Jstr.empty}. The root path [/] is represented
+      by the list [[Jstr.empty]] and [/a] by [[Jstr.v "a"]].
+
+      {b Warning.} You should never concatenate these segments with a
+      directory separator to get a file path because path segments may
+      contain stray, percent-decoded, directory separators. *)
+
+  val path_segments : t -> (path, Jv.Error.t) result
+  (** [path_segments u] splits the {!val-path} of [u] on ['/'] and
+      {{!decode_component}percent-decodes} the resulting
+      segments. Note that as per {!val-path} definition, the result is
+      never the empty. *)
+
+  val with_path_segments : t -> path -> (t, Jv.Error.t) result
+  (** [with_path_segments u segs] is [u] with a {!path} made by
+      {{!encode_component}percent-encoding} the segments, prepending a
+      ['/'] to each segment and concatenating the result. An empty [segs]
+      is mapped on the root path [/]. *)
 
   (** {1:params Fragment or query parameters} *)
 
@@ -675,38 +718,54 @@ module Uri : sig
     (**/**)
   end
 
-  (** {1:encoding URI Encoding} *)
+  val query_params : t -> Params.t
+  (** [query_params u] is {!Params.of_jstr}[ (query u)]. *)
 
-  val encode : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [encode s] URL encodes [s] by percent-encoding an UTF-8 representation
-      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI}encodeURI}.
+  val with_query_params : t -> Params.t -> t
+  (** [with_query_params u ps] is [u] with a {!query} defined by parameters
+      [ps]. *)
 
-      {b Warning.} This encodes according to RFC2396 not according to RFC3986 which
-      reserves a few more characters. *)
+  val fragment_params : t -> Params.t
+  (** [fragment_params u] is {!Params.of_jstr}[ (fragment u)]. *)
 
-  val decode : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [decode s] URL decodes [s] by percent-decoding an UTF-8 representation
-      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI}decodeURI}.
-  *)
-
-  val encode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [encode s] URL encodes [s] by percent-encoding an UTF-8 representation
-      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent}encodeURIComponent}. *)
-
-  val decode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [decode s] URL decodes [s] by precent-decoding an UTF-8 representation
-      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent}decodeURIComponent}. *)
+  val with_fragment_params : t -> Params.t -> t
+  (** [with_fragment_params u ps] is [u] with a {!fragment} defined by
+      parameters [ps]. *)
 
   (** {1:conv Converting} *)
 
   val of_jstr : ?base:Jstr.t -> Jstr.t -> (t, Jv.Error.t) result
-  (** [of_jstr ~base s] is an URL from [s] relative to [base] (if specified).
-      Note that if [s] is relative and [base] is unspecified the function
-      errors. *)
+  (** [of_jstr ~base s] is an URL from [s] relative to [base] (if
+      specified). Note that if [s] is relative and [base] is
+      unspecified the function errors. *)
 
   val to_jstr : t -> Jstr.t
-  (** [to_jstr u] is [u] as a JavaScript string. The result is {{!encode}URL
-      encoded}. *)
+  (** [to_jstr u] is [u] as a JavaScript string. The result is
+      {{!encode}percent-encoded}. *)
+
+  (** {1:encoding Percent encoding} *)
+
+  val encode : Jstr.t -> (Jstr.t, Jv.Error.t) result
+  (** [encode s] percent-encodes an UTF-8 representation
+      of [s]. See
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI}encodeURI}.
+
+      {b Warning.} This encodes according to RFC2396 not according to RFC3986
+      which reserves a few more characters. *)
+
+  val decode : Jstr.t -> (Jstr.t, Jv.Error.t) result
+  (** [decode s] percent-decodes an UTF-8 representation
+      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI}decodeURI}.
+  *)
+
+  val encode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
+  (** [encode s] percent-encodes an UTF-8 representation
+      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent}encodeURIComponent}. *)
+
+  val decode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
+  (** [decode s] percent-descodes an UTF-8 representation
+      of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent}decodeURIComponent}. Note that
+      this has the same effect as {!decode}. *)
 
   (**/**)
   include Jv.CONV with type t := t

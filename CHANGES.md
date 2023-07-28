@@ -1,5 +1,15 @@
 
 
+- Fix encoding mess in `Brr.Uri` which tried to expose a model that is
+  not workable in practice due to the way the URI standard is defined.
+  
+  - Accessors and `Uri.with_uri` no longer perform percent decoding and 
+    encoding for you.
+  - Added helper functions `Uri.[with_]{query,fragment}_params`.
+  - Added helper functions `Uri.[with_]{path_segments}`.
+  
+  Thanks to Max Lang for the report (#50) and the discussion.
+
 Add canvas color space support (note: unsupported on Firefox for now).
 
 - `C2d.attrs`, add `color_space` and `will_read_frequently` attributes.

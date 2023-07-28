@@ -854,6 +854,8 @@ module Uri = struct
 
   let encode = Jv.get Jv.global "encodeURI"
   let decode = Jv.get Jv.global "decodeURI"
+  let encode_component = Jv.get Jv.global "encodeURIComponent"
+  let decode_component = Jv.get Jv.global "decodeURIComponent"
 
   let url = Jv.get Jv.global "URL"
 
@@ -863,39 +865,65 @@ module Uri = struct
 
   let with_uri ?scheme ?host ?port ?path ?query ?fragment u =
     let u = Jv.new' url [| u |] in
-    let pct_enc v = Jv.apply encode [| Jv.of_jstr v |] in
     try
-      Jv.set_if_some u "protocol" (Option.map pct_enc scheme);
-      Jv.set_if_some u "hostname" (Option.map pct_enc host);
+      Jv.Jstr.set_if_some u "protocol" scheme;
+      Jv.Jstr.set_if_some u "hostname" host;
       begin match port with
       | None -> ()
       | Some p -> Jv.Jstr.set_if_some u "port" (Option.map Jstr.of_int p)
       end;
-      Jv.set_if_some u "pathname" (Option.map pct_enc path);
-      Jv.set_if_some u "search" (Option.map pct_enc query);
-      Jv.set_if_some u "hash" (Option.map pct_enc fragment);
+      Jv.Jstr.set_if_some u "pathname" path;
+      Jv.Jstr.set_if_some u "search" query;
+      Jv.Jstr.set_if_some u "hash" fragment;
       Ok u
     with Jv.Error e -> Error e
 
-  let pct_dec v = Jv.to_jstr @@ Jv.apply decode [| v |]
-
   let scheme u =
-    let p = pct_dec (Jv.get u "protocol") in
+    let p = Jv.Jstr.get u "protocol" in
     if Jstr.length p <> 0 then Jstr.slice p ~stop:(-1) (* remove ':' *) else p
 
-  let host u = pct_dec (Jv.get u "hostname")
+  let host u = Jv.Jstr.get u "hostname"
   let port u =
     let p = Jv.Jstr.get u "port" in
     if Jstr.is_empty p then None else Jstr.to_int p
 
+  let slash = Jstr.v "/"
+
+  let path u =
+    let p = Jv.Jstr.get u "pathname" in
+    if Jstr.is_empty p then slash else p
+
   let query u =
-    let q = pct_dec (Jv.get u "search") in
+    let q = Jv.Jstr.get u "search" in
     if Jstr.is_empty q then q else Jstr.slice q ~start:1 (* remove '?' *)
 
-  let path u = pct_dec (Jv.get u "pathname")
   let fragment u =
-    let f = Jv.to_jstr @@ Jv.apply decode [| Jv.get u "hash" |] in
+    let f = Jv.Jstr.get u "hash" in
     if Jstr.is_empty f then f else Jstr.slice f ~start:1 (* remove '#' *)
+
+  (* Path *)
+
+  type path = Jstr.t list
+
+  let path_segments u =
+    let decode_seg s = Jv.(to_jstr (apply decode_component [| of_jstr s |])) in
+    try
+      begin match Jstr.cuts ~sep:slash (Jstr.slice (path u) ~start:1) with
+      | [] -> Ok [Jstr.empty] (* should never happpen *)
+      | segs -> Ok (List.map decode_seg segs)
+      end
+    with Jv.Error e -> Error e
+
+  let with_path_segments u segs =
+    let encode_seg s =
+      Jstr.append slash Jv.(to_jstr (apply encode_component [| of_jstr s |]))
+    in
+    try
+      let u = Jv.new' url [| u |] in
+      let path = Jstr.concat (List.map encode_seg segs) in
+      Jv.set u "pathname" (Jv.of_jstr path);
+      Ok u
+    with Jv.Error e -> Error e
 
   (* Params *)
 
@@ -913,7 +941,11 @@ module Uri = struct
       let value = Jv.to_jstr in
       Jv.It.fold_bindings ~key ~value f (Jv.call p "entries" [||]) acc
 
-    let of_jstr s = Jv.new' usp [| Jv.of_jstr s|] (* No errors ? *)
+    let of_jstr s =
+      (* Note that it seems that this never errors. At least decoding
+         errors seem to be replaced by U+FFFD. *)
+      Jv.new' usp [| Jv.of_jstr s|]
+
     let to_jstr p = Jv.to_jstr (Jv.call p "toString" [||])
     let of_assoc l =
       let p = of_jstr Jstr.empty in
@@ -926,24 +958,34 @@ module Uri = struct
     let of_obj o = Jv.new' usp [| o |]
   end
 
-  (* URI encoding *)
+  let query_params u = Params.of_jstr (query u)
+  let with_query_params u ps =
+    let u = Jv.new' url [| u |] in
+    Jv.Jstr.set u "search" (Params.to_jstr ps);
+    u
 
-  let code f s = match Jv.apply f [|Jv.of_jstr s|] with
-  | exception Jv.Error e -> Error e
-  | v -> Ok (Jv.to_jstr v)
-
-  let encode_component = Jv.get Jv.global "encodeURIComponent"
-  let decode_component = Jv.get Jv.global "decodeURIComponent"
-  let encode s = code encode s
-  let decode s = code decode s
-  let encode_component s = code encode_component s
-  let decode_component s = code decode_component s
+  let fragment_params u = Params.of_jstr (fragment u)
+  let with_fragment_params u ps =
+    let u = Jv.new' url [| u |] in
+    Jv.Jstr.set u "hash" (Params.to_jstr ps);
+    u
 
   (* Converting *)
 
   let to_jstr u = Jv.to_jstr (Jv.call u "toString" [||])
   let of_jstr ?base s = match v ?base s with
   | exception Jv.Error e -> Error e | v -> Ok v
+
+  (* Percent-encoding *)
+
+  let code f s = match Jv.apply f [|Jv.of_jstr s|] with
+  | exception Jv.Error e -> Error e
+  | v -> Ok (Jv.to_jstr v)
+
+  let encode s = code encode s
+  let decode s = code decode s
+  let encode_component s = code encode_component s
+  let decode_component s = code decode_component s
 end
 
 (* DOM interaction *)
