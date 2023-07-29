@@ -589,7 +589,7 @@ module Uri : sig
       [URL]} objects. *)
 
   val v : ?base:Jstr.t -> Jstr.t -> t
-  (** [v ?base s] is an URI from [s] relative to [base] (if specified).
+  (** [v ?base s] is a URI from [s] relative to [base] (if specified).
       Raises in in case of error, use {!of_jstr} if you need to deal
       with user input. *)
 
@@ -655,9 +655,9 @@ module Uri : sig
       contain stray, percent-decoded, directory separators. *)
 
   val path_segments : t -> (path, Jv.Error.t) result
-  (** [path_segments u] splits the {!val-path} of [u] on ['/'] and
-      {{!decode_component}percent-decodes} the resulting
-      segments. This is the empty list if the path is empty. *)
+  (** [path_segments u] determines the segments of the {!val-path} of
+      [u] and {{!decode_component}percent-decodes} them. This is the
+      empty list if the path is empty. The root path is [[Jstr.empty]]. *)
 
   val with_path_segments : t -> path -> (t, Jv.Error.t) result
   (** [with_path_segments u segs] is [u] with a {!path} made by
@@ -738,7 +738,7 @@ module Uri : sig
   (** {1:conv Converting} *)
 
   val of_jstr : ?base:Jstr.t -> Jstr.t -> (t, Jv.Error.t) result
-  (** [of_jstr ~base s] is an URL from [s] relative to [base] (if
+  (** [of_jstr ~base s] is a URL from [s] relative to [base] (if
       specified). Note that if [s] is relative and [base] is
       unspecified the function errors. *)
 
@@ -757,16 +757,16 @@ module Uri : sig
       which reserves a few more characters. *)
 
   val decode : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [decode s] percent-decodes an UTF-8 representation
+  (** [decode s] percent-decodes a UTF-8 representation
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI}decodeURI}.
   *)
 
   val encode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [encode s] percent-encodes an UTF-8 representation
+  (** [encode s] percent-encodes a UTF-8 representation
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent}encodeURIComponent}. *)
 
   val decode_component : Jstr.t -> (Jstr.t, Jv.Error.t) result
-  (** [decode s] percent-descodes an UTF-8 representation
+  (** [decode s] percent-descodes a UTF-8 representation
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent}decodeURIComponent}. Note that
       this has the same effect as {!decode}. *)
 
