@@ -609,12 +609,14 @@ module Uri : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/URL/port}port}. *)
 
   val path : t -> Jstr.t
-  (** [path u] is the path of [u]. This is ["/"] if there is no path
-      in [u]: no distinction is made between [http://example.org] and
-      [http://example.org/]. This is not percent-decoded and what the
+  (** [path u] is the path of [u]. This is not percent-decoded and what the
       URL API calls
       {{:https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname}
-      [pathname]}. Use {!path_segments} for decoding the path. *)
+      [pathname]}. Use {!path_segments} for decoding the path.
+
+      {b Note.} In hierarchical URI schemes like [http] this is ["/"]
+      even if there is no path in [u]: no distinction is made between
+      [http://example.org] and [http://example.org/]. *)
 
   val query : t -> Jstr.t
   (** [query u] is the query of [u]. This not percent-decoded and
@@ -655,14 +657,15 @@ module Uri : sig
   val path_segments : t -> (path, Jv.Error.t) result
   (** [path_segments u] splits the {!val-path} of [u] on ['/'] and
       {{!decode_component}percent-decodes} the resulting
-      segments. Note that as per {!val-path} definition, the result is
-      never the empty. *)
+      segments. This is the empty list if the path is empty. *)
 
   val with_path_segments : t -> path -> (t, Jv.Error.t) result
   (** [with_path_segments u segs] is [u] with a {!path} made by
       {{!encode_component}percent-encoding} the segments, prepending a
-      ['/'] to each segment and concatenating the result. An empty [segs]
-      is mapped on the root path [/]. *)
+      ['/'] to each segment and concatenating the result.
+
+      {b Note.} In hierarchical URI schemes like [http] an empty [segs]
+      is mapped to the root path, see {!path}. *)
 
   (** {1:params Fragment or query parameters} *)
 

@@ -11,7 +11,8 @@
   * Added helper functions `Uri.[with_]{query,fragment}_params`.
   * Added helper functions `Uri.[with_]{path_segments}`.
   
-  Thanks to Max Lang for the report (#50) and the discussion.
+  Thanks to Max Lang for the report (#50) and making sure the new API
+  makes sense.
 
 - Add canvas color space support (note: unsupported on Firefox for now).
 

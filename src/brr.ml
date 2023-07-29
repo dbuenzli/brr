@@ -889,9 +889,7 @@ module Uri = struct
 
   let slash = Jstr.v "/"
 
-  let path u =
-    let p = Jv.Jstr.get u "pathname" in
-    if Jstr.is_empty p then slash else p
+  let path u = Jv.Jstr.get u "pathname"
 
   let query u =
     let q = Jv.Jstr.get u "search" in
@@ -908,10 +906,8 @@ module Uri = struct
   let path_segments u =
     let decode_seg s = Jv.(to_jstr (apply decode_component [| of_jstr s |])) in
     try
-      begin match Jstr.cuts ~sep:slash (Jstr.slice (path u) ~start:1) with
-      | [] -> Ok [Jstr.empty] (* should never happpen *)
-      | segs -> Ok (List.map decode_seg segs)
-      end
+      let segs = Jstr.cuts ~sep:slash (Jstr.slice (path u) ~start:1) in
+      Ok (List.map decode_seg segs)
     with Jv.Error e -> Error e
 
   let with_path_segments u segs =
