@@ -161,6 +161,7 @@ let default =
       [ "ocaml", {|>= "4.08.0"|};
         "ocamlfind", {|build|};
         "ocamlbuild", {|build|};
+        "topkg", {|build & >= "1.0.3"|};
         "js_of_ocaml-compiler", {|>= "4.1.0"|};
         "js_of_ocaml-toplevel", {|>= "4.1.0"|};
       ]
