@@ -410,25 +410,48 @@ module Blob : sig
       [type'] specifies the resulting type for the blob, defaults to
       the empty string. *)
 
-  val array_buffer : t -> Tarray.Buffer.t Fut.or_error
+  (** {1:loading Loading} *)
+
+  type progress = (float * float) option -> unit
+  (** The type for loading progress callbacks.
+
+      If the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent/lengthComputable}length is computable} the function is periodically called with [Some
+      (loaded, total)] which are respectively the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent/loaded}
+      [loaded]} and
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent/total}
+      [total]} fields of the progress event. If the length is not computable it
+      is called with [None]. *)
+
+  val array_buffer : ?progress:progress -> t -> Tarray.Buffer.t Fut.or_error
   (** [array_buffer b] is an
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Blob/arrayBuffer}
-      array buffer} with the contents of [b]. *)
+      array buffer} with the contents of [b].  If [progress] is
+      specified, the given callback reports it (in this case the load
+      happens via a
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/FileReader}
+      [FileReader]} object). *)
 
   val stream : t -> Jv.t
   (** [stream b] is a
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Blob/stream}stream}
       to read the contents of [b]. *)
 
-  val text : t -> Jstr.t Fut.or_error
+  val text : ?progress:progress -> t -> Jstr.t Fut.or_error
   (** [text b] is the
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Blob/text}string}
-      that results from UTF-8 decoding the contents of [b]. *)
-
-  val data_uri : t -> Jstr.t Fut.or_error
-  (** [data_uri b] is [b] as a data URI (via the
+      that results from UTF-8 decoding the contents of [b]. If [progress]
+      is specified, the given callback reports it (in this case the load
+      happens via a
       {{:https://developer.mozilla.org/en-US/docs/Web/API/FileReader}
-      [FileReader]} API). *)
+      [FileReader]} object). *)
+
+  val data_uri : ?progress:progress -> t -> Jstr.t Fut.or_error
+  (** [data_uri b] is [b] as a data URI. If [progress] is specified,
+      the given callback reports it. This function always goes through
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/FileReader}
+      [FileReader]} object. *)
 
   (**/**)
   include Jv.CONV with type t := t

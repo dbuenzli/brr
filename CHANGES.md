@@ -2,7 +2,7 @@
 - The experimental library `brr.note` has been migrated to the `note.brr`
   library available via the `note` package. The toplevel modules 
   were renamed from `Brr_note*` to `Note_brr*`.
-- Updated developer tool console to Manifest V3 (#44).
+  
 - Fix encoding mess in `Brr.Uri` which tried to expose a model that is
   not workable in practice due to the way the URI standard is defined.
   
@@ -11,8 +11,8 @@
   * Added helper functions `Uri.[with_]{query,fragment}_params`.
   * Added helper functions `Uri.[with_]{path_segments}`.
   
-  Thanks to Max Lang for the report (#50) and making sure the new API
-  makes sense.
+  Thanks to Max Lang for the report and making sure the new API makes
+  sense (#50).
 
 - Add canvas color space support (note: unsupported on Firefox for now).
 
@@ -20,6 +20,11 @@
   * Add `C2d.Image_data.color_space` and a `?color_space` optional argument
     to `C2d.{create,get}_image_data` and `C2d.Image_data.create`.
 
+- `Brr.Blob.{array_buffer,text,data_uri}`: add an optional argument
+  `?progress`. If provided the load happens via a `FileReader` object
+  and load progress is reported (#39).
+
+- Updated developer tool console to Manifest V3 (#44).
 
 v0.0.5 2023-05-10 La Forclaz (VS)
 ---------------------------------
