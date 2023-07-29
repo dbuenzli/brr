@@ -1,5 +1,5 @@
-v0.0.6 2023-07-29 La Forclaz (VS)
----------------------------------
+v0.0.6 2023-07-29 Zagreb
+------------------------
 
 - The experimental library `brr.note` has been migrated to the `note.brr`
   library available via the `note` package. The toplevel modules 
