@@ -906,8 +906,9 @@ module Uri = struct
   let path_segments u =
     let decode_seg s = Jv.(to_jstr (apply decode_component [| of_jstr s |])) in
     try
-      let segs = Jstr.cuts ~sep:slash (Jstr.slice (path u) ~start:1) in
-      Ok (List.map decode_seg segs)
+      let p = path u and prefix = slash in
+      let p = if Jstr.starts_with ~prefix p then Jstr.slice p ~start:1 else p in
+      Ok (List.map decode_seg (Jstr.cuts ~sep:slash p))
     with Jv.Error e -> Error e
 
   let with_path_segments u segs =
