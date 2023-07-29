@@ -779,7 +779,9 @@ module Blob = struct
 
   type progress = (float * float) option -> unit
 
-  let file_reader ?progress () = (* If we want progress we need a FileReader *)
+  (* If we want progress we need a FileReader *)
+
+  let file_reader ?progress conv =
     let progress_data e =
       let e = Ev.to_jv e in
       if not (Jv.Bool.get e "lengthComputable") then None else
@@ -794,7 +796,7 @@ module Blob = struct
       | None -> ()
       | Some progress -> progress (progress_data e)
       end;
-      set_fut (Ok (Jv.Jstr.get reader "result"))
+      set_fut (Ok (conv (Jv.get reader "result")))
     in
     let error _e = set_fut (Error (Jv.to_error (Jv.get reader "error"))) in
     let t = Ev.target_of_jv reader in
@@ -813,21 +815,21 @@ module Blob = struct
   | None ->
       Fut.of_promise ~ok:Tarray.Buffer.of_jv (Jv.call b "arrayBuffer" [||])
   | Some _ ->
-      let fut, reader = file_reader ?progress () in
+      let fut, reader = file_reader ?progress Tarray.Buffer.of_jv in
       ignore (Jv.call reader "readAsArrayBuffer" [| b |]);
       fut
 
   let text ?progress b = match progress with
   | None -> Fut.of_promise ~ok:Jv.to_jstr (Jv.call b "text" [||])
   | Some _ ->
-      let fut, reader = file_reader ?progress () in
+      let fut, reader = file_reader ?progress Jv.to_jstr in
       ignore (Jv.call reader "readAsText" [| b |]);
       fut
 
   let data_uri ?progress b =
     (* There's no direct support for data urls in blob objects.
        We do this via the FileReader API. *)
-    let fut, reader = file_reader ?progress () in
+    let fut, reader = file_reader ?progress Jv.to_jstr in
     ignore (Jv.call reader "readAsDataURL" [| b |]);
     fut
 end
