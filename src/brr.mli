@@ -176,10 +176,12 @@ module Tarray : sig
 
   (** {1:set Setting, copying and slicing} *)
 
-  external get : ('a, 'b) t -> int -> 'a = "caml_js_get"
+  val get : ('a, 'b) t -> int -> 'a
+  [@@ocaml.deprecated "convert the typed array into a big array instead."]
   (** [get a i] is the element of [a] at [i]. *)
 
-  external set : ('a, 'b) t -> int -> 'a -> unit = "caml_js_set"
+  val set : ('a, 'b) t -> int -> 'a -> unit
+  [@@ocaml.deprecated "convert the typed array into a big array instead."]
   (** [set a i v] sets the element of [a] at [i] to [v]. *)
 
   val set_tarray : ('a, 'b) t -> dst:int -> ('c, 'd) t -> unit

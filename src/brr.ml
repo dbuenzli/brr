@@ -557,15 +557,57 @@ module Tarray = struct
         let t = Jstr.of_string s in
         Jv.throw (Jstr.append (Jstr.v "Unknown typed array: ") t)
 
+  let to_jv_of_type : type a b. (a, b) type' -> a -> Jv.t = function
+  | Int8 -> Jv.of_int
+  | Int16 -> Jv.of_int
+  | Int32 -> Jv.of_int32
+  | Uint8 -> Jv.of_int
+  | Uint8_clamped -> Jv.of_int
+  | Uint16 -> Jv.of_int
+  | Uint32 -> Jv.of_int32
+  | Float32 -> Jv.of_float
+  | Float64 -> Jv.of_float
+
+  let of_jv_of_type : type a b. (a, b) type' -> Jv.t -> a = function
+  | Int8 -> Jv.to_int
+  | Int16 -> Jv.to_int
+  | Int32 -> Jv.to_int32
+  | Uint8 -> Jv.to_int
+  | Uint8_clamped -> Jv.to_int
+  | Uint16 -> Jv.to_int
+  | Uint32 -> Jv.to_int32
+  | Float32 -> Jv.to_float
+  | Float64 -> Jv.to_float
+
+  let elt_to_jv a = to_jv_of_type (type' a)
+  let elt_of_jv a = of_jv_of_type (type' a)
+
   (* Setting, copying and slicing *)
+
+  let compiled_to_wasm =
+    match Sys.backend_type with
+    | Other "wasm_of_ocaml" -> true
+    | _ -> false
 
   external get : ('a, 'b) t -> int -> 'a = "caml_js_get"
   external set : ('a, 'b) t -> int -> 'a -> unit = "caml_js_set"
+
+  let get =
+    if compiled_to_wasm then
+      fun a i -> elt_of_jv a (Jv.Jarray.get (Jv.repr a) i)
+    else
+      get
+  let set =
+    if compiled_to_wasm then
+      fun a i v -> Jv.Jarray.set (Jv.repr a) i (elt_to_jv a v)
+    else
+      set
+
   let set_tarray a ~dst b = ignore @@ Jv.call a "set" Jv.[| b; of_int dst |]
 
   let fill ?(start = 0) ?stop v a =
     let stop = match stop with None -> length a | Some stop -> stop in
-    ignore @@ Jv.call a "fill" Jv.[| Jv.repr v; of_int start; of_int stop |]
+    ignore @@ Jv.call a "fill" Jv.[| elt_to_jv a v; of_int start; of_int stop |]
 
   let copy_within ?(start = 0) ?stop ~dst a =
     let stop = match stop with None -> length a | Some stop -> stop in
@@ -583,39 +625,51 @@ module Tarray = struct
   (* Predicates *)
 
   let find sat a =
-    let sat v i = Jv.of_bool (sat i v) in
-    Jv.to_option Obj.magic (Jv.call a "find" Jv.[| callback ~arity:2 sat |])
+    let of_jv = elt_of_jv a in
+    let sat v i = Jv.of_bool (sat i (of_jv v)) in
+    Jv.to_option of_jv (Jv.call a "find" Jv.[| callback ~arity:2 sat |])
 
   let find_index sat a =
-    let sat v i = Jv.of_bool (sat i v) in
+    let of_jv = elt_of_jv a in
+    let sat v i = Jv.of_bool (sat i (of_jv v)) in
     let i = Jv.to_int (Jv.call a "findIndex" Jv.[| callback ~arity:2 sat |]) in
     if i = -1 then None else Some i
 
   let for_all sat a =
-    let sat v i = Jv.of_bool (sat i v) in
+    let of_jv = elt_of_jv a in
+    let sat v i = Jv.of_bool (sat i (of_jv v)) in
     Jv.to_bool @@ Jv.call a "every" Jv.[| callback ~arity:2 sat |]
 
   let exists sat a =
-    let sat v i = Jv.of_bool (sat i v) in
+    let of_jv = elt_of_jv a in
+    let sat v i = Jv.of_bool (sat i (of_jv v)) in
     Jv.to_bool @@ Jv.call a "every" Jv.[| callback ~arity:2 sat |]
 
   (* Traversals *)
 
   let filter sat a =
-    let sat v i = Jv.of_bool (sat i v) in
+    let of_jv = elt_of_jv a in
+    let sat v i = Jv.of_bool (sat i (of_jv v)) in
     Jv.call a "filter" Jv.[| callback ~arity:2 sat |]
 
   let iter f a =
-    let f v i = f i v in
+    let of_jv = elt_of_jv a in
+    let f v i = f i (of_jv v) in
     ignore @@ Jv.call a "forEach" Jv.[| callback ~arity:2 f |]
 
-  let map f a = Jv.call a "map" Jv.[| callback ~arity:1 f |]
+  let map f a =
+    let of_jv = elt_of_jv a in
+    let f v = f (of_jv v) in
+    Jv.call a "map" Jv.[| callback ~arity:1 f |]
 
   let fold_left f acc a =
+    let of_jv = elt_of_jv a in
+    let f acc v = f acc (of_jv v) in
     Obj.magic @@ Jv.call a "reduce" [|Jv.callback ~arity:2 f; Jv.repr acc|]
 
   let fold_right f a acc =
-    let f acc v = f v acc in
+    let of_jv = elt_of_jv a in
+    let f acc v = f (of_jv v) acc in
     Obj.magic @@ Jv.call a "reduceRight" [|Jv.callback ~arity:2 f; Jv.repr acc|]
 
   let reverse a = Jv.call a "reverse" Jv.[||]
