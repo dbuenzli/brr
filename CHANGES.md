@@ -1,3 +1,10 @@
+
+
+- `At.class'` attribute values. Allow to specify multiple classes in a
+  single `At.t` value. This was not possible before which is
+  surprising. Thanks to Basile Clément for noticing and patching
+  (#53).
+
 v0.0.6 2023-07-29 Zagreb
 ------------------------
 
