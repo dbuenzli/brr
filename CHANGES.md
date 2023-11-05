@@ -1,5 +1,6 @@
 
-
+- Fix `At.draggable`. It is enumerated not a boolean attribute. Thanks
+  to Ulysse for the patch (#55).
 - `At.class'` attribute values. Allow to specify multiple classes in a
   single `At.t` value. This was not possible before which is
   surprising. Thanks to Basile Clément for noticing and patching

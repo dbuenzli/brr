@@ -1936,7 +1936,7 @@ module At : sig
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled}
       disabled} *)
 
-  val draggable : bool cons
+  val draggable : Jstr.t cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable}draggable} *)
 
   val for' : Jstr.t cons
