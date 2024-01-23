@@ -1,4 +1,5 @@
 
+- Add `At.download` attribute constructor.
 - Fix `At.draggable`. It is enumerated not a boolean attribute. Thanks
   to Ulysse for the patch (#55).
 - `At.class'` attribute values. Allow to specify multiple classes in a

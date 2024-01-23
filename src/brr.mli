@@ -1865,6 +1865,7 @@ module At : sig
     val defer : name
     val dir : name
     val disabled : name
+    val download : name
     val draggable : name
     val for' : name
     val height : name
@@ -1936,8 +1937,13 @@ module At : sig
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled}
       disabled} *)
 
+  val download : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#download}
+      download} *)
+
   val draggable : Jstr.t cons
-  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable}draggable} *)
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable}draggable}
+  *)
 
   val for' : Jstr.t cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/for}
