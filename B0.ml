@@ -49,7 +49,7 @@ let console =
   let doc = "Browser developer tool OCaml console" in
   let srcs =
     [ `Dir ~/"src/console";
-      (* FIXME we want something like ext_js *)
+      (* TODO b0: we want something like ext_js *)
       `X ~/"src/console/ocaml_console.js"; (* GNGNGNGN *)
       `X ~/"src/console/devtools.js";
       `X ~/"src/console/highlight.pack.js" ]
@@ -77,8 +77,8 @@ let top =
   let doc = "In page toplevel test" in
   let srcs = [
     `File ~/"test/top.ml";
-    (* FIXME js_of_ocaml chokes `File "src/console/highlight.pack.js";
-       FIXME it's likely fixed by now. *)
+    (* TODO js_of_ocaml chokes `File "src/console/highlight.pack.js";
+       TODO it's likely fixed by now. *)
     `File ~/"src/console/ocaml_console.css" ] in
   let requires =
     [ js_of_ocaml_compiler_runtime;
@@ -145,20 +145,19 @@ let update_console =
   let jsfile = "ocaml_console.js" in
   let src = B0_env.in_unit_dir env console ~/jsfile in
   let dst = B0_env.in_scope_dir env Fpath.(~/"src/console" / jsfile) in
-  Os.File.copy ~force:true ~make_path:false ~src dst
+  Os.File.copy ~force:true ~make_path:false src ~dst
 
 (* Packs *)
 
-let test_pack = (* FIXME b0 add stuff for testing *)
+let test_pack =
   let us = [ test_console ] in
   let meta = B0_meta.empty |> B0_meta.tag B0_meta.test in
   B0_pack.make ~locked:false "test" ~doc:"Brr test suite" ~meta us
 
+let is_toplevel u = B0_unit.has_tag B0_jsoo.toplevel u
+
 let jsoo_toplevels =
-  (* FIXME this is wrong and make that nice to write
-     Not sure why this is wrong in fact. *)
-  let tops = B0_unit.has_tag B0_jsoo.toplevel in
-  let us = List.filter tops (B0_unit.list ()) in
+  let us = List.filter is_toplevel (B0_unit.list ()) in
   let doc = "Units with toplevel (slow to build)" in
   B0_pack.make ~locked:false "tops" ~doc us
 
@@ -187,4 +186,4 @@ let default =
       |> B0_meta.tag B0_opam.tag
   in
   B0_pack.make "default" ~doc:"brr package" ~meta ~locked:true @@
-  B0_unit.list ()
+  List.filter (Fun.negate is_toplevel) (B0_unit.list ())
