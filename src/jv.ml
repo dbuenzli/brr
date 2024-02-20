@@ -12,7 +12,7 @@ type t
 type jv = t
 
 external equal : t -> t -> bool = "caml_js_equals"
-let strict_equal = ( == )
+external strict_equal : t -> t -> bool = "caml_js_strict_equals"
 external typeof : t -> Jstr.t = "caml_js_typeof"
 external instanceof : t -> cons:t -> bool = "caml_js_instanceof"
 external repr : 'a -> t = "%identity"
@@ -21,8 +21,8 @@ external repr : 'a -> t = "%identity"
 
 let null = pure_js_expr "null"
 let undefined = pure_js_expr "undefined"
-let is_null v = v == null
-let is_undefined v = v == undefined
+let is_null v = strict_equal v null
+let is_undefined v = strict_equal v undefined
 let is_none v = is_null v || is_undefined v
 let is_some v = not (is_none v)
 let to_option conv v = if is_none v then None else Some (conv v)
@@ -87,6 +87,17 @@ module Float = struct
   let find o p = let f = get o p in if is_none f then None else Some(to_float f)
   let get o p = to_float (get o p)
   let set o p b = set o p (of_float b)
+  let set_if_some o p = function None -> () | Some f -> set o p f
+end
+
+(* Int32 *)
+
+external to_int32 : t -> int32 = "caml_js_to_int32"
+external of_int32 : int32 -> t = "caml_js_from_int32"
+module Int32 = struct
+  let find o p = let f = get o p in if is_none f then None else Some(to_int32 f)
+  let get o p = to_int32 (get o p)
+  let set o p b = set o p (of_int32 b)
   let set_if_some o p = function None -> () | Some f -> set o p f
 end
 
