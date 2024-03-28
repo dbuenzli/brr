@@ -1,4 +1,5 @@
 
+- Fix `Fut.tick` in the presence of effects compilation.
 - Add `At.download` attribute constructor.
 - Fix `At.draggable`. It is enumerated not a boolean attribute. Thanks
   to Ulysse for the patch (#55).
