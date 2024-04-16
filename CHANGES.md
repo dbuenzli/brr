@@ -1,4 +1,7 @@
 
+- Fix `Brr_webaudio.Audio.Node.Media_element_source.create` the
+  `MediaElementAudioSourceNode` property was mispelled. Thanks
+  to Emile Trotignon for the report and the patch (#57).
 - Fix `Fut.tick` in the presence of effects compilation.
 - Add `At.download` attribute constructor.
 - Fix `At.draggable`. It is enumerated not a boolean attribute. Thanks

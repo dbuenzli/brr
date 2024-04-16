@@ -521,7 +521,7 @@ module Audio = struct
       include (Jv.Id : Jv.CONV with type t := t)
       external as_node : t -> node = "%identity"
       let create c ~opts =
-        Jv.new' (Jv.get Jv.global "MediaElementAudioSourceNode ") [| c; opts |]
+        Jv.new' (Jv.get Jv.global "MediaElementAudioSourceNode") [| c; opts |]
 
       let media_element n = Brr_io.Media.El.of_jv @@ Jv.get n "mediaElement"
     end
