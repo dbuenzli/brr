@@ -112,6 +112,10 @@ external to_string : t -> string = "caml_string_of_jsstring"
 
 (* Arrays *)
 
+let is_array jv =
+  Jv.call (Jv.get Jv.global "Array") "isArray" [| jv |]
+  |> Jv.to_bool
+
 module Jarray = struct
   type t = jv
   let create n = new' (get global "Array") [| of_int n |]

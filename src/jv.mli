@@ -305,6 +305,10 @@ external of_jstr_list : Jstr.t list ->  t = "caml_list_to_js_array"
 
 (** {2:jarr JavaScript array manipulation} *)
 
+val is_array : jv -> bool
+(** [is_array] is the
+    {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray}Array.isarray} function. *)
+
 (** JavaScript arrays. *)
 module Jarray : sig
 
