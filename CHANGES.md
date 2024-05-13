@@ -1,4 +1,7 @@
 
+- Add `Jv.is_array` a binding to `Array.isArray` which is the
+  recommended way to test a value for an array. Thanks to
+  Valentin Gatien-Baron for the patch (#59).
 - Fix `Brr_webaudio.Audio.Node.Media_element_source.create` the
   `MediaElementAudioSourceNode` property was mispelled. Thanks
   to Emile Trotignon for the report and the patch (#57).

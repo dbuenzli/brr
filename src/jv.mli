@@ -257,6 +257,11 @@ val to_string : t -> string
 
 (** {1:arrays Arrays} *)
 
+val is_array : jv -> bool
+(** [is_array v] determines if [v] is a JavaScript array using the
+    {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray}
+    Array.isArray} function. *)
+
 val to_array : (t -> 'a) -> t -> 'a array
 (** [to_array conv a] is an [array] value made of the JavaScript array
     [a] whose elements are converted with [conv]. *)
