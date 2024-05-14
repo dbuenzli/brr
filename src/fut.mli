@@ -9,6 +9,10 @@
     becomes determined at an arbitrary point in the future. The future
     acts as a placeholder for the value while it is undetermined.
 
+    Future values do not support exceptions, you need to turn them
+    into a value and make them appear in the future's type, for
+    example using {!Fut.error}.
+
     [Brr] uses future values [('a, 'b) result Fut.t] to type the
     resolution and rejection case of JavaScript promises. Since most
     rejection cases given by browser APIs are simply {!Jv.Error.t}
@@ -40,10 +44,12 @@ val return : 'a -> 'a t
 (** [return v] is a future that determines [v]. *)
 
 val map : ('a -> 'b) -> 'a t -> 'b t
-(** [map fn f] is [return (fn v)] with [v] the value determined by [f]. *)
+(** [map fn f] is [return (fn v)] with [v] the value determined by [f].
+    [fn] must not raise. *)
 
 val bind : 'a t -> ('a -> 'b t) -> 'b t
-(** [bind f fn] is the future [fn v] with [v] the value determined by [f]. *)
+(** [bind f fn] is the future [fn v] with [v] the value determined by [f].
+    [fn] must not raise. *)
 
 val pair : 'a t -> 'b t -> ('a * 'b) t
 (** [pair f0 f1] is the future that determines with the value of [f0]
