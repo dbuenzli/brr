@@ -57,8 +57,8 @@ let nl = v "\n"
 let append s0 s1 = jv_call s0 "concat" [| s1 |]
 let ( + ) = append
 let concat ?(sep = empty) ss = jv_call (jv_of_jstr_list ss) "join" [| sep |]
-let pad_start ?(pad = sp) len s = jv_call s "padStart" [| jv_of_int len; sp |]
-let pad_end ?(pad = sp) len s = jv_call s "padEnd" [| jv_of_int len; sp |]
+let pad_start ?(pad = sp) len s = jv_call s "padStart" [| jv_of_int len; pad |]
+let pad_end ?(pad = sp) len s = jv_call s "padEnd" [| jv_of_int len; pad |]
 let repeat n s = jv_call s "repeat" [| jv_of_int n |]
 
 (* Finding *)

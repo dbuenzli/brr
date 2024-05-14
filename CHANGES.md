@@ -1,4 +1,6 @@
 
+- Fix `Jstr.pad_{start,end}` specifying the [pad] optional argument
+  was being ignored. Thanks to Valentin Gatien-Baron for noticing.
 - Add `Jv.is_array` a binding to `Array.isArray` which is the
   recommended way to test a value for an array. Thanks to
   Valentin Gatien-Baron for the patch (#59).
