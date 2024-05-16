@@ -140,8 +140,8 @@ let nop =
 
 let update_console =
   let doc = "Update dev console" in
-  B0_action.make' ~units:[console] ~doc "update-console" @@
-  fun _ env ~args ->
+  B0_unit.of_action ~units:[console] ~doc "update-console" @@
+  fun env _ ~args ->
   let jsfile = "ocaml_console.js" in
   let src = B0_env.in_unit_dir env console ~/jsfile in
   let dst = B0_env.in_scope_dir env Fpath.(~/"src/console" / jsfile) in
