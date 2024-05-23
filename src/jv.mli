@@ -213,6 +213,35 @@ module Float : sig
   (** [set_if_some o p b] is [set_if_some o p (Option.map of_float b)]. *)
 end
 
+(** {1:int32 32-bits integers} *)
+
+external to_int32 : t -> int32 = "caml_js_to_int32"
+(** [to_int32 v] is the JavaScript [Number] value [v] as an [int32] value. The
+    conversion is lossless provided [v] is a 32-bit signed integer. *)
+
+external of_int32 : int32 -> t = "caml_js_from_int32"
+(** [of_int32 f] is the [int32] value [f] as a JavaScript [Number] value. The
+    conversion is lossless. *)
+
+(** [int32] object properties. *)
+module Int32 : sig
+  val find : t -> prop -> int32 option
+  (** [find o p] is [find_map to_int32 o p]. {b This is
+      unsafe}, only use if you know that if [o] defines [p] it is
+      guaranteed to be a JavaScript number. *)
+
+  val get : t -> prop -> int32
+  (** [get o p] is [to_int32 (get o p)]. {b This is unsafe}, only use
+      if you know [o] has [p] and it is guaranteed to be a JavaScript
+      number. *)
+
+  val set : t -> prop -> int32 -> unit
+  (** [set o p b] is [set o p (of_int32 b)]. *)
+
+  val set_if_some : t -> prop -> int32 option -> unit
+  (** [set_if_some o p b] is [set_if_some o p (Option.map of_int32 b)]. *)
+end
+
 (** {1:jstr JavaScript strings} *)
 
 external to_jstr : t -> Jstr.t = "%identity"
