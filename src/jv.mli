@@ -107,7 +107,7 @@ external obj : (prop * t) array -> t = "caml_js_object"
 (** [obj props] is an object with properties [prop]. *)
 
 external new' : t -> t array -> t = "caml_js_new"
-(** [new_obj c args] creates an object with constructor function [c]
+(** [new' c args] creates an object with constructor function [c]
     and arguments [args]. {{!page-ffi_manual.create}Lookup} contructor
     functions in the {!Jv.global} object. *)
 
