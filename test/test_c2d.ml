@@ -12,13 +12,14 @@ let stripe_cnv_rect c ~x ~y ~w ~h =
   let w = truncate w and h = truncate h in
   let idata = C2d.get_image_data c ~x ~y ~w ~h in
   let d = C2d.Image_data.data idata in
+  let ba = Tarray.to_bigarray1 d in
   for y = 0 to h - 1 do
     for x = 0 to w - 1 do
       if x mod 4 <> 0 then () else
       let off = 4 * (y * w + x) in
-      Tarray.set d (off    ) 0xFF;
-      Tarray.set d (off + 1) 0x00;
-      Tarray.set d (off + 2) 0x00
+      Bigarray.Array1.set ba (off    ) 0xFF;
+      Bigarray.Array1.set ba (off + 1) 0x00;
+      Bigarray.Array1.set ba (off + 2) 0x00
     done
   done;
   C2d.put_image_data c idata ~x ~y

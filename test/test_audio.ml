@@ -40,8 +40,9 @@ let wave_data c ~x ~y ~w ~h data =
   let p = C2d.Path.create () in
   let slice_width = w /. float (Tarray.length data) in
   let x = ref x in
-  for i = 0 to Tarray.length data - 1 do
-    let v = float (Tarray.get data i) /. 128. in
+  let ba = Tarray.to_bigarray1 data in
+  for i = 0 to Bigarray.Array1.dim ba - 1 do
+    let v = float (Bigarray.Array1.get ba i) /. 128. in
     let y = y +. v *. (h /. 2.) in
     if i = 0 then C2d.Path.move_to p ~x:!x ~y else
     C2d.Path.line_to p ~x:!x ~y;
@@ -53,8 +54,9 @@ let freq_data c ~x ~y ~w ~h data =
   C2d.set_fill_style c (C2d.color (Jstr.v "#000"));
   let bw = (w /. float (Tarray.length data)) *. 5. in
   let x = ref x in
-  for i = 0 to Tarray.length data - 1 do
-    let bh = float (Tarray.get data i) /. 2. in
+  let ba = Tarray.to_bigarray1 data in
+  for i = 0 to Bigarray.Array1.dim ba - 1 do
+    let bh = float (Bigarray.Array1.get ba i) /. 2. in
     C2d.fill_rect c ~x:!x ~y:(y +. h -. 0.5 *. bh) ~w:bw ~h:bh;
     x := !x +. bw +. (1. *. Window.device_pixel_ratio G.window);
   done
