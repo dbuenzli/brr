@@ -1,4 +1,9 @@
 
+- Add support for `wasm_of_ocaml`. Thanks to Jérôme Vouillon
+  for the patchset (#51).
+- Deprecate `Tarray.{get,set}`. These function become less efficient
+  in order to support wasm_of_ocaml. Use `Tarray.to_bigarray1` to
+  convert to a bigarray and operate on that instead (#51).
 - Fix `Jstr.pad_{start,end}` specifying the [pad] optional argument
   was being ignored. Thanks to Valentin Gatien-Baron for noticing.
 - Add `Jv.is_array` a binding to `Array.isArray` which is the
