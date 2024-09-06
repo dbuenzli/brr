@@ -106,6 +106,9 @@ let test_module ?meta ?doc ?requires ?srcs top m =
   test ?meta ?requires ?srcs src ~doc
 
 let test_hello = test ~/"test/test_hello.ml" ~doc:"Brr console hello size"
+let test_fact =
+  test ~/"test/test_fact.ml" ~doc:"Test export OCaml to JavaScript"
+
 let test_base64 = test_module "Brr" "Base64"
 let test_c2d = test_module "Brr_canvas" "C2d"
 let test_clipboard = test_module "Brr_io" "Clipboard"
