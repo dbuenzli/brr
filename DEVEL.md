@@ -1,10 +1,10 @@
 # Testing 
 
-There are a few test see `b0 list`, the can be built and shown in your
+There are a few test see `b0 list`, they can be built and shown in your
 browser with:
 
-    b0 -- .show-url test_c2d
-    b0 -- .show-url test_gl
-    b0 -- .show-url test_audio
+    b0 -- test_c2d
+    b0 -- test_gl
+    b0 -- test_audio
     … 
 
