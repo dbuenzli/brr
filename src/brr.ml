@@ -584,24 +584,22 @@ module Tarray = struct
 
   (* Setting, copying and slicing *)
 
-  let compiled_to_wasm =
-    match Sys.backend_type with
-    | Other "wasm_of_ocaml" -> true
-    | _ -> false
+  let compiled_to_wasm = match Sys.backend_type with
+  | Other "wasm_of_ocaml" -> true
+  | _ -> false
 
   external get : ('a, 'b) t -> int -> 'a = "caml_js_get"
   external set : ('a, 'b) t -> int -> 'a -> unit = "caml_js_set"
 
   let get =
-    if compiled_to_wasm then
-      fun a i -> elt_of_jv a (Jv.Jarray.get (Jv.repr a) i)
-    else
-      get
+    if compiled_to_wasm
+    then fun a i -> elt_of_jv a (Jv.Jarray.get (Jv.repr a) i)
+    else get
+
   let set =
-    if compiled_to_wasm then
-      fun a i v -> Jv.Jarray.set (Jv.repr a) i (elt_to_jv a v)
-    else
-      set
+    if compiled_to_wasm
+    then fun a i v -> Jv.Jarray.set (Jv.repr a) i (elt_to_jv a v)
+    else set
 
   let set_tarray a ~dst b = ignore @@ Jv.call a "set" Jv.[| b; of_int dst |]
 

@@ -177,11 +177,13 @@ module Tarray : sig
   (** {1:set Setting, copying and slicing} *)
 
   val get : ('a, 'b) t -> int -> 'a
-  [@@ocaml.deprecated "convert the typed array into a big array instead."]
+  [@@ocaml.deprecated
+    "Use Brr.Tarray.to_bigarray1 and operate on the bigarray instead."]
   (** [get a i] is the element of [a] at [i]. *)
 
   val set : ('a, 'b) t -> int -> 'a -> unit
-  [@@ocaml.deprecated "convert the typed array into a big array instead."]
+  [@@ocaml.deprecated
+    "Use Brr.Tarray.to_bigarray1 and operate on the bigarray instead."]
   (** [set a i v] sets the element of [a] at [i] to [v]. *)
 
   val set_tarray : ('a, 'b) t -> dst:int -> ('c, 'd) t -> unit

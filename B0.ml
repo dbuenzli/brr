@@ -178,8 +178,8 @@ let default =
         "ocamlfind", {|build|};
         "ocamlbuild", {|build|};
         "topkg", {|build & >= "1.0.3"|};
-        "js_of_ocaml-compiler", {|>= "4.1.0"|};
-        "js_of_ocaml-toplevel", {|>= "4.1.0"|} ]
+        "js_of_ocaml-compiler", {|>= "5.5.0"|};
+        "js_of_ocaml-toplevel", {|>= "5.5.0"|} ]
       |> B0_meta.tag B0_opam.tag
   in
   B0_pack.make "default" ~doc:"brr package" ~meta ~locked:true @@
