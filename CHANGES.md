@@ -1,4 +1,4 @@
-v0.0.7 2024-07-30 Zagreb
+v0.0.7 2024-09-09 Zagreb
 ------------------------
 
 - Add support for `wasm_of_ocaml`. Thanks to Jérôme Vouillon
