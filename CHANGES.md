@@ -1,3 +1,5 @@
+v0.0.7 2024-07-30 Zagreb
+------------------------
 
 - Add support for `wasm_of_ocaml`. Thanks to Jérôme Vouillon
   for the patchset (#51).
