@@ -618,7 +618,7 @@ module Tarray = struct
 
   let sub ?(start = 0) ?stop  a =
     let stop = match stop with None -> byte_length a | Some stop -> stop in
-    Jv.call a "subArray" Jv.[| of_int start; of_int stop |]
+    Jv.call a "subarray" Jv.[| of_int start; of_int stop |]
 
   (* Predicates *)
 

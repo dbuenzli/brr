@@ -422,7 +422,7 @@ module Fetch = struct
     let request e = Request.of_jv @@ Jv.get e "request"
     let preload_response e =
       let ok = Jv.to_option Response.of_jv in
-      Fut.of_promise ~ok @@ Jv.get e "preloadReponse"
+      Fut.of_promise ~ok @@ Jv.get e "preloadResponse"
 
     let client_id e = Jv.Jstr.get e "clientId"
     let resulting_client_id e = Jv.Jstr.get e "resultingClientId"
