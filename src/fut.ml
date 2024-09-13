@@ -92,7 +92,7 @@ module Syntax = struct
 end
 
 module Result_syntax = struct
-  let result_pair r0 r1 = match r0, r1 with
+  let result_pair r = match r with
   | (Error _ as r), _ | _, (Error _ as r) -> r
   | Ok v0, Ok v1 -> Ok (v0, v1)
 

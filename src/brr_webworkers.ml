@@ -78,8 +78,8 @@ module Service_worker = struct
   include (Jv.Id : Jv.CONV with type t := t)
   external as_worker : t -> Worker.t = "%identity"
   external as_target : t -> Ev.target = "%identity"
-  let script_url w = Jv.to_jstr @@ Jv.call w "scriptURL" [||]
-  let state w = Jv.to_jstr @@ Jv.call w "state" [||]
+  let script_url w = Jv.to_jstr @@ Jv.get w "scriptURL"
+  let state w = Jv.to_jstr @@ Jv.get w "state"
 
   module Navigation_preload_manager = struct
     type t = Jv.t
