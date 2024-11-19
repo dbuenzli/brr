@@ -1,3 +1,7 @@
+
+- Fix wrong default value for `name` in `Crypto_algo.Aes_gcm_params.v`
+  to `AES-GCM`. Thanks to @EruEri for the patch (#65).
+
 v0.0.7 2024-09-09 Zagreb
 ------------------------
 

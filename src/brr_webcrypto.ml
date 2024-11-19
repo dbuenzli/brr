@@ -174,7 +174,7 @@ module Crypto_algo = struct
   let aes_gcm = Jstr.v "AES-GCM"
   module Aes_gcm_params = struct
     type t = Jv.t
-    let v ?(name = aes_cbc) ~iv ~additional_data ~tag_length () =
+    let v ?(name = aes_gcm) ~iv ~additional_data ~tag_length () =
       let add = match additional_data with
       | None -> Jv.undefined | Some a -> Tarray.Buffer.to_jv a
       in
