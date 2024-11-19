@@ -1,4 +1,9 @@
 
+
+- Fix `Result_syntax.(and*)`. Thanks to Jérôme Vouillon.
+- Fix `Service_worker.{script_url,state}`. Thanks to Jérôme Vouillon.
+- Fix typo in binding of `Tarray.sub`. Thanks to Jérôme Vouillon.
+- Fix typo in binding of `Fetch.Ev.preload_response`. Thanks to Jérôme Vouillon.
 - Fix wrong default value for `name` in `Crypto_algo.Aes_gcm_params.v`
   to `AES-GCM`. Thanks to @EruEri for the patch (#65).
 
