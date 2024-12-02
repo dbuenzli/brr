@@ -1,5 +1,6 @@
 
-
+- Fix `At.wrap` attribute, it was defined as `value`. 
+  Thanks to Brendan Zabarauskas for the patch (#66).
 - Fix `Result_syntax.(and*)`. Thanks to Jérôme Vouillon.
 - Fix `Service_worker.{script_url,state}`. Thanks to Jérôme Vouillon.
 - Fix typo in binding of `Tarray.sub`. Thanks to Jérôme Vouillon.
