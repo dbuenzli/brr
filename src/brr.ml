@@ -1174,7 +1174,7 @@ module At = struct
   let type' s = v Name.type' s
   let value s = v Name.value s
   let width i = int Name.width i
-  let wrap s = v Name.value s
+  let wrap s = v Name.wrap s
 end
 
 module El = struct
