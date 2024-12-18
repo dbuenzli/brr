@@ -3825,3 +3825,30 @@ module G : sig
   (** [cancel_animation_frame fid]
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame}cancels} the animation frame request [a]. *)
 end
+
+module ResizeObserver : sig
+
+  module Entry : sig
+    type t
+
+    val target : t -> El.t
+
+    (**/**)
+    include Jv.CONV with type t := t
+    (**/**)
+  end
+
+  type observer
+
+  val create : (Entry.t list -> observer -> unit) -> observer
+
+  val observe : observer -> El.t -> unit
+
+  val unobserve : observer -> El.t -> unit
+
+  val disconnect : observer -> unit
+
+  (**/**)
+  include Jv.CONV with type t := observer
+  (**/**)
+end
