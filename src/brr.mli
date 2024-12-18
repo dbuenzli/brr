@@ -3338,6 +3338,18 @@ module Window : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY}
       vertically scrolled} by. *)
 
+  val inner_width : t -> int
+  (** [inner_width w] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth}interior
+      height} of the window in CSS pixels, including the width of the vertical
+      scroll bar, if present. *)
+
+  val inner_height : t -> int
+  (** [inner_height w] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/innerHeight}interior
+      height} of the window in CSS pixels, including the height of the horizontal
+      scroll bar, if present. *)
+
   (** {1:media Media properties} *)
 
   val device_pixel_ratio : t -> float
