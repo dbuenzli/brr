@@ -2316,6 +2316,52 @@ module El : sig
   val bound_h : t -> float
   (** [bound_h e] is [e]'s bound height. *)
 
+  (** {1 Offset} *)
+
+  val offset_h : t -> int
+  (** [offset_w e] is the height of [e] in CSS pixels, excluding borders,
+      padding, scrollbars and pseudo-elements, and ignoring transforms.
+
+      See the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight}MDN
+      doc} and the
+      {{:https://www.w3.org/TR/cssom-view-1/#dom-htmlelement-offsetheight}specification}
+      for a precise description. *)
+
+  val offset_w : t -> int
+  (** [offset_w e] is the width of [e] in CSS pixels, excluding borders,
+      padding, scrollbars and pseudo-elements, and ignoring transforms.
+
+      See the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetWidth}MDN
+      doc} and the
+      {{:https://www.w3.org/TR/cssom-view-1/#dom-htmlelement-offsetwidth}specification}
+      for a precise description. *)
+
+  val offset_top : t -> int
+  (** [offset_top e] is the number of CSS pixels that the upper left corner of
+      the current element is offset to the left within the
+      {{!offset_parent}parent node}. See the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop}MDN
+      doc} and the
+      {{:https://www.w3.org/TR/cssom-view-1/#dom-htmlelement-offsettop}specification}
+      for a precise description. *)
+
+  val offset_left : t -> int
+  (** [offset_left e] is the number of CSS pixels that the upper left corner of
+      the current element is offset to the left within the
+      {{!offset_parent}parent node}. See the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetLeft}MDN
+      doc} and the
+      {{:https://www.w3.org/TR/cssom-view-1/#dom-htmlelement-offsetleft}specification}
+      for a precise description. *)
+
+  val offset_parent : t -> t option
+  (** [offset_parent e] is the element (if it exists) which is the closest
+      (nearest in the containment hierarchy)
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent}positioned
+      ancestor element}. *)
+
   (** {1:scrolling Scrolling} *)
 
   val scroll_x : t -> float

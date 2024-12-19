@@ -1,16 +1,20 @@
 
-- Add `Brr.Range` a binding to `Range` objects.
+
 - Add `Brr_css.{Highlight,HighlightRegistry,Css}` a binding to the
   CSS Custom Highlight API.
+- Add `Brr.Range` a binding to `Range` objects.
 - Add `El.text_content` a binding to `Node.textContent`.
-- Add more arguments to `El.scroll_into_view.`
+- Add more arguments to `El.scroll_into_view`.
   Thanks to Paul-Elliot Anglès d'Auriac for the patch (#70).
-- Add `El.Style.zoom` property. Thanks to Paul-Elliot Anglès d'Auriac
-  for the patch (#74).
-- Add `Window.parent`. Thanks to Paul-Elliot Anglès d'Auriac
-  for the patch (#73).
-- Add `Window.inner_{width,height}`. Thanks to Paul-Elliot Anglès d'Auriac
-  for the patch (#75).
+- Add `El.Style.zoom` property.
+  Thanks to Paul-Elliot Anglès d'Auriac for the patch (#74).
+- Add `El.offset_{h,w,top,left,parent}`.
+  Thanks to Paul-Elliot Anglès d'Auriac for the patch (#76).
+- Add `Window.parent`.
+  Thanks to Paul-Elliot Anglès d'Auriac for the patch (#73).
+- Add `Window.inner_{width,height}`.
+  Thanks to Paul-Elliot Anglès d'Auriac for the patch (#75).
+
 - Add `Canvas.attrs_create` which fixes the shadowing issue by
   the `Canvas.attrs` getter that prevented from creating these values.
   Thanks to Tim Ats for reporting and @naora for fixing (#63, #79).
