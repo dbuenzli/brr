@@ -2311,6 +2311,14 @@ module El : sig
   val bound_h : t -> float
   (** [bound_h e] is [e]'s bound height. *)
 
+  (** {1 Offset} *)
+
+  val offset_h : t -> int
+  val offset_w : t -> int
+  val offset_top : t -> int
+  val offset_left : t -> int
+  val offset_parent : t -> t option
+
   (** {1:scrolling Scrolling} *)
 
   val scroll_x : t -> float
