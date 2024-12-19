@@ -1399,6 +1399,16 @@ module El = struct
   let bound_w e = Jv.Float.get (Jv.call e "getBoundingClientRect" [||]) "width"
   let bound_h e = Jv.Float.get (Jv.call e "getBoundingClientRect" [||]) "height"
 
+  (* Offset *)
+
+  let offset_w e = Jv.Int.get e "offsetWidth"
+  let offset_h e = Jv.Int.get e "offsetHeight"
+
+  let offset_left e = Jv.Int.get e "offsetLeft"
+  let offset_top e = Jv.Int.get e "offsetTop"
+
+  let offset_parent e = Jv.get e "offsetParent" |> Jv.to_option of_jv
+
   (* Scrolling *)
 
   let scroll_x e = Jv.Float.get e "scrollLeft"
