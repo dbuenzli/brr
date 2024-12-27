@@ -1221,8 +1221,18 @@ module El = struct
         ignore (Jv.call e "setAttribute" Jv.[|of_jstr a; of_jstr v|])
       end
 
-  let v ?(d = global_document) ?(at = []) name cs =
-    let e = Jv.call d "createElement" [| Jv.of_jstr name |] in
+  let v ?ns ?(d = global_document) ?(at = []) name cs =
+    let e =
+      match ns with
+      | None -> Jv.call d "createElement" [| Jv.of_jstr name |]
+      | Some ns ->
+         let ns = match ns with
+           | `HTML -> "http://www.w3.org/1999/xhtml"
+           | `SVG -> "http://www.w3.org/2000/svg"
+           | `MathML -> "http://www.w3.org/1998/Math/MathML"
+         in
+         Jv.call d "createElementNS" [| Jv.of_string ns ; Jv.of_jstr name |]
+    in
     set_atts e [] [] at;
     List.iter (append_child e) cs;
     e

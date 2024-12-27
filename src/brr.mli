@@ -2062,7 +2062,7 @@ module El : sig
   type el = t
   (** See {!t}. *)
 
-  val v : ?d:document -> ?at:At.t list -> tag_name -> t list -> t
+  val v : ?ns:[`HTML | `SVG | `MathML] -> ?d:document -> ?at:At.t list -> tag_name -> t list -> t
   (** [v ?d ?at name cs] is an element [name] with attribute [at]
       (defaults to [[]]) and children [cs]. If [at] specifies an
       attribute more than once, the last one takes over with the
