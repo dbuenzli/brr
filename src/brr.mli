@@ -2263,7 +2263,7 @@ module El : sig
       [e] to [v] with priority [important] (defaults to [false]). *)
 
   val remove_inline_style : Style.prop -> t -> unit
-  (** [remove_inline_style p e] removes the inlie style property [p]
+  (** [remove_inline_style p e] removes the inline style property [p]
       of [e]. *)
 
   (** {1:layout Layout} *)
@@ -3361,7 +3361,7 @@ module Window : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open}
       loads the specified resource} [url] into a new or existing browsing
       context with the specified [name] and
-      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features}
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open#windowfeatures}
       window features}. [None] is returned if the window could not be
       opened.*)
 
