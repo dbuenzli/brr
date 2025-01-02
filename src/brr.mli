@@ -2263,7 +2263,7 @@ module El : sig
       [e] to [v] with priority [important] (defaults to [false]). *)
 
   val remove_inline_style : Style.prop -> t -> unit
-  (** [remove_inline_style p e] removes the inlie style property [p]
+  (** [remove_inline_style p e] removes the inline style property [p]
       of [e]. *)
 
   (** {1:layout Layout} *)
