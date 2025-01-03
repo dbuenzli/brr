@@ -3338,6 +3338,15 @@ module Window : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY}
       vertically scrolled} by. *)
 
+
+  val parent : t -> t option
+  (** [parent w] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/parent}parent}
+      of the window, if it has one.
+
+      When a window is loaded in an [<iframe>], [<object>], or [<frame>], its
+      parent is the window with the element embedding the window. *)
+
   (** {1:media Media properties} *)
 
   val device_pixel_ratio : t -> float
