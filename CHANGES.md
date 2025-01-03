@@ -1,4 +1,6 @@
 
+- Add `Window.parent`. Thanks to Paul-Elliot Anglès d'Auriac
+  for the patch (#74). 
 - Add `Window.inner_{width,height}`. Thanks to Paul-Elliot Anglès d'Auriac
   for the patch (#75).
 - Fix `At.wrap` attribute, it was defined as `value`. 
