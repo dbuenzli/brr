@@ -3390,7 +3390,7 @@ module Window : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open}
       loads the specified resource} [url] into a new or existing browsing
       context with the specified [name] and
-      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features}
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/open#windowfeatures}
       window features}. [None] is returned if the window could not be
       opened.*)
 
