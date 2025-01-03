@@ -3367,6 +3367,11 @@ module Window : sig
       When a window is loaded in an [<iframe>], [<object>], or [<frame>], its
       parent is the window with the element embedding the window. *)
 
+  val post_message : t -> msg:Jv.t -> unit
+  (** [post_message w ~msg]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage}dispatches}
+      a {{!Brr_io.Message.Ev}Message events} on [w]. *)
+
   (** {1:media Media properties} *)
 
   val device_pixel_ratio : t -> float
