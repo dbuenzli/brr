@@ -170,6 +170,27 @@ external of_jstr_list : Jstr.t list -> t = "caml_list_to_js_array"
 external apply : t -> t array -> 'a = "caml_js_fun_call"
 external callback : arity:int -> (_ -> _) -> t = "caml_js_wrap_callback_strict"
 
+module Function = struct
+  type _ args =
+    | [] : jv args
+    | (::) : (string * ('a -> jv)) * 'b args -> ('a -> 'b) args
+
+  let rec args_to_list : type a. a args -> jv list =
+    fun args ->
+    match args with
+    | [] -> []
+    | (s, conv) :: q -> of_string s :: args_to_list q
+
+  let v : type a . args:(a args) -> body:Jstr.t -> a =
+    fun ~args ~body ->
+    let jstr_args = Array.of_list @@ args_to_list args @ [ of_jstr body ] in
+    let res = new' (get global "Function") jstr_args in
+    let rec c : type a. jv list -> a args -> a = fun args -> function
+      | [] -> apply res (args |> List.rev |> Array.of_list)
+      | (_, conv) :: q -> fun x -> c (conv x :: args) q in
+    c [] args
+end
+
 (* Errors *)
 
 module Error = struct

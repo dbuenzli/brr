@@ -373,6 +373,24 @@ external callback : arity:int -> (_ -> _) -> t = "caml_js_wrap_callback_strict"
 (** [callback ~arity f] makes function [f] with arity [arity] callable
     from JavaScript. *)
 
+module Function : sig
+  type _ args =
+    | [] : jv args
+    | (::) : (string * ('a -> jv)) * 'b args -> ('a -> 'b) args
+
+  val v : args:('a args) -> body:Jstr.t -> 'a
+  (** Creates a function with the given body. For instance:
+
+      {[
+        let body = Jstr.v "console.log(x, y + 2) ; return x" in
+        let args = Function.[("x", of_string) ; ("y", of_int)] in
+        let f = Function.v ~body ~args in
+        f "Hello" 42
+      ]}
+  *)
+
+end
+
 (** {1:exns Errors and exceptions} *)
 
 (** Error objects. *)
