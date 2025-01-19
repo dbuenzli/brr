@@ -1409,9 +1409,23 @@ module El = struct
   let scroll_w e = Jv.Float.get e "scrollWidth"
   let scroll_h e = Jv.Float.get e "scrollHeight"
 
-  let scroll_into_view ?(align_v = `Start) e =
-    let align = match align_v with `Start -> true | `End -> false in
-    ignore @@ Jv.call e "scrollIntoView" [| Jv.of_bool align |]
+  let scroll_into_view ?(align_v = `Start) ?behavior e =
+    let align = match align_v with
+      | `Start -> "start"
+      | `Center -> "center"
+      | `Nearest -> "nearest"
+      | `End -> "end"
+    in
+    let behavior =
+      Jv.of_option ~none:Jv.null Jv.of_string @@
+        Option.map (function
+            | `Smooth -> "smooth"
+            | `Instant -> "instant"
+            | `Auto -> "auto")
+          behavior
+    in
+    let options = Jv.obj [|"block", Jv.of_string align; "behavior" , behavior |] in
+    ignore @@ Jv.call e "scrollIntoView" [| options |]
 
   (* Focus *)
 
