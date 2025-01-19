@@ -2326,12 +2326,32 @@ module El : sig
   (** [scroll_h e] is the minimum height the element would require
       to display without a vertical scrollbar. *)
 
-  val scroll_into_view : ?align_v:[ `Start | `End ] -> t -> unit
-  (** [scroll_into_view ~align e]
-      {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView}scrolls} [e] into view. If [align_v] is [`Start] (default) the top of the
-      element is align with to to the top of the scrollable area. If
-      [align_v] is [`End] the bottom of the element is aligned with the
-      bottom of the scrollable area. *)
+  val scroll_into_view :
+    ?align_v:[ `Center | `End | `Nearest | `Start ] ->
+    ?behavior:[< `Auto | `Instant | `Smooth ] ->
+    t ->
+    unit
+  (** [scroll_into_view ~align_v ~behavior e]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView}scrolls}
+      [e] into view.
+
+      [align_v] controls the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block}block}
+      option:
+      {ul
+      {- with [`Start] (default) the top of the element is align with to to the
+        top of the scrollable area.}
+      {- with [`End] the bottom of the element is aligned with the bottom of the
+        scrollable area.}}
+
+      [behavior] controls the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#behavior}behavior}
+      option:
+      {ul
+      {- with [`Auto] (default) scroll behavior is determined by the computed
+        value of [scroll-behavior].}
+      {- with [`Smooth] scrolling should animate smoothly.}
+      {- with [`Instant] scrolling should happen instantly in a single jump.}} *)
 
   (** {1:focus Focus} *)
 
