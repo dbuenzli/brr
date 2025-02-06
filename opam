@@ -29,7 +29,7 @@ depends: [
   "ocamlfind" {build}
   "ocamlbuild" {build}
   "topkg" {build & >= "1.0.3"}
-  "js_of_ocaml-compiler" {>= "5.5.0"}
+  "js_of_ocaml-compiler" {build & >= "5.5.0"}
   "js_of_ocaml-toplevel" {>= "5.5.0"}
 ]
 build: ["ocaml" "pkg/pkg.ml" "build" "--dev-pkg" "%{dev}%"]
