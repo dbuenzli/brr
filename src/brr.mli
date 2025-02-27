@@ -3826,28 +3826,54 @@ module G : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame}cancels} the animation frame request [a]. *)
 end
 
+(** [ResizeObserver] objects.
+
+    See the {{:https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver}
+    ResizeObserver API}. *)
 module ResizeObserver : sig
 
+  (** [ResizeObserverEntry] objects.
+
+      See the {{:https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry}
+      ResizeObserverEntry API}. *)
   module Entry : sig
     type t
-
+    (** Type for
+        {{:https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry}observed
+        entries} as passed to the observer's callback *)
+    
     val target : t -> El.t
+    (** [target entry] is the element
+        {{:https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/target}associated
+        to [entry]}.*)
 
     (**/**)
     include Jv.CONV with type t := t
     (**/**)
   end
 
-  type observer
+  type t
+  (** The type for resize observers. *)
 
-  val create : (Entry.t list -> observer -> unit) -> observer
+  val create : (Entry.t list -> t -> unit) ->  t
+  (** [create callback] is resize observer of type [t]. It will call [callback]
+      on all observed entries, whenever one of them change size.
 
-  val observe : observer -> El.t -> unit
+      See
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver/ResizeObserver}the
+      doc}.*)
 
-  val unobserve : observer -> El.t -> unit
+  val observe : t -> El.t -> unit
+  (** [observe observer entry] makes [observer] start observing [entry], as explained
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver/observe}here}. *)
 
-  val disconnect : observer -> unit
+  val unobserve : t -> El.t -> unit
+  (** [unobserve observer entry] ends [observer]'s observation of [entry], as explained
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver/unobserve}here}. *)
 
+  val disconnect : t -> unit
+  (** [disconnect observer] unobserves all observed entries, as explained
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver/disconnect}here}. *)
   (**/**)
   include Jv.CONV with type t := observer
   (**/**)
