@@ -2339,10 +2339,16 @@ module El : sig
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block}block}
       option:
       {ul
-      {- with [`Start] (default) the top of the element is align with to to the
+      {- with [`Start], (default) the top of the element is align with to to the
         top of the scrollable area.}
-      {- with [`End] the bottom of the element is aligned with the bottom of the
-        scrollable area.}}
+      {- with [`Center], the element vertically at the center of the scrollable
+         container, positioning it in the middle of the visible area.}
+      {- with [`End], the bottom of the element is aligned with the bottom of the
+        scrollable area.}
+      {- with [`Nearest], the element is to the nearest edge in the vertical
+        direction. If the element is closer to the top edge of the scrollable
+        container, it will align to the top; if it's closer to the bottom edge,
+        it will align to the bottom. This minimizes the scrolling distance.}}
 
       [behavior] controls the
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#behavior}behavior}
