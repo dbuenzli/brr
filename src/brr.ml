@@ -1363,6 +1363,7 @@ module El = struct
     let visibility = Jstr.v "visibility"
     let width = Jstr.v "width"
     let z_index = Jstr.v "z-index"
+    let zoom = Jstr.v "zoom"
   end
 
   let computed_style ?(w = Jv.get Jv.global "window") p e =
