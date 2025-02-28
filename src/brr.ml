@@ -1870,6 +1870,9 @@ module Window = struct
   let scroll_x w = Jv.Float.get w "scrollX"
   let scroll_y w = Jv.Float.get w "scrollY"
 
+  let inner_width w = Jv.Int.get w "innerWidth"
+  let inner_height w = Jv.Int.get w "innerHeight"
+
   (* Media properties *)
 
   let device_pixel_ratio w = Jv.Float.get w "devicePixelRatio"
