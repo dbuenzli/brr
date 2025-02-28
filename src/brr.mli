@@ -3341,13 +3341,13 @@ module Window : sig
   val inner_width : t -> int
   (** [inner_width w] is the
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth}interior
-      height} of the window in pixels, including the width of the vertical
+      height} of the window in CSS pixels, including the width of the vertical
       scroll bar, if present. *)
 
   val inner_height : t -> int
   (** [inner_height w] is the
       {{:https://developer.mozilla.org/en-US/docs/Web/API/Window/innerHeight}interior
-      height} of the window in pixels, including the height of the horizontal
+      height} of the window in CSS pixels, including the height of the horizontal
       scroll bar, if present. *)
 
   (** {1:media Media properties} *)
