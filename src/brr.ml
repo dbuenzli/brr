@@ -2112,3 +2112,40 @@ module G = struct
   let cancel_animation_frame fid =
     ignore @@ Jv.call Jv.global "cancelAnimationFrame" [| Jv.of_int fid|]
 end
+
+module ResizeObserver = struct
+
+  module Entry = struct
+    type t = Jv.t
+
+    let target v = Jv.get v "target"
+
+    include (Jv.Id : Jv.CONV with type t := t)
+  end
+
+  type observer = Jv.t
+
+  let create : (Entry.t list -> observer -> unit) -> observer =
+    fun callback ->
+    let callback e o =
+      let e = Jv.to_list Entry.of_jv e in
+      callback e o
+    in
+    let callback = Jv.callback ~arity:2 callback in
+    let constructor = Jv.get Jv.global "ResizeObserver" in
+    Jv.new' constructor [| callback |]
+
+  let observe : observer -> El.t -> unit =
+    fun observer target ->
+    ignore @@ Jv.call observer "observe" [| target |]
+
+  let unobserve : observer -> El.t -> unit =
+    fun observer target ->
+    ignore @@ Jv.call observer "unobserve" [| target |]
+
+  let disconnect : observer -> unit =
+    fun observer ->
+    ignore @@ Jv.call observer "disconnect" [| |]
+
+  include (Jv.Id : Jv.CONV with type t := observer)
+end
