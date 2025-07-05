@@ -395,9 +395,10 @@ module C2d : sig
   type attrs
   (** The type for {{:https://html.spec.whatwg.org/multipage/canvas.html#canvasrenderingcontext2dsettings}CanvasRenderingContext2DSettings}. *)
 
-  val attrs :
-    ?alpha:bool -> ?color_space:Jstr.t -> ?desynchronized:bool -> unit -> attrs
-  (** [attrs ()] are {!type-attrs} with the given attributes. *)
+  val create_attrs :
+    ?alpha:bool -> ?color_space:Jstr.t -> ?desynchronized:bool ->
+    ?will_read_frequently:bool -> unit -> attrs
+  (** [create_attrs ()] are {!type-attrs} with the given attributes. *)
 
   val attrs_alpha : attrs -> bool
   (** [attrs_alpha a] is the [alpha] attribute of [a]. *)

@@ -286,7 +286,9 @@ module C2d = struct
 
   type attrs = Jv.t
 
-  let attrs ?alpha ?color_space ?desynchronized ?will_read_frequently () =
+  let create_attrs
+      ?alpha ?color_space ?desynchronized ?will_read_frequently ()
+    =
     let o = Jv.obj [||] in
     Jv.Bool.set_if_some o "alpha" alpha;
     Jv.Jstr.set_if_some o "colorSpace" color_space;
