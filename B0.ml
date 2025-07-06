@@ -93,7 +93,7 @@ let base_css = `File ~/"test/base.css"
 let test ?(meta = B0_meta.empty) ?doc ?(requires = []) ?(srcs = []) src =
   let srcs = `File src :: base_css :: srcs in
   let requires = brr :: requires in
-  let name = Fpath.basename ~strip_ext:true src in
+  let name = Fpath.basename ~strip_exts:true src in
   let meta =
     meta |> B0_meta.(tag test) |> ~~ B0_jsoo.compile_opts Cmd.(arg "--pretty")
   in
