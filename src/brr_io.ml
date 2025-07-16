@@ -485,7 +485,7 @@ module Geolocation = struct
     let fut, set_fut = Fut.create () in
     let pos p = set_fut (Ok p) and error e = set_fut (Error e) in
     let opts = Jv.of_option ~none:Jv.undefined Fun.id opts in
-    let args = Jv.[| repr pos; repr error; opts |] in
+    let args = Jv.[| callback ~arity:1 pos; callback ~arity:1 error; opts |] in
     ignore @@ Jv.call l "getCurrentPosition" args;
     fut
 
@@ -493,7 +493,7 @@ module Geolocation = struct
   let watch ?opts l f =
     let pos p = f (Ok p) and error e = f (Error e) in
     let opts = Jv.of_option ~none:Jv.undefined Fun.id opts in
-    Jv.to_int @@ Jv.call l "watchPosition" Jv.[| repr pos; repr error; opts |]
+    Jv.to_int @@ Jv.call l "watchPosition" Jv.[| callback ~arity:1 pos; callback ~arity:1 error; opts |]
 
   let unwatch l id = ignore @@ Jv.call l "clearWatch" [| Jv.of_int id |]
 end
