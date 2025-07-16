@@ -1,4 +1,5 @@
 
+- Fix callbacks in `Brr_io.Geolocalisation`. Thanks to Jérôme Vouillon (#80).
 - Add `El.Style.zoom` property. Thanks to Paul-Elliot Anglès d'Auriac
   for the patch (#74).
 - Add `Window.parent`. Thanks to Paul-Elliot Anglès d'Auriac
