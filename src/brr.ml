@@ -705,7 +705,7 @@ module Tarray = struct
 
   let uint8_of_buffer b = of_buffer Uint8 b
 
-  external to_string : uint8 -> string = "caml_string_of_array"
+  external to_string : uint8 -> string = "caml_string_of_uint8_array"
 
   let of_jstr s =
     let enc = Jv.new' (Jv.get Jv.global "TextEncoder") [||] in

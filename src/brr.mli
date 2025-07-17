@@ -310,7 +310,7 @@ module Tarray : sig
   (** [to_hex_jstr ?sep a] is a string with the bytes of [a] printed in
       lowercase hex and separated by [sep] (defaults to {!Jstr.empty}). *)
 
-  external to_string :  uint8 -> string = "caml_string_of_array"
+  external to_string :  uint8 -> string = "caml_string_of_uint8_array"
   (** [to_string a] is an OCaml {e byte} string from the byte array. *)
 
   (** {1:bigarrays As bigarrays} *)
