@@ -292,15 +292,15 @@ module Tarray : sig
       if [a] holds invalid UTF-8. *)
 
   val of_binary_jstr : Jstr.t -> (uint8, Jv.Error.t) result
-  (** [of_binary_jstr s] is an unsigned byte array with the bytes of the
-      {{:https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary}
-      JavaScript binary string} [s]. Errors if a code unit of [s] is greater
-      than [255]. *)
+  (** [of_binary_jstr s] is an unsigned byte array with the bytes of
+      the binary string [s]. In [s] every byte is represented by a
+      code unit in the range \[[0];[255]\]. Errors if a code unit of [s] is
+      greater than [255]. *)
 
   val to_binary_jstr : uint8 -> Jstr.t
-  (** [to_binary_jstr a] is a
-      {{:https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary}
-      JavaScript binary string} with the unsigned bytes of [a]. *)
+  (** [to_binary_jstr a] converts [a] to a binary string, a string in
+      which every byte is represented by a code unit in the range
+      \[[0];[255]\]. *)
 
   val to_int_jstr : ?sep:Jstr.t -> ('a, 'b) t -> Jstr.t
   (** [to_int_jstr ~sep a] is a string with the elements of [a] printed and
