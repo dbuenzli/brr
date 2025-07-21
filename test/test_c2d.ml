@@ -49,6 +49,7 @@ let set_size cnv =
   let w = El.inner_w el in
   let h = Jstr.(of_int (truncate ((w *. 3.) /. 4.)) + v "px") (* 4:3 *) in
   El.set_inline_style El.Style.height h el;
+  (* Note this relies on the canvas rule in the base.css file to be present *)
   Canvas.set_size_to_layout_size cnv
 
 let main ()  =
