@@ -2103,6 +2103,11 @@ module El : sig
   (** [txt_text e] is the text of [e] if [e] is a {{!is_txt}text node}
       and the empty string otherwise. *)
 
+  val text_content : t -> Jstr.t
+  (** [text_content e] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}
+      text content} of [e] and its descendents. *)
+
   val document : t -> document
   (** [document e] is the document of [e]. *)
 
@@ -3041,6 +3046,184 @@ module Document : sig
   include Jv.CONV with type t := t
   (**/**)
 end
+
+
+(** [Range] objects. *)
+module Range : sig
+
+  (** {1:cmp Comparison constants} *)
+
+  type compare_how
+  (** Constants for the first argument of {!compare_boundary_points}. *)
+
+  val end_to_end : compare_how
+  (** [Range.END_TO_END]. *)
+
+  val end_to_start : compare_how
+  (** [Range.END_TO_START]. *)
+
+  val start_to_end : compare_how
+  (** [Range.START_TO_END]. *)
+
+  val start_to_start : compare_how
+  (** [Range.START_TO_START]. *)
+
+  (** {1:ranges Ranges} *)
+
+  type t
+  (** The type for
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range}
+      [Range]} objects. *)
+
+  val create : unit -> t
+  (** [create ()] is a new range object. *)
+
+  val clone_range : t -> t
+  (** [clone_range r]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/cloneRange}
+      clones} [r]. *)
+
+  val collapse_to_start : t -> unit
+  (** [collapse_to_start r]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/collapse}
+      collapses} [r] to its start. *)
+
+  val collapse_to_end : t -> unit
+  (** [collapse_to_end r]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/collapse}
+      collapses} [r] to its end. *)
+
+  val compare_boundary_points : t -> compare_how -> t -> int
+  (** [compare_boundary_points r how r']
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/compareBoundaryPoints}compares} [r] to [r']. *)
+
+  val compare_point : t -> El.t -> int -> int
+  (** [compare_point r el offset]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/comparePoint}
+      compare} [r] to [el]. *)
+
+  (*
+  val create_contextual_fragment : t -> 'a
+  (** [create_contextual_fragment r] {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/createContextualFragment}createContextualFragment} *)
+  *)
+
+  val delete_contents : t -> unit
+  (** [delete_contents r]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/deleteContents}
+      deletes} the content in range [r]. *)
+
+  (*
+  val extract_contents : t -> 'a
+  (** [extract_contents r] {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/extractContents}extractContents} *)
+
+  val get_bounding_client_rect : t -> 'a
+  (** [get_bounding_client_rect r] {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/getBoundingClientRect}getBoundingClientRect} *)
+
+  val get_client_rects : t -> 'a
+  (** [get_client_rects r] {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/getClientRects}getClientRects} *)
+  *)
+
+  val insert_node : t -> El.t -> unit
+  (** [insert_node r el]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/insertNode}
+      insert} [el] at the start of [r]. *)
+
+  val intersects_node : t -> El.t -> bool
+  (** [intersects_node r e] is [true] if [el]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/intersectsNode}
+      intersects} [r]. *)
+
+  val is_point_in_range : t -> El.t -> int -> bool
+  (** [is_point_in_range r el offset] is [true] if the point
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/isPointInRange}
+      is in the range} of [r]. *)
+
+  val select_node : t -> El.t -> unit
+  (** [select_node r el]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/selectNode}
+      sets} [r] to conatin [el]. *)
+
+  val select_node_contents : t -> El.t -> unit
+  (** [select_node_contents r el]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/selectNodeContents}
+      sets} [r] to the contents of [el]. *)
+
+  val set_end : t -> El.t -> int -> unit
+  (** [set_end r el offset]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/setEnd}sets}
+      the end of [r] to [el]. *)
+
+  val set_end_after : t -> El.t -> unit
+  (** [set_end_after r el]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/setEndAfter}
+      sets} the end of [r] after the end of [el]. *)
+
+  val set_end_before : t -> El.t -> unit
+  (** [set_end_before r]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/setEndBefore}
+      sets} the end of [r] before the end of [el]. *)
+
+  val set_start : t -> El.t -> int -> unit
+  (** [set_start r el offset]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/setStart}
+      sets} the start of [r] to [el]. *)
+
+  val set_start_after : t -> El.t -> unit
+  (** [set_start_after r el]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/setStartAfter}
+      sets} the start of [r] after [el]. *)
+
+  val set_start_before : t -> El.t -> unit
+  (** [set_start_before r el]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/setStartBefore}
+      sets} the start of [r] before [el]. *)
+
+  val surround_contents : t -> El.t -> unit
+  (** [surround_contents r el]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/surroundContents}surrounds}
+      the content of [r] by [el]. *)
+
+  val to_string : t -> Jstr.t
+  (** [to_string r] converts [r]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/toString}
+      to a string}. *)
+
+  (** {1:properties Properties} *)
+
+  val collapsed : t -> bool
+  (** [collapsed r] indicates if [r] is
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/collapsed}
+      collapsed}. *)
+
+  val common_ancestor_container : t -> El.t
+(** [common_ancestor_container r] is the
+    {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/commonAncestorContainer}common ancestor container} of [r] *)
+
+  val end_container : t -> El.t
+  (** [end_container r] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/endContainer}
+      end container} of [r]. *)
+
+  val end_offset : t -> int
+  (** [end_offset r] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/endOffset}
+      end offset} of [r]. *)
+
+  val start_container : t -> El.t
+  (** [end_container r] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/startContainer}
+      start container} of [r]. *)
+
+  val start_offset : t -> int
+  (** [end_offset r] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/Range/startOffset}
+      start offset} of [r]. *)
+
+  (**/**)
+  include Jv.CONV with type t := t
+  (**/**)
+end
+
 
 (** {1:browser Browser interaction} *)
 

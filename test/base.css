@@ -113,6 +113,11 @@ button { border: solid 1px #545454;
 button:active { background-color: #9cb1c9; }
 button + * { margin-left: 1ex; }
 
+/* CSS Custom highlight test */
+
+::highlight(marker) { background-color: yellow }
+
+
 /*
 Copyright (c) 2020 The brr programmers
 

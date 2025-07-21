@@ -39,6 +39,7 @@ Jv
 Fut
 Brr
 Brr_canvas
+Brr_css
 Brr_io
 Brr_webaudio
 Brr_webcrypto
@@ -92,6 +93,7 @@ The following JavaScript and browser functionality is supported:
 {- The Canvas 2D API is in {!Brr_canvas.C2d}.}
 {- The Cache API is in {!Brr_io.Fetch.Cache}.}
 {- The Clipboard API is in {!Brr_io.Clipboard}.}
+{- The CSS Custom Highlight API is in {!Brr_css}.}
 {- The File API is in {!Brr.File}.}
 {- The Fetch API is in {!Brr_io.Fetch}.}
 {- The Form element and Form Data API is in {!Brr_io.Form}.}

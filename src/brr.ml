@@ -1244,6 +1244,8 @@ module El = struct
   | true -> Jv.Jstr.get txt "nodeValue"
   | false -> Jstr.empty
 
+  let text_content e = Jv.Jstr.get e "textContent"
+
   external as_target : t -> Ev.target = "%identity"
 
   (* Element lookups *)
@@ -1699,6 +1701,85 @@ module El = struct
   let video = cons Name.video
   let wbr = void_cons Name.wbr
 end
+
+module Range = struct
+  type t = Jv.t
+  include (Jv.Id : Jv.CONV with type t := t)
+
+  type compare_how = int
+  let end_to_end = Jv.Int.get Jv.global "Range.END_TO_END"
+  let end_to_start = Jv.Int.get Jv.global "Range.END_TO_START"
+  let start_to_end = Jv.Int.get Jv.global "Range.START_TO_END"
+  let start_to_start = Jv.Int.get Jv.global "Range.START_TO_START"
+
+  let range = Jv.get Jv.global "Range"
+  let create () = Jv.new' range [||]
+  let clone_range r = Jv.call r "cloneRange" [||]
+  let collapse r b = ignore @@ Jv.call r "collapse" Jv.[|of_bool b|]
+  let collapse_to_start r = collapse r true
+  let collapse_to_end r = collapse r false
+
+  let compare_boundary_points r how r' =
+    Jv.to_int @@ Jv.call r "compareBoundaryPoints" [|Jv.of_int how; r'|]
+
+  let compare_point r el offset =
+    Jv.to_int @@ Jv.call r "comparePoint" [|El.to_jv el; Jv.of_int offset|]
+
+  (*  let create_contextual_fragment r = failwith "createContextualFragment" *)
+
+  let delete_contents r = ignore @@ Jv.call r "deleteContents" [||]
+  (*
+  let extract_contents r = failwith "extractContents"
+  let get_bounding_client_rect r = failwith "getBoundingClientRect"
+  let get_client_rects r = failwith "getClientRects" *)
+
+  let insert_node r el = ignore @@ Jv.call r "insertNode" [|El.to_jv el|]
+  let intersects_node r el =
+    Jv.to_bool @@ Jv.call r "intersectsNode" [|El.to_jv el|]
+
+  let is_point_in_range r el offset =
+    Jv.to_bool @@ Jv.call r "isPointInRange" [|El.to_jv el; Jv.of_int offset|]
+
+  let select_node r el = ignore @@ Jv.call r "selectNode" [|El.to_jv el|]
+
+  let select_node_contents r el =
+    ignore @@ Jv.call r "selectNodeContents" [|El.to_jv el|]
+
+  let set_end r el offset =
+    ignore @@ Jv.call r "setEnd" [|El.to_jv el; Jv.of_int offset|]
+
+  let set_end_after r el =
+    ignore @@ Jv.call r "setEndAfter" [|El.to_jv el|]
+
+  let set_end_before r el =
+    ignore @@ Jv.call r "setEndBefore" [|El.to_jv el|]
+
+  let set_start r el offset =
+    ignore @@ Jv.call r "setStart" [|El.to_jv el; Jv.of_int offset|]
+
+  let set_start_after r el =
+    ignore @@ Jv.call r "setStartAfter" [|El.to_jv el|]
+
+  let set_start_before r el =
+    ignore @@ Jv.call r "setStartBefore" [|El.to_jv el|]
+
+  let surround_contents r el =
+    ignore @@ Jv.call r "surroundContents" [|El.to_jv el|]
+
+  let to_string r = Jv.to_jstr @@ Jv.call r "toString" [||]
+
+  (* Properties *)
+
+  let collapsed r = Jv.Bool.get r "collapsed"
+  let common_ancestor_container r =
+    El.of_jv (Jv.get r "commonAncestorContainer")
+
+  let end_container r = El.of_jv (Jv.get r "endContainer")
+  let end_offset r = Jv.Int.get r "endOffset"
+  let start_container r = El.of_jv (Jv.get r "startContainer")
+  let start_offset r = Jv.Int.get r "sartOffset"
+end
+
 
 module Document = struct
   type t = El.document

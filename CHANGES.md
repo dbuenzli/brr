@@ -1,5 +1,9 @@
 
+- Add `Brr.Range` a binding to `Range` objects.
+- Add `Brr_css.{Highlight,HighlightRegistry,Css}` a binding to the
+  CSS Custom Highlight API.
 - Fix callbacks in `Brr_io.Geolocalation`. Thanks to Jérôme Vouillon (#80).
+- Add `El.text_content` a binding to `Node.textContent`.
 - Add `El.Style.zoom` property. Thanks to Paul-Elliot Anglès d'Auriac
   for the patch (#74).
 - Add `Window.parent`. Thanks to Paul-Elliot Anglès d'Auriac
