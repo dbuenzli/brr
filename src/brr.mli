@@ -579,12 +579,16 @@ end
     As codec by the
     {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON}JSON object}.
 
-    {b Warning.} This interface will change in the future. *)
+    {b Note.} This interface is not particularly useful for
+    programming in OCaml. To map JSON schemas to OCaml and back, describe
+    your JSON with {{:https://erratique.ch/software/jsont}jsont}. The
+    {{:https://erratique.ch/software/jsont/doc/Jsont_brr/index.html}[jsont.brr]
+    library} can use these descriptions with the JSON codec provided by your
+    JavaScript runtime. *)
 module Json : sig
 
   type t = Jv.t
-  (** The type for JSON values.
-      {b FIXME} have something more abstract. *)
+  (** The type for JSON values. *)
 
   val encode : t -> Jstr.t
   (** [encode v] encodes [v] to JSON using
