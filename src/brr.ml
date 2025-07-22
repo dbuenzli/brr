@@ -1118,24 +1118,26 @@ module Regexp = struct
         let acc = ref acc in
         for i = 0 to Jv.Jarray.length entries - 1 do
           let entry = Jv.Jarray.get entries i in
+          let match' = obj_value entry in
+          if Jv.is_undefined match' then () else
           let name = Jv.to_jstr (obj_key entry) in
-          let match' = Jv.to_jstr (obj_value entry) in
-          acc := f ~name match' !acc
+          acc := f ~name (Jv.to_jstr match') !acc
         done;
         !acc
 
     let fold_named_group_indices f r acc = match Jv.find r "indices" with
     | None -> acc (* happens if regexp had no [d] flag. *)
     | Some a ->
-        match Jv.find r "groups" with
+        match Jv.find a "groups" with
         | None -> acc
         | Some groups ->
             let entries = obj_entries groups in
             let acc = ref acc in
             for i = 0 to Jv.Jarray.length entries - 1 do
               let entry = Jv.Jarray.get entries i in
-              let name = Jv.to_jstr (obj_key entry) in
               let range = obj_value entry in
+              if Jv.is_undefined range then () else
+              let name = Jv.to_jstr (obj_key entry) in
               let start = Jv.to_int (Jv.Jarray.get range 0) in
               let stop = Jv.to_int (Jv.Jarray.get range 1) in
               acc := f ~name ~start ~stop !acc
