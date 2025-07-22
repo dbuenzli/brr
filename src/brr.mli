@@ -3,9 +3,12 @@
    SPDX-License-Identifier: ISC
   ---------------------------------------------------------------------------*)
 
-(** Browser APIs.
+(** Browser and JavaScript language APIs.
 
-    Open this module to use it. It defines only modules in your scope. *)
+    Open this module to use it. It defines only modules in your scope.
+
+    {b Note.} The mix of JavaScript and browser APIs is unfortunate but
+    fixing the module organisation is likely not worth the cost on users. *)
 
 (** {1:data Data containers and encodings} *)
 
@@ -800,6 +803,176 @@ module Uri : sig
   (** [decode s] percent-descodes a UTF-8 representation
       of [s]. See {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent}decodeURIComponent}. Note that
       this has the same effect as {!decode}. *)
+
+  (**/**)
+  include Jv.CONV with type t := t
+  (**/**)
+end
+
+(** [RegExp] objects and matching. *)
+module Regexp : sig
+
+  (** Matching results.
+
+      This handles the {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec#return_value}weird array}
+      returned by {!exec} or {!match'}. *)
+  module Result : sig
+    type t
+    (** The type for regular expression matching results. *)
+
+    val input : t -> Jstr.t
+    (** [input r] is the string that was matched against. *)
+
+    val match' : t -> Jstr.t
+    (** [match' r] is the matched string. *)
+
+    val start_index : t -> int
+    (** [start_index r] is the index of the start of {!match'} in
+        {!input}. *)
+
+    val stop_index : t -> int
+    (** [stop_index r] is the index after the end of {!match'}.
+        The last character of {!match'} is at [stop_index r - 1]
+        in {!input}. *)
+
+    val fold_groups : (Jstr.t -> 'a -> 'a) -> t -> 'a -> 'a
+    (** [fold_groups f r acc] folds [f] over the content of all
+        capturing groups (named included) in [r] starting with
+        [acc]. This is [acc] if there is no group. *)
+
+    val fold_group_indices :
+      (start:int -> stop:int -> 'a -> 'a) -> t -> 'a -> 'a
+    (** [fold_group_indices f r acc] is like {!fold_groups} but [f] is
+        given the [start] and [stop] index of the group which indicate it
+        spans the indices \[[start];[stop-1]\] of {!input}.
+
+        {b Warning.} The regexp needs the [d] flag for this to yield
+        results otherwise the function simply returns [acc].  *)
+
+    val fold_named_groups : (name:Jstr.t -> Jstr.t -> 'a -> 'a) -> t -> 'a -> 'a
+    (** [fold_named_groups f r acc] folds [f] over the content of named
+        capturing groups in [r] starting with [acc]. *)
+
+    val fold_named_group_indices :
+      (name:Jstr.t -> start:int -> stop:int -> 'a -> 'a) -> t -> 'a -> 'a
+    (** [fold_named_group_indices f r acc] is like {!fold_named_groups} but
+        [f] is given the [start] and [stop] index of the group which indicate
+        it spans the indices \[[start];[stop-1]\] of {!input}.
+
+        {b Warning.} The regexp needs the [d] flag for this to yield
+        results otherwise the function simply returns [acc].  *)
+    (**/**)
+    include Jv.CONV with type t := t
+    (**/**)
+  end
+
+  type t
+  (** The type for
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp}
+      [RegExp]} objects. *)
+
+  val escape : Jstr.t -> Jstr.t
+  (** [escape s]
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/escape}escapes}
+      the regexp syntax literals in [s]. *)
+
+  val create : ?flags:Jstr.t -> Jstr.t -> t
+  (** [create ?flags s] is the regexp object for [s] using
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags}[flags]} if specified.
+
+      @raise Jv.Error see {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#exceptions}details}.
+  *)
+
+  val exec : t -> Jstr.t -> Result.t option
+  (** [exec r s]
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec}executes}
+      regular expression [r] on [s] at index {!last_index}. *)
+
+  val test : t -> Jstr.t -> bool
+  (** [test r s]
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test}tests}
+      [s] against [r] and returns [true] if it matches. *)
+
+  val match' : t -> Jstr.t -> Result.t option
+  (** [match r s]
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/Symbol.match}matches}
+      [r] against [s]. See also {!exec}. *)
+
+  val fold_matches : t -> (Result.t -> 'a -> 'a) -> Jstr.t -> 'a -> 'a
+  (** [fold_matches r f s acc] folds [f] over the non-overlapping
+      matches of [r] in [s] starintg with [acc].
+
+      @raise Jv.Error see {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/matchAll#exceptions}details}.
+  *)
+
+  val replace : t -> by:Jstr.t -> Jstr.t -> Jstr.t
+  (** [replace r ~by s]
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/Symbol.replace}replaces} the first match of [r] by [by] in
+      [s]. *)
+
+  val replace_all : t -> by:Jstr.t -> Jstr.t -> Jstr.t
+  (** [replace_all r ~by s]
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replaceAll}replaces}
+      all non-overlapping matches of [r] by [by] in [s]. *)
+
+  val search : t -> Jstr.t -> int
+  (** [search r s] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/Symbol.search}first index}
+      of [s] that matches [r] or [-1] if there is no match. *)
+
+  val split : ?limit:int -> t -> Jstr.t -> Jstr.t array
+  (** [split r s] {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/Symbol.split}splits} [s] on delimiters
+      matched by [r]. *)
+
+  (** {1:props Properties} *)
+
+  val last_index : t -> int
+  (** [last_index r] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex}index} at which to start (sic) the next match. *)
+
+  val set_last_index : t -> int -> unit
+  (** [set_last_index r i] sets the {!last_index} in [r] to [i]. *)
+
+  val dot_all : t -> bool
+  (** [dot_all r] is [true] if [r] has the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags}[s] flag}. *)
+
+  val flags : t -> Jstr.t
+  (** [flags r] are the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/flags}flags}
+      of [r]. *)
+
+  val global : t -> bool
+  (** [global r] is [true] if [r] has the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags}[g] flag}. *)
+
+  val has_indices : t -> bool
+  (** [has_indices r] is [true] if [r] has the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags}[d] flag}. *)
+
+  val ignore_case : t -> bool
+  (** [ignore_case r] is [true] if [r] has the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags}[i] flag}. *)
+
+  val multiline : t -> bool
+  (** [multiline r] is [true] if [r] has the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags}[m] flag}. *)
+
+  val source : t -> Jstr.t
+  (** [source r] is the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source}source text} of [r]. *)
+
+  val sticky : t -> bool
+  (** [sticky r] is [true] if [r] has the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags}[y] flag}. *)
+
+  val unicode : t -> bool
+  (** [unicode r] is [true] if [r] has the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags}[u] flag}. *)
+
+  val unicode_sets : t -> bool
+  (** [unicode_sets r] is [true] if [r] has the
+      {{:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags}[v] flag}. *)
 
   (**/**)
   include Jv.CONV with type t := t

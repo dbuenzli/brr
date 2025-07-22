@@ -1078,6 +1078,120 @@ module Uri = struct
   let decode_component s = code decode_component s
 end
 
+module Regexp = struct
+  module Result = struct
+    type t = Jv.t
+    include (Jv.Id : Jv.CONV with type t := t)
+
+    let input r = Jv.Jstr.get r "input"
+    let match' r = Jv.to_jstr (Jv.Jarray.get r 0)
+    let start_index r = Jv.Int.get r "index"
+    let stop_index r = start_index r + Jstr.length (match' r)
+    let fold_groups f r acc =
+      let acc = ref acc in
+      for i = 1 (* 0 is the whole match *) to Jv.Jarray.length r - 1 do
+        acc := f (Jv.to_jstr (Jv.Jarray.get r i)) !acc
+      done;
+      !acc
+
+    let fold_group_indices f r acc = match Jv.find r "indices" with
+    | None -> acc (* happens if regexp had no [d] flag. *)
+    | Some a ->
+        let acc = ref acc in
+        for i = 1 (* 0 is the whole match *) to Jv.Jarray.length a - 1 do
+          let range = Jv.Jarray.get a i in
+          let start = Jv.to_int (Jv.Jarray.get range 0) in
+          let stop = Jv.to_int (Jv.Jarray.get range 1) in
+          acc := f ~start ~stop !acc
+        done;
+        !acc
+
+    (* No iterator protocol on Object members ? *)
+    let obj_entries jv = Jv.call (Jv.get Jv.global "Object") "entries" [| jv |]
+    let obj_key a = Jv.Jarray.get a 0
+    let obj_value a = Jv.Jarray.get a 1
+
+    let fold_named_groups f r acc = match Jv.find r "groups" with
+    | None -> acc
+    | Some groups ->
+        let entries = obj_entries groups in
+        let acc = ref acc in
+        for i = 0 to Jv.Jarray.length entries - 1 do
+          let entry = Jv.Jarray.get entries i in
+          let name = Jv.to_jstr (obj_key entry) in
+          let match' = Jv.to_jstr (obj_value entry) in
+          acc := f ~name match' !acc
+        done;
+        !acc
+
+    let fold_named_group_indices f r acc = match Jv.find r "indices" with
+    | None -> acc (* happens if regexp had no [d] flag. *)
+    | Some a ->
+        match Jv.find r "groups" with
+        | None -> acc
+        | Some groups ->
+            let entries = obj_entries groups in
+            let acc = ref acc in
+            for i = 0 to Jv.Jarray.length entries - 1 do
+              let entry = Jv.Jarray.get entries i in
+              let name = Jv.to_jstr (obj_key entry) in
+              let range = obj_value entry in
+              let start = Jv.to_int (Jv.Jarray.get range 0) in
+              let stop = Jv.to_int (Jv.Jarray.get range 1) in
+              acc := f ~name ~start ~stop !acc
+            done;
+            !acc
+  end
+
+  type t = Jv.t
+  include (Jv.Id : Jv.CONV with type t := t)
+
+  let regexp = Jv.get Jv.global "RegExp"
+  let escape s = Jv.to_jstr (Jv.call regexp "escape" Jv.[|of_jstr s|])
+  let create ?flags s =
+    let flags = Jv.of_option ~none:Jv.undefined Jv.of_jstr flags in
+    Jv.new' regexp Jv.[|of_jstr s; flags|]
+
+  let exec r s =
+    Jv.to_option Result.of_jv @@ Jv.call r "exec" Jv.[|of_jstr s|]
+
+  let match' r s =
+    Jv.to_option Result.of_jv @@ Jv.call (Jv.of_jstr s) "match" Jv.[|r|]
+
+  let fold_matches r f s acc =
+    let iter = Jv.call (Jv.of_jstr s) "matchAll" Jv.[|r|] in
+    Jv.It.fold Result.of_jv f iter acc
+
+  let replace r ~by s =
+    Jv.to_jstr @@ Jv.call (Jv.of_jstr s) "replace" Jv.[|r; of_jstr by|]
+
+  let replace_all r ~by s =
+    Jv.to_jstr @@ Jv.call (Jv.of_jstr s) "replaceAll" Jv.[|r; of_jstr by|]
+
+  let search r s =
+    Jv.to_int @@ Jv.call (Jv.of_jstr s) "search" Jv.[|r|]
+
+  let split ?limit r s = match limit with
+  | None -> Jv.to_jstr_array @@ Jv.call (Jv.of_jstr s) "split" Jv.[|r|]
+  | Some limit ->
+      Jv.to_jstr_array @@ Jv.call (Jv.of_jstr s) "split" Jv.[|r; of_int limit|]
+
+  let test r s = Jv.to_bool @@ Jv.call r "test" Jv.[|of_jstr s|]
+  let last_index r = Jv.Int.get r "lastIndex"
+  let set_last_index r i = Jv.Int.set r "lastIndex" i
+  let dot_all r = Jv.Bool.get r "dotAll"
+  let flags r = Jv.Jstr.get r "flags"
+  let global r = Jv.Bool.get r "global"
+  let has_indices r = Jv.Bool.get r "hasIndices"
+  let ignore_case r = Jv.Bool.get r "ignoreCase"
+  let multiline r = Jv.Bool.get r "multiline"
+  let source r = Jv.Jstr.get r "source"
+  let sticky r = Jv.Bool.get r "sticky"
+  let unicode r = Jv.Bool.get r "unicode"
+  let unicode_sets r = Jv.Bool.get r "unicodeSets"
+end
+
+
 (* DOM interaction *)
 
 module At = struct
