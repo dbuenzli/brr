@@ -14,10 +14,10 @@
   Thanks to Paul-Elliot Anglès d'Auriac for the patch (#73).
 - Add `Window.inner_{width,height}`.
   Thanks to Paul-Elliot Anglès d'Auriac for the patch (#75).
-
 - Add `Canvas.attrs_create` which fixes the shadowing issue by
   the `Canvas.attrs` getter that prevented from creating these values.
   Thanks to Tim Ats for reporting and @naora for fixing (#63, #79).
+- Add `` `Type_error `` case to `Jv.Error.enum`.
 
 - Fix callbacks in `Brr_io.Geolocalation`. Thanks to Jérôme Vouillon (#80).
 - Fix `At.wrap` attribute, it was defined as `value`.

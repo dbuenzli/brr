@@ -182,7 +182,7 @@ module Error = struct
   | `No_modification_allowed_error | `Not_allowed_error | `Not_found_error
   | `Not_readable_error | `Not_supported_error | `Operation_error
   | `Quota_exceeded_error | `Read_only_error | `Security_error
-  | `Syntax_error | `Timeout_error | `Transaction_inactive_error
+  | `Syntax_error | `Timeout_error | `Transaction_inactive_error | `Type_error
   | `Type_mismatch_error | `Url_mismatch_error | `Unknown_error
   | `Version_error | `Wrong_document_error | `Other ]
 
@@ -220,6 +220,7 @@ module Error = struct
   | "SecurityError" -> `Security_error
   | "SyntaxError" -> `Syntax_error
   | "TimeoutError" -> `Timeout_error
+  | "TypeError" -> `Type_error
   | "TransactionInactiveError" -> `Transaction_inactive_error
   | "TypeMismatchError" -> `Type_mismatch_error
   | "URLMismatchError" -> `Url_mismatch_error
