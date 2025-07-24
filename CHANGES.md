@@ -5,6 +5,7 @@
 - Add `Brr.Range` a binding to `Range` objects.
 - Add `Brr.Regexp` a binding to `RegExp` objects.
 - Add `El.text_content` a binding to `Node.textContent`.
+- Add `El.Prop.hidden` binding the `hidden` property.
 - Add more arguments to `El.scroll_into_view`.
   Thanks to Paul-Elliot Anglès d'Auriac for the patch (#70).
 - Add `El.Style.zoom` property.

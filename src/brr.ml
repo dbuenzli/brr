@@ -1445,6 +1445,7 @@ module El = struct
 
     let checked = bool (Jstr.v "checked")
     let height = int (Jstr.v "height")
+    let hidden = bool (Jstr.v "hidden")
     let id = jstr (Jstr.v "id")
     let name = jstr (Jstr.v "name")
     let title = jstr (Jstr.v "title")

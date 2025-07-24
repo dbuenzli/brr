@@ -2391,6 +2391,7 @@ module El : sig
 
     val checked : bool t
     val height : int t
+    val hidden : bool t
     val id : Jstr.t t
     val name : Jstr.t t
     val title : Jstr.t t
