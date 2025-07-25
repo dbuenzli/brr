@@ -28,7 +28,7 @@ depends: [
   "ocaml" {>= "4.08.0"}
   "ocamlfind" {build}
   "ocamlbuild" {build}
-  "topkg" {build & >= "1.0.3"}
+  "topkg" {build & >= "1.1.0"}
   "js_of_ocaml-compiler" {>= "6.0.1"}
   "js_of_ocaml-toplevel" {>= "6.0.1"}
 ]
