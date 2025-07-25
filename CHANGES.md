@@ -1,4 +1,5 @@
-
+v0.0.8 2025-07-25 Zagreb
+------------------------
 
 - Add `Brr_css.{Highlight,HighlightRegistry,Css}` a binding to the
   CSS Custom Highlight API.
