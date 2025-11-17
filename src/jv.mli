@@ -561,7 +561,7 @@ val obj' : (prop' * t) array -> t
 (** [obj props] is an object with properties [prop]. *)
 
 val call' : t -> Jstr.t -> t array -> 'a
-(** [call' o m args] calls method [m] on [o] with arguments [m]. [m]
+(** [call' o m args] calls method [m] on [o] with arguments [args]. [m]
     must be a JavaScript string. *)
 
 (** {1:debugger Entering the debugger} *)
