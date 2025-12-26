@@ -1844,9 +1844,7 @@ module Gpu = struct
     let request_device ?descriptor:(descr = Jv.undefined) a =
       Fut.of_promise ~ok:Device.of_jv @@ Jv.call a "requestDevice" [|descr|]
 
-    let request_adapter_info a ~unmask_hints =
-      let arr = Jv.of_list Jv.of_jstr unmask_hints in
-      Fut.of_promise ~ok:Info.of_jv @@ Jv.call a "requestAdapterInfo" [|arr|]
+    let info a = Jv.get a "info"
   end
 
   (* GPU object *)
