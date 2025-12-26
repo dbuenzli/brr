@@ -2402,9 +2402,8 @@ module Gpu : sig
     (** [request_device a]
         {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUAdapter/requestDevice}requests} the device of [a]. *)
 
-    val request_adapter_info :
-      t -> unmask_hints:Jstr.t list -> Info.t Fut.or_error
-    (** [request_adapter_info a ~unmask_hints] {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUAdapter/requestAdapterInfo}requests} the adapter info of [a]. *)
+    val info : t -> Info.t
+    (** [info a] is the adapter {{:https://developer.mozilla.org/en-US/docs/Web/API/GPUAdapter/info}info} of [a]. *)
 
     (**/**) include Jv.CONV with type t := t (**/**)
   end

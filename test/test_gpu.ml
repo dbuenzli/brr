@@ -225,7 +225,7 @@ let main ()  =
       match a with
       | None -> error ~h1 "Sorry, no GPU adapter found."
       | Some a ->
-          let* info = Gpu.Adapter.request_adapter_info a ~unmask_hints:[] in
+          let info = Gpu.Adapter.info a in
           let* dev = Gpu.Adapter.request_device a in
           Console.log [a]; Console.log [info]; Console.log [dev];
           let cnv = Canvas.create [] in

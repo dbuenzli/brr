@@ -1,3 +1,10 @@
+
+
+- Replace deprecated and unsupported `Gpu.Adapter.request_adapter_info` 
+  by `Gpu.Adapter.info`.
+  Thanks to Jack Nørskov Jørgensen for the patch (#82).
+
+
 v0.0.8 2025-07-25 Zagreb
 ------------------------
 
