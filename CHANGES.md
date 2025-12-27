@@ -1,4 +1,6 @@
 
+- Fix `Fetch.Request.method'`.
+  Thanks to Puneeth Chaganti for the patch (#83).
 
 - Replace deprecated and unsupported `Gpu.Adapter.request_adapter_info` 
   by `Gpu.Adapter.info`.
