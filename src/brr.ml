@@ -1559,7 +1559,9 @@ module El = struct
             | `Auto -> "auto")
           behavior
     in
-    let options = Jv.obj [|"block", Jv.of_string align; "behavior" , behavior |] in
+    let options =
+      Jv.obj [|"block", Jv.of_string align; "behavior" , behavior |]
+    in
     ignore @@ Jv.call e "scrollIntoView" [| options |]
 
   (* Focus *)
@@ -1593,7 +1595,7 @@ module El = struct
     ignore @@ Jv.call e "requestPointerLock" [||];
     fut
 
-  (* Click simluation *)
+  (* Click simulation *)
 
   let click e = ignore (Jv.call e "click" [||])
   let select_text e = ignore (Jv.call e "select" [||])
