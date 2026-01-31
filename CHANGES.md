@@ -1,4 +1,6 @@
 
+- Add `El.dialog`.
+
 - Add `At.{role,popover,popoveraction,popovertargetaction`}.
 
 - Fix `Fetch.Request.method'`.

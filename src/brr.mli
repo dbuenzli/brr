@@ -2718,6 +2718,7 @@ module El : sig
     val del : tag_name
     val details : tag_name
     val dfn : tag_name
+    val dialog : tag_name
     val div : tag_name
     val dl : tag_name
     val dt : tag_name
@@ -2911,6 +2912,10 @@ module El : sig
   val dfn : cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn}
       dfn} *)
+
+  val dialog : cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog}
+      dialog} *)
 
   val div : cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div}
