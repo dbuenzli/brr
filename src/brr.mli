@@ -2509,7 +2509,7 @@ module El : sig
   val bound_h : t -> float
   (** [bound_h e] is [e]'s bound height. *)
 
-  (** {1 Offset} *)
+  (** {1:offset Offset} *)
 
   val offset_h : t -> int
   (** [offset_w e] is the height of [e] in CSS pixels, excluding borders,
@@ -2613,6 +2613,20 @@ module El : sig
   val set_has_focus : bool -> t -> unit
   (** [set_has_focus b e] sets the focus of [e] to [b] in the document
       it belongs do. *)
+
+  (** {1:popover Popovers} *)
+
+  val show_popover : ?source:t -> t -> unit
+  (** [show_popover e]
+      {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/showPopover}shows} the popover element [e]. If [source] is specified
+      it is the invoker of the popover. *)
+
+  val hide_popover : t -> unit
+  (** [hide_popover e] {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/hidePopover}hides} the popover element [e]. *)
+
+  val toggle_popover : ?source:t -> t -> bool
+  (** [toggle_popover e] {{:https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/togglePopover}toggles} the popover element [e]. If [source]
+      is specified it is the invoker of the popover. *)
 
   (** {1:pointerlock Pointer locking} *)
 

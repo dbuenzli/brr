@@ -1595,6 +1595,21 @@ module El = struct
     ignore @@ Jv.call e "requestPointerLock" [||];
     fut
 
+  (* Popover *)
+
+  let show_popover ?source e =
+    let args = match source with
+    | None -> [||] | Some src -> [| Jv.obj [|"source", src|] |]
+    in
+    ignore @@ Jv.call e "showPopover" args
+
+  let hide_popover e = ignore @@ Jv.call e "hidePopover" [||]
+  let toggle_popover ?source e =
+    let args = match source with
+    | None -> [||] | Some src -> [| Jv.obj [|"source", src|] |]
+    in
+    Jv.to_bool @@ Jv.call e "togglePopover" args
+
   (* Click simulation *)
 
   let click e = ignore (Jv.call e "click" [||])

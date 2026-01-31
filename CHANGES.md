@@ -2,7 +2,7 @@
 - Add `El.dialog`.
 
 - Add `At.{role,popover,popoveraction,popovertargetaction`}.
-
+- Add `El.{show,hide,toggle}_popover`.
 - Fix `Fetch.Request.method'`.
   Thanks to Puneeth Chaganti for the patch (#83).
 
