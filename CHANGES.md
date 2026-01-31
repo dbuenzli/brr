@@ -1,4 +1,6 @@
 
+- Add `At.{role,popover,popoveraction,popovertargetaction`}.
+
 - Fix `Fetch.Request.method'`.
   Thanks to Puneeth Chaganti for the patch (#83).
 

@@ -2059,6 +2059,9 @@ module At : sig
     val method' : name
     val name : name
     val placeholder : name
+    val popover : name
+    val popovertarget : name
+    val popovertargetaction : name
     val rel : name
     val required : name
     val rows : name
@@ -2162,6 +2165,15 @@ module At : sig
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}
       placeholder} *)
 
+  val popover : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/popover}popover} *)
+
+  val popovertarget : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#popovertarget}popovertarget} *)
+
+  val popovertargetaction : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#popovertargetaction}popovertargetaction} *)
+
   val rel : Jstr.t cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel}
       rel} *)
@@ -2169,6 +2181,9 @@ module At : sig
   val required : t
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required}
       required} *)
+
+  val role : Jstr.t cons
+  (** {{:https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles}role} *)
 
   val rows : int cons
   (** {{:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea#attr-rows}rows} *)
