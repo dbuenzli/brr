@@ -3,6 +3,7 @@ open B0_kit.V000
 (* OCaml library names *)
 
 let js_of_ocaml_toplevel = B0_ocaml.libname "js_of_ocaml-toplevel"
+let js_of_ocaml_toplevel_common = B0_ocaml.libname "js_of_ocaml-toplevel.common"
 let js_of_ocaml_compiler_runtime =
   B0_ocaml.libname "js_of_ocaml-compiler.runtime"
 
@@ -33,7 +34,11 @@ let brr_ocaml_poke_ui_lib =
 
 let brr_poke_lib =
   let srcs = [`Dir ~/"src/poke"] in
-  let requires = [js_of_ocaml_compiler_runtime; js_of_ocaml_toplevel; brr] in
+  let requires =
+    [js_of_ocaml_compiler_runtime; js_of_ocaml_toplevel;
+     js_of_ocaml_toplevel_common;
+     brr]
+  in
   B0_ocaml.lib brr_poke ~srcs ~requires ~doc:"Poke explicitely"
 
 let brr_poked_lib =
