@@ -93,7 +93,7 @@ let base_css = `File ~/"test/base.css"
 let test ?(meta = B0_meta.empty) ?doc ?(requires = []) ?(srcs = []) src =
   let srcs = `File src :: base_css :: srcs in
   let requires = brr :: requires in
-  let name = Fpath.basename ~drop_exts:true src in
+  let name = Filepath.basename ~drop_exts:true src in
   let meta =
     meta |> B0_meta.(tag test) |> ~~ B0_jsoo.compile_opts Cmd.(arg "--pretty")
   in
@@ -102,7 +102,7 @@ let test ?(meta = B0_meta.empty) ?doc ?(requires = []) ?(srcs = []) src =
 let test_module ?meta ?doc ?requires ?srcs top m =
   let name = Fmt.str "test_%s" (String.Ascii.uncapitalize m) in
   let doc = Fmt.str "Test %s.%s module" top m in
-  let src = Fpath.fmt "test/%s.ml" name in
+  let src = Filepath.fmt "test/%s.ml" name in
   test ?meta ?requires ?srcs src ~doc
 
 let test_hello = test ~/"test/test_hello.ml" ~doc:"Brr console hello size"
@@ -142,7 +142,7 @@ let update_console =
   B0_unit.of_action ~units:[console] ~doc "update-console" @@ fun env _ ~args ->
   let jsfile = "ocaml_console.js" in
   let src = B0_env.in_unit_dir env console ~/jsfile in
-  let dst = B0_env.in_scope_dir env Fpath.(~/"src/console" / jsfile) in
+  let dst = B0_env.in_scope_dir env Filepath.(~/"src/console" / jsfile) in
   Os.File.copy ~force:true ~make_path:false src ~dst
 
 (* Packs *)
