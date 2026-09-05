@@ -6,6 +6,9 @@
 - Fix `Fetch.Request.method'`.
   Thanks to Puneeth Chaganti for the patch (#83).
 
+- Fix binding to `Audio.Buffer.duration_s`.
+  Thanks to Raoul Hidalgo Charman (#85).
+
 - Replace deprecated and unsupported `Gpu.Adapter.request_adapter_info` 
   by `Gpu.Adapter.info`.
   Thanks to Jack Nørskov Jørgensen for the patch (#82).
