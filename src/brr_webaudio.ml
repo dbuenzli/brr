@@ -107,7 +107,7 @@ module Audio = struct
     let create opts = Jv.new' (Jv.get Jv.global "AudioBuffer") [| opts |]
     let sample_rate b = Jv.Float.get b "sampleRate"
     let length b = Jv.Int.get b "length"
-    let duration_s b = Jv.Float.get b "length"
+    let duration_s b = Jv.Float.get b "duration"
     let channel_count b = Jv.Int.get b "numberOfChannels"
     let get_channel_data b ~channel =
       Tarray.of_jv @@ Jv.call b "getChannelData" Jv.[| of_int channel |]
