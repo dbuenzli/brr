@@ -1,18 +1,16 @@
+v0.0.9 2026-09-08 Zagreb
+------------------------
 
 - Add `El.dialog`.
-
 - Add `At.{role,popover,popoveraction,popovertargetaction`}.
 - Add `El.{show,hide,toggle}_popover`.
-- Fix `Fetch.Request.method'`.
-  Thanks to Puneeth Chaganti for the patch (#83).
-
-- Fix binding to `Audio.Buffer.duration_s`.
-  Thanks to Raoul Hidalgo Charman (#85).
-
 - Replace deprecated and unsupported `Gpu.Adapter.request_adapter_info` 
   by `Gpu.Adapter.info`.
   Thanks to Jack Nørskov Jørgensen for the patch (#82).
-
+- Fix `Fetch.Request.method'`.
+  Thanks to Puneeth Chaganti for the patch (#83).
+- Fix binding to `Audio.Buffer.duration_s`.
+  Thanks to Raoul Hidalgo Charman (#85).
 
 v0.0.8 2025-07-25 Zagreb
 ------------------------
