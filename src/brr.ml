@@ -2282,7 +2282,7 @@ module Performance = struct
       let dom_complete e = Jv.Float.get e "domComplete"
       let load_event_start e = Jv.Float.get e "loadEventStart"
       let load_event_end e = Jv.Float.get e "loadEventEnd"
-      let type' e = Jv.Jstr.get e "type'"
+      let type' e = Jv.Jstr.get e "type"
       let redirect_count e = Jv.Int.get e "redirectCount"
     end
     let as_resource_timing = Fun.id

@@ -1,3 +1,11 @@
+
+
+
+
+- Fix binding of `Performance.Entry.Navigation_timing.type'`, 
+  `Fetch.Request.Destination.object'`, `Midi.Port.type'`. 
+  Thanks to Arthur Wendling for the patch (#86).
+
 v0.0.9 2026-09-08 Zagreb
 ------------------------
 

@@ -22,7 +22,7 @@ module Midi = struct
     let name p = get_nullable p "name"
     let manufacturer p = get_nullable p "manufacturer"
     let version p = get_nullable p "version"
-    let type' p = Jv.Jstr.get p "type'"
+    let type' p = Jv.Jstr.get p "type"
     let state p = Jv.Jstr.get p "state"
     let connection p = Jv.Jstr.get p "connection"
 
