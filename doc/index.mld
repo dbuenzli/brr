@@ -104,6 +104,7 @@ The following JavaScript and browser functionality is supported:
    {!Brr_io.Media}.}
 {- The Notification API is in {!Brr_io.Notification}.}
 {- The Performance API is in {!Brr.Performance}.}
+{- The Resize Observer API is in {!Brr.ResizeObserver}.}
 {- The Service Worker API is in {!Brr_webworkers.Service_worker}.}
 {- The URL API is in {!Brr.Uri}.}
 {- The Web Audio API is in {!Brr_webaudio}.}
