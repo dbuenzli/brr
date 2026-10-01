@@ -1321,8 +1321,6 @@ module El = struct
     for i = len - 1 downto 0 do acc := Jv.Jarray.get nl i :: !acc done;
     !acc
 
-  let append_child e n = ignore (Jv.call e "appendChild" [| n |])
-
   let rec set_atts e ss clss = function
   | (a, v) :: at ->
       if Jstr.is_empty a then set_atts e ss clss at else
@@ -1345,10 +1343,12 @@ module El = struct
         ignore (Jv.call e "setAttribute" Jv.[|of_jstr a; of_jstr v|])
       end
 
+  let set_children e l = ignore @@ Jv.call e "replaceChildren" (Array.of_list l)
+
   let v ?(d = global_document) ?(at = []) name cs =
     let e = Jv.call d "createElement" [| Jv.of_jstr name |] in
     set_atts e [] [] at;
-    List.iter (append_child e) cs;
+    if cs <> [] then set_children e cs;
     e
 
   let txt ?(d = global_document) s =
@@ -1399,17 +1399,9 @@ module El = struct
   | Some e when is_el e -> Some e
   | _ -> None
 
-  let delete_children e =
-    while not (Jv.is_null (Jv.get e "firstChild")) do
-      ignore @@ Jv.call e "removeChild" [| Jv.get e "firstChild" |];
-    done
-
   let children ?(only_els = false) e = match only_els with
   | true -> el_list_of_node_list (Jv.get e "children")
   | false -> el_list_of_node_list (Jv.get e "childNodes")
-
-  let set_children e l = delete_children e; List.iter (append_child e) l
-  let append_child e c = ignore @@ Jv.call e "appendChild" [| c |]
 
   let prepend_children e l = ignore @@ Jv.call e "prepend" (Array.of_list l)
   let append_children e l = ignore @@ Jv.call e "append" (Array.of_list l)
@@ -1420,7 +1412,7 @@ module El = struct
   | `After ->  Jv.call e "after" (Array.of_list l)
   | `Replace -> Jv.call e "replaceWith" (Array.of_list l)
 
-  let remove e = ignore @@ Jv.call e "remove" [| e |]
+  let remove e = ignore @@ Jv.call e "remove" [||]
 
   (* Attributes *)
 
