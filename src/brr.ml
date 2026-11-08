@@ -3,6 +3,8 @@
    SPDX-License-Identifier: ISC
   ---------------------------------------------------------------------------*)
 
+let id x = x
+
 (* DOM events.
 
    We need that underneath some of the APIs below, so
@@ -115,7 +117,7 @@ module Ev = struct
       include (Jv.Id : Jv.CONV with type t := t)
       let kind i = Jv.Jstr.get i "kind"
       let type' i = Jv.Jstr.get i "type"
-      let get_file i = Jv.to_option Fun.id (Jv.call i "getAsFile" [||])
+      let get_file i = Jv.to_option id (Jv.call i "getAsFile" [||])
       let get_jstr i =
         let str, set_str = Fut.create () in
         let set_str = Jv.callback ~arity:1 set_str in
@@ -237,13 +239,12 @@ module Ev = struct
   module Drag = struct
     type t = Jv.t
     external as_mouse : t -> Mouse.t = "%identity"
-    let data_transfer d = Jv.find_map Fun.id d "dataTransfer"
+    let data_transfer d = Jv.find_map id d "dataTransfer"
   end
   module Pointer = struct
     type 'a event = 'a t
     type t = Jv.t
     external as_mouse : t -> Mouse.t = "%identity"
-    let id p = Jv.Int.get p "pointerId"
     let width p = Jv.Float.get p "width"
     let height p = Jv.Float.get p "height"
     let pressure p = Jv.Float.get p "pressure"
@@ -256,10 +257,12 @@ module Ev = struct
     let type' p = Jv.Jstr.get p "pointerType"
     let is_primary p = Jv.Bool.get p "isPrimary"
     let get_coalesced_events p =
-      Jv.to_list Fun.id (Jv.call p "getCoalescedEvents" [||])
+      Jv.to_list id (Jv.call p "getCoalescedEvents" [||])
 
     let get_predicted_events p =
-      Jv.to_list Fun.id (Jv.call p "getPredictedEvents" [||])
+      Jv.to_list id (Jv.call p "getPredictedEvents" [||])
+
+    let id p = Jv.Int.get p "pointerId"
   end
   module Wheel = struct
     module Delta_mode = struct
@@ -919,8 +922,8 @@ module Base64 = struct
   let data_utf_8_to_jstr d = match Tarray.of_binary_jstr d with
   | Error _ as e -> e | Ok t -> Tarray.to_jstr t
 
-  let data_of_binary_jstr = Fun.id
-  let data_to_binary_jstr = Fun.id
+  let data_of_binary_jstr = id
+  let data_to_binary_jstr = id
 
   let encode bs =
     match Jv.apply (Jv.get Jv.global "btoa") Jv.[| of_jstr bs |] with
@@ -1207,7 +1210,7 @@ module At = struct
   let true' n = (n, Jstr.empty)
   let int n i = (n, Jstr.of_int i)
   let float n f = (n, Jstr.of_float f)
-  let to_pair = Fun.id
+  let to_pair = id
   let add_if b at l = if b then at :: l else l
   let add_if_some name o l = match o with None -> l | Some a -> (name, a) :: l
   module Name = struct
@@ -1567,7 +1570,7 @@ module El = struct
   (* Focus *)
 
   let has_focus e =
-    match Jv.to_option Fun.id (Jv.get (document e) "activeElement") with
+    match Jv.to_option id (Jv.get (document e) "activeElement") with
     | None -> false | Some e' -> e == e'
 
   let set_has_focus b e =
@@ -1576,7 +1579,7 @@ module El = struct
   (* Pointer locking *)
 
   let is_locking_pointer e =
-    match Jv.to_option Fun.id (Jv.get (document e) "pointerLockElement") with
+    match Jv.to_option id (Jv.get (document e) "pointerLockElement") with
     | None -> false | Some e' -> e == e'
 
   let request_pointer_lock e =
@@ -2238,7 +2241,7 @@ module Performance = struct
     module Resource_timing = struct
       type t = Jv.t
       include (Jv.Id : Jv.CONV with type t := t)
-      let as_entry = Fun.id
+      let as_entry = id
       let initiator_type e = Jv.Jstr.get e "initiatorType"
       let next_hop_protocol e = Jv.Jstr.get e "nextHopProtocol"
       let worker_start e = Jv.Float.get e "workerStart"
@@ -2268,8 +2271,8 @@ module Performance = struct
       type t = Jv.t
       include (Jv.Id : Jv.CONV with type t := t)
 
-      let as_resource_timing = Fun.id
-      let as_entry = Fun.id
+      let as_resource_timing = id
+      let as_entry = id
       let unload_event_start e = Jv.Float.get e "unloadEventStart"
       let unload_event_end e = Jv.Float.get e "unloadEventEnd"
       let dom_interactive e = Jv.Float.get e "domInteractive"
@@ -2285,8 +2288,8 @@ module Performance = struct
       let type' e = Jv.Jstr.get e "type'"
       let redirect_count e = Jv.Int.get e "redirectCount"
     end
-    let as_resource_timing = Fun.id
-    let as_navigation_timing = Fun.id
+    let as_resource_timing = id
+    let as_navigation_timing = id
   end
 
   type t = Jv.t

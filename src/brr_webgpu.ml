@@ -3,6 +3,8 @@
    SPDX-License-Identifier: ISC
   ---------------------------------------------------------------------------*)
 
+let id x = x
+
 module Gpu = struct
   module Origin_2d = struct
     type t = Jv.t
@@ -1893,7 +1895,7 @@ module Gpu = struct
 
     let get cnv =
       let webgpu = Jstr.v "webgpu" in
-      Jv.to_option Fun.id @@
+      Jv.to_option id @@
       Jv.call (Brr_canvas.Canvas.to_jv cnv) "getContext" [| Jv.of_jstr webgpu|]
 
     let canvas ctx = Brr_canvas.Canvas.of_jv (Jv.get ctx "canvas")
