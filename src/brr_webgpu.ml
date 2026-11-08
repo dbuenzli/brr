@@ -1893,7 +1893,7 @@ module Gpu = struct
 
     let get cnv =
       let webgpu = Jstr.v "webgpu" in
-      Jv.to_option Fun.id @@
+      Jv.to_option (fun x -> x) @@
       Jv.call (Brr_canvas.Canvas.to_jv cnv) "getContext" [| Jv.of_jstr webgpu|]
 
     let canvas ctx = Brr_canvas.Canvas.of_jv (Jv.get ctx "canvas")

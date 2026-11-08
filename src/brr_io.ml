@@ -174,7 +174,7 @@ module Fetch = struct
     type t = Jv.t
     include (Jv.Id : Jv.CONV with type t := t)
     let body_used r = Jv.Bool.get r "bodyUsed"
-    let body r = Jv.to_option Fun.id (Jv.get r "body")
+    let body r = Jv.to_option (fun x -> x) (Jv.get r "body")
     let array_buffer r =
       Fut.of_promise ~ok:Tarray.Buffer.of_jv (Jv.call r "arrayBuffer" [||])
 
@@ -182,7 +182,7 @@ module Fetch = struct
     let form_data r =
       Fut.of_promise ~ok:Form.Data.of_jv (Jv.call r "formData" [||])
 
-    let json r = Fut.of_promise ~ok:Fun.id (Jv.call r "json" [||])
+    let json r = Fut.of_promise ~ok:(fun x -> x) (Jv.call r "json" [||])
     let text r = Fut.of_promise ~ok:Jv.to_jstr (Jv.call r "text" [||])
   end
   module Headers = struct
@@ -265,7 +265,7 @@ module Fetch = struct
         ?mode ?redirect ?referrer ?referrer_policy ?signal ()
       =
       let o = Jv.obj [||] in
-      Jv.set o "body" (Jv.of_option ~none:Jv.undefined Fun.id body);
+      Jv.set o "body" (Jv.of_option ~none:Jv.undefined (fun x -> x) body);
       Jv.Jstr.set_if_some o "cache" cache;
       Jv.Jstr.set_if_some o "credentials" credentials;
       Jv.set_if_some o "headers" (Option.map Headers.to_jv headers);
@@ -328,7 +328,7 @@ module Fetch = struct
     include (Jv.Id : Jv.CONV with type t := t)
     let response = Jv.get Jv.global "Response"
     let v ?(init = Jv.obj [||]) ?body () =
-      let body = Jv.of_option ~none:Jv.null Fun.id body in
+      let body = Jv.of_option ~none:Jv.null (fun x -> x) body in
       Jv.new' response [| body; init |]
 
     let of_response r = Jv.call r "clone" [||]
@@ -405,7 +405,7 @@ module Fetch = struct
         Fut.of_promise ~ok:Jv.to_bool @@ Jv.call s "has" Jv.[| of_jstr n |]
 
       let open' s n =
-        Fut.of_promise ~ok:Fun.id @@ Jv.call s "open" Jv.[| of_jstr n |]
+        Fut.of_promise ~ok:(fun x -> x) @@ Jv.call s "open" Jv.[| of_jstr n |]
 
       let delete s n =
         Fut.of_promise ~ok:Jv.to_bool @@ Jv.call s "delete" Jv.[| of_jstr n |]
@@ -484,7 +484,7 @@ module Geolocation = struct
   let get ?opts l =
     let fut, set_fut = Fut.create () in
     let pos p = set_fut (Ok p) and error e = set_fut (Error e) in
-    let opts = Jv.of_option ~none:Jv.undefined Fun.id opts in
+    let opts = Jv.of_option ~none:Jv.undefined (fun x -> x) opts in
     let args = Jv.[| callback ~arity:1 pos; callback ~arity:1 error; opts |] in
     ignore @@ Jv.call l "getCurrentPosition" args;
     fut
@@ -492,7 +492,7 @@ module Geolocation = struct
   type watch_id = int
   let watch ?opts l f =
     let pos p = f (Ok p) and error e = f (Error e) in
-    let opts = Jv.of_option ~none:Jv.undefined Fun.id opts in
+    let opts = Jv.of_option ~none:Jv.undefined (fun x -> x) opts in
     Jv.to_int @@ Jv.call l "watchPosition" Jv.[| callback ~arity:1 pos; callback ~arity:1 error; opts |]
 
   let unwatch l id = ignore @@ Jv.call l "clearWatch" [| Jv.of_int id |]
@@ -731,7 +731,7 @@ module Media = struct
 
     let apply_constraints t c =
       let a = match c with None -> [||] | Some c -> [|Constraints.to_jv c|] in
-      Fut.of_promise ~ok:(Fun.const ()) @@ Jv.call t "applyConstraints" a
+      Fut.of_promise ~ok:((fun _ -> ())) @@ Jv.call t "applyConstraints" a
 
     let get_settings t = Settings.of_jv @@ Jv.call t "getSettings" [||]
     let stop t = ignore @@ Jv.call t "stop" [||]
@@ -956,9 +956,9 @@ module Media = struct
     module Provider = struct
       type t = Jv.t
       include (Jv.Id : Jv.CONV with type t := t)
-      let of_media_stream = Fun.id
+      let of_media_stream = (fun x -> x)
       let of_blob = Blob.to_jv
-      let of_media_source = Fun.id
+      let of_media_source = (fun x -> x)
     end
     module Audio_track = struct
       module List = struct
@@ -1126,7 +1126,7 @@ module Message = struct
     let data e = Obj.magic @@ Jv.get e "data"
     let origin e = Jv.Jstr.get e "origin"
     let last_event_id e = Jv.Jstr.get e "lastEventId"
-    let source e = Jv.to_option Fun.id (Jv.get e "source")
+    let source e = Jv.to_option (fun x -> x) (Jv.get e "source")
     let ports e = Jv.to_list Port.of_jv (Jv.get e "ports")
   end
 end
@@ -1187,7 +1187,7 @@ module Notification = struct
     Jv.Bool.set_if_some o "silent" silent;
     Jv.Bool.set_if_some o "requireInteraction" require_interaction;
     Jv.set_if_some o "data" (Option.map Jv.repr data);
-    Jv.set o "actions" (Jv.of_list Fun.id actions);
+    Jv.set o "actions" (Jv.of_list (fun x -> x) actions);
     o
 
   type t = Jv.t
@@ -1198,7 +1198,7 @@ module Notification = struct
 
   let close n = ignore @@ Jv.call n "close" [||]
   external as_target : t -> Ev.target = "%identity"
-  let actions n = Jv.to_list Fun.id (Jv.get n "actions")
+  let actions n = Jv.to_list (fun x -> x) (Jv.get n "actions")
   let badge n = Jv.Jstr.get n "badge"
   let body n = Jv.Jstr.get n "body"
   let data n = Obj.magic @@ Jv.get n "data"

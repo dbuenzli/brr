@@ -60,7 +60,7 @@ module Crypto_algo = struct
                 "modulusLength", Jv.of_int modulus_length;
                 "publicExponent", Tarray.to_jv public_exponent;
                 "hash", Jv.of_jstr hash |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let modulus_length a = Jv.Int.get a "modulusLength"
     let public_exponent a = Tarray.of_jv (Jv.get a "publicExponent")
@@ -70,7 +70,7 @@ module Crypto_algo = struct
     type t = Jv.t
     let v ~name ~hash () =
       Jv.obj [| "name", Jv.of_jstr name; "hash", Jv.of_jstr hash |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let hash a = Jv.Jstr.get a "hash"
   end
@@ -81,7 +81,7 @@ module Crypto_algo = struct
     let v ?(name = rsa_pss) ~salt_length () =
       Jv.obj [| "name", Jv.of_jstr name;
                 "saltLength", Jv.of_int salt_length; |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let salt_length a = Jv.Int.get a "saltLength"
   end
@@ -94,7 +94,7 @@ module Crypto_algo = struct
       | None -> Jv.undefined | Some l -> Tarray.Buffer.to_jv l
       in
       Jv.obj [| "name", Jv.of_jstr name; "label", label; |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let label a = Jv.to_option Tarray.Buffer.of_jv (Jv.get a "label")
   end
@@ -106,7 +106,7 @@ module Crypto_algo = struct
       Jv.obj
         [| "name", Jv.of_jstr name; "namedCurve", Jv.of_jstr named_curve |]
 
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let named_curve a = Jv.Jstr.get a "namedCurve"
   end
@@ -116,7 +116,7 @@ module Crypto_algo = struct
       Jv.obj
         [| "name", Jv.of_jstr name; "namedCurve", Jv.of_jstr named_curve |]
 
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let named_curve a = Jv.Jstr.get a "namedCurve"
   end
@@ -124,7 +124,7 @@ module Crypto_algo = struct
     type t = Jv.t
     let v ~name ~hash () =
       Jv.obj [| "name", Jv.of_jstr name; "hash", Jv.of_jstr hash |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let hash a = Jv.Jstr.get a "hash"
   end
@@ -134,7 +134,7 @@ module Crypto_algo = struct
     type t = Jv.t
     let v ~name ~public () =
       Jv.obj [| "name", Jv.of_jstr name; "public", public |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let public a = Jv.get a "public"
   end
@@ -144,7 +144,7 @@ module Crypto_algo = struct
     type t = Jv.t
     let v ~name ~length () =
       Jv.obj [| "name", Jv.of_jstr name; "length", Jv.of_int length |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let length a = Jv.Int.get a "length"
 
@@ -155,7 +155,7 @@ module Crypto_algo = struct
       Jv.obj [| "name", Jv.of_jstr name;
                 "counter", Tarray.Buffer.to_jv counter;
                 "length", Jv.of_int length |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let counter a = Tarray.Buffer.of_jv @@ Jv.get a "counter"
     let length a = Jv.Int.get a "length"
@@ -166,7 +166,7 @@ module Crypto_algo = struct
     type t = Jv.t
     let v ?(name = aes_cbc) ~iv () =
       Jv.obj [| "name", Jv.of_jstr name; "iv", Tarray.Buffer.to_jv iv |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let iv a = Tarray.Buffer.of_jv @@ Jv.get a "iv"
   end
@@ -183,7 +183,7 @@ module Crypto_algo = struct
       in
       Jv.obj [| "name", Jv.of_jstr name; "iv", Tarray.Buffer.to_jv iv;
                 "additionalData", add; "tagLength", tlen |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let iv a = Tarray.Buffer.of_jv @@ Jv.get a "iv"
     let additional_data a = Jv.find_map Tarray.Buffer.of_jv a "additionalData"
@@ -198,7 +198,7 @@ module Crypto_algo = struct
     let v ?(name = hmac) ?length ~hash () =
       let l = match length with None -> Jv.undefined | Some l -> Jv.of_int l in
       Jv.obj Jv.[| "name", of_jstr name; "hash", of_jstr hash; "length", l |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let hash a = Jv.Jstr.get a "hash"
     let length a = Jv.find_map Jv.to_int a "length"
@@ -217,7 +217,7 @@ module Crypto_algo = struct
       Jv.obj Jv.[| "name", of_jstr name; "hash", of_jstr hash;
                    "salt", Tarray.Buffer.to_jv salt;
                    "info", Tarray.Buffer.to_jv info |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let hash a = Jv.Jstr.get a "hash"
     let salt a = Tarray.Buffer.of_jv @@ Jv.get a "salt"
@@ -231,7 +231,7 @@ module Crypto_algo = struct
       Jv.obj Jv.[| "name", of_jstr name; "hash", of_jstr hash;
                    "salt", Tarray.Buffer.to_jv salt;
                    "iterations", of_int iterations |]
-    let of_algo = Fun.id
+    let of_algo = (fun x -> x)
     let name a = Jv.Jstr.get a "name"
     let hash a = Jv.Jstr.get a "hash"
     let salt a = Tarray.Buffer.of_jv @@ Jv.get a "salt"

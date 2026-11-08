@@ -252,7 +252,7 @@ module It = struct
   let symbol : jv = pure_js_expr "Symbol.iterator"
   external get_symbol : jv -> jv -> jv = "caml_js_get"
 
-  let iterable o = match to_option Fun.id (get_symbol o symbol) with
+  let iterable o = match to_option (fun x -> x) (get_symbol o symbol) with
   | None -> None | Some func -> apply func [||]
 
   let iterator o = apply (get_symbol o symbol) [||]
@@ -262,7 +262,7 @@ module It = struct
   let result_done o = match to_option to_bool (get o "done") with
   | None -> false | Some d -> d
 
-  let result_value o = to_option Fun.id (get o "value")
+  let result_value o = to_option (fun x -> x) (get o "value")
   let get_result_value o = get o "value"
 
   let fold of_jv f it acc =
