@@ -3,6 +3,8 @@
    SPDX-License-Identifier: ISC
   ---------------------------------------------------------------------------*)
 
+let id x = x
+
 open Brr
 
 module Matrix4 = struct
@@ -280,7 +282,7 @@ module C2d = struct
 
   type image_src = Jv.t
   let image_src_of_el = El.to_jv
-  let image_src_of_jv = (fun x -> x)
+  let image_src_of_jv = id
 
   (* Attributes *)
 
@@ -370,7 +372,7 @@ module C2d = struct
   let color = Jv.of_jstr
 
   type gradient = Jv.t
-  let gradient_style = (fun x -> x)
+  let gradient_style = id
 
   let make_stops g stops =
     let add_stop g (off, c) =
@@ -400,7 +402,7 @@ module C2d = struct
     | None -> p
     | Some t -> ignore @@ Jv.call p "setTransform" [| Matrix4.to_jv t |]; p
 
-  let pattern_style = (fun x -> x)
+  let pattern_style = id
 
   (* Style lines *)
 
@@ -628,7 +630,7 @@ module Gl = struct
 
   let get_context ?(attrs = Jv.undefined) ?(v1 = false) cnv =
     let webgl = Jv.of_string (if v1 then "webgl" else "webgl2") in
-    Jv.to_option (fun x -> x) @@
+    Jv.to_option id @@
     Jv.call (Canvas.to_jv cnv) "getContext" Jv.[| webgl; attrs |]
 
   let create = get_context
@@ -681,7 +683,7 @@ module Gl = struct
     let of_img_el = Brr.El.to_jv
     let of_canvas_el = Canvas.to_jv
     let of_video_el = Brr_io.Media.El.to_jv
-    let of_offscreen_canvas = (fun x -> x)
+    let of_offscreen_canvas = id
   end
 
   (* Functions *)
@@ -702,7 +704,7 @@ module Gl = struct
     ignore @@ Jv.call c "bindAttribLocation" Jv.[|program; of_int index; of_jstr name|]
 
   let bind_buffer c target buffer =
-    ignore @@ Jv.call c "bindBuffer" Jv.[|of_int target; of_option ~none:null (fun x -> x) buffer|]
+    ignore @@ Jv.call c "bindBuffer" Jv.[|of_int target; of_option ~none:null id buffer|]
 
   let bind_buffer_base c target index buffer =
     ignore @@ Jv.call c "bindBufferBase" Jv.[|of_int target; of_int index; buffer|]
@@ -711,22 +713,22 @@ module Gl = struct
     ignore @@ Jv.call c "bindBufferRange" Jv.[|of_int target; of_int index; buffer; of_int offset; of_int size|]
 
   let bind_framebuffer c target framebuffer =
-    ignore @@ Jv.call c "bindFramebuffer" Jv.[|of_int target; of_option ~none:null (fun x -> x) framebuffer|]
+    ignore @@ Jv.call c "bindFramebuffer" Jv.[|of_int target; of_option ~none:null id framebuffer|]
 
   let bind_renderbuffer c target renderbuffer =
-    ignore @@ Jv.call c "bindRenderbuffer" Jv.[|of_int target; of_option ~none:null (fun x -> x) renderbuffer|]
+    ignore @@ Jv.call c "bindRenderbuffer" Jv.[|of_int target; of_option ~none:null id renderbuffer|]
 
   let bind_sampler c unit sampler =
-    ignore @@ Jv.call c "bindSampler" Jv.[|of_int unit; of_option ~none:null (fun x -> x) sampler|]
+    ignore @@ Jv.call c "bindSampler" Jv.[|of_int unit; of_option ~none:null id sampler|]
 
   let bind_texture c target texture =
-    ignore @@ Jv.call c "bindTexture" Jv.[|of_int target; of_option ~none:null (fun x -> x) texture|]
+    ignore @@ Jv.call c "bindTexture" Jv.[|of_int target; of_option ~none:null id texture|]
 
   let bind_transform_feedback c target tf =
-    ignore @@ Jv.call c "bindTransformFeedback" Jv.[|of_int target; of_option ~none:null (fun x -> x) tf|]
+    ignore @@ Jv.call c "bindTransformFeedback" Jv.[|of_int target; of_option ~none:null id tf|]
 
   let bind_vertex_array c array =
-    ignore @@ Jv.call c "bindVertexArray" Jv.[| of_option ~none:null (fun x -> x) array|]
+    ignore @@ Jv.call c "bindVertexArray" Jv.[| of_option ~none:null id array|]
 
   let blend_color c red green blue alpha =
     ignore @@ Jv.call c "blendColor" Jv.[|of_float red; of_float green; of_float blue; of_float alpha|]

@@ -3,6 +3,8 @@
    SPDX-License-Identifier: ISC
   ---------------------------------------------------------------------------*)
 
+let id x = x
+
 open Brr
 open Brr_io
 
@@ -99,9 +101,9 @@ module Service_worker = struct
     type t = Jv.t
     include (Jv.Id : Jv.CONV with type t := t)
     external as_target : t -> Ev.target = "%identity"
-    let installing r = Jv.to_option (fun x -> x) @@ Jv.get r "installing"
-    let waiting r = Jv.to_option (fun x -> x) @@ Jv.get r "waiting"
-    let active r = Jv.to_option (fun x -> x) @@ Jv.get r "active"
+    let installing r = Jv.to_option id @@ Jv.get r "installing"
+    let waiting r = Jv.to_option id @@ Jv.get r "waiting"
+    let active r = Jv.to_option id @@ Jv.get r "active"
     let navigation_preload r =
       Navigation_preload_manager.of_jv @@ Jv.get r "navigationPreload"
 
@@ -130,7 +132,7 @@ module Service_worker = struct
 
     let of_navigator n = Jv.get (Navigator.to_jv n) "serviceWorker"
     external as_target : t -> Ev.target = "%identity"
-    let controller c = Jv.to_option (fun x -> x) (Jv.get c "controller")
+    let controller c = Jv.to_option id (Jv.get c "controller")
     let ready c = Fut.of_promise ~ok:Registration.of_jv @@ Jv.get c "ready"
 
     type register_opts = Jv.t
@@ -182,7 +184,6 @@ module Service_worker = struct
     include (Jv.Id : Jv.CONV with type t := t)
     let url c = Jv.Jstr.get c "url"
     let frame_type c = Jv.Jstr.get c "frameType"
-    let id c = Jv.Jstr.get c "id"
     let type' c = Jv.Jstr.get c "type"
     let post ?opts c v =
       let opts = match opts with None -> Jv.undefined | Some o -> Obj.magic o in
@@ -196,10 +197,12 @@ module Service_worker = struct
       let focused w = Jv.Bool.get w "focused"
       let ancestor_origins w =
         Jv.to_list Jv.to_jstr @@ Jv.get w "ancestorOrigins"
-      let focus w = Fut.of_promise ~ok:(fun x -> x) @@ Jv.call w "focus" [||]
+      let focus w = Fut.of_promise ~ok:id @@ Jv.call w "focus" [||]
       let navigate w url =
-        Fut.of_promise ~ok:(fun x -> x) @@ Jv.call w "focus" Jv.[| of_jstr url |]
+        Fut.of_promise ~ok:id @@ Jv.call w "focus" Jv.[| of_jstr url |]
     end
+
+    let id c = Jv.Jstr.get c "id"
   end
 
   module Clients = struct
