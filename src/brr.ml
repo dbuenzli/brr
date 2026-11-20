@@ -2315,10 +2315,12 @@ module Performance = struct
 
   let mark p n = ignore @@ Jv.call p "mark" Jv.[| of_jstr n |]
   let measure ?start ?stop p n = match start, stop with
-  | None, None -> ignore @@ Jv.call p "measure" [||]
-  | Some s, None -> ignore @@ Jv.call p "measure" Jv.[| of_jstr s|]
-  | Some s, Some e -> ignore @@ Jv.call p "measure" Jv.[| of_jstr s; of_jstr e|]
-  | None, Some e -> ignore @@ Jv.call p "measure" Jv.[| undefined; of_jstr e|]
+  | None, None -> ignore @@ Jv.call p "measure" Jv.[| of_jstr n |]
+  | Some s, None -> ignore @@ Jv.call p "measure" Jv.[| of_jstr n; of_jstr s|]
+  | Some s, Some e ->
+      ignore @@ Jv.call p "measure" Jv.[| of_jstr n; of_jstr s; of_jstr e|]
+  | None, Some e ->
+      ignore @@ Jv.call p "measure" Jv.[| of_jstr n; undefined; of_jstr e|]
 
   let now_ms p = Jv.to_float @@ Jv.call p "now" [||]
   let to_json p = Jv.call p "toJSON" [||]
