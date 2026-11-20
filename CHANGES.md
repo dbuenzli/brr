@@ -1,7 +1,9 @@
 
+
 - Use `replaceChildren` to implement `El.set_children`. 
   Thanks to Arthur Wendling for the patch (#87).
-
+- Fix binding of `Performance.measure`. 
+  Thanks to Jérôme Vouillon for the patch (#89).
 - Fix binding of `Performance.Entry.Navigation_timing.type'`, 
   `Fetch.Request.Destination.object'`, `Midi.Port.type'`. 
   Thanks to Arthur Wendling for the patch (#86).
