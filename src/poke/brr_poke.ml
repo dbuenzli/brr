@@ -28,22 +28,22 @@ let top_init () =
      can't use them. *)
   Jsoo_runtime.Sys.set_channel_output' stdout stdouts_append;
   Jsoo_runtime.Sys.set_channel_output' stderr stdouts_append;
-  Js_of_ocaml_toplevel.JsooTop.initialize ();
+  Js_of_ocaml_toplevel.Direct.initialize ();
   (* FIXME we likely want to go differently about these things.
      https://github.com/ocaml/ocaml/pull/10559 would be nice. *)
   let ppf = Format.formatter_of_buffer resp in
-  ignore (Js_of_ocaml_toplevel.JsooTop.use ppf
+  ignore (Js_of_ocaml_toplevel.Direct.use ppf
             "#install_printer Brr_poke.pp_jstr;;");
-  ignore (Js_of_ocaml_toplevel.JsooTop.use ppf
+  ignore (Js_of_ocaml_toplevel.Direct.use ppf
             "#install_printer Brr_poke.pp_jv_error;;");
-  ignore (Js_of_ocaml_toplevel.JsooTop.use ppf
+  ignore (Js_of_ocaml_toplevel.Direct.use ppf
             "#install_printer Brr_poke.pp_jv;;");
   ()
 
 let top_eval phrase =
   let ppf = Format.formatter_of_buffer resp in
   stdouts_reset ();
-  Js_of_ocaml_toplevel.JsooTop.execute true ppf (Jstr.to_string phrase);
+  Js_of_ocaml_toplevel.Direct.execute true ppf (Jstr.to_string phrase);
   let r = Jstr.append !stdouts (Jstr.of_string (Buffer.contents resp)) in
   Buffer.reset resp; stdouts_reset ();
   r
@@ -51,7 +51,7 @@ let top_eval phrase =
 let top_use phrases =
   let ppf = Format.formatter_of_buffer resp in
   stdouts_reset ();
-  let _bool = Js_of_ocaml_toplevel.JsooTop.use ppf (Jstr.to_string phrases) in
+  let _bool = Js_of_ocaml_toplevel.Direct.use ppf (Jstr.to_string phrases) in
   let r = Jstr.append !stdouts (Jstr.of_string (Buffer.contents resp)) in
   stdouts_reset (); Buffer.reset resp;
   r

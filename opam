@@ -29,8 +29,8 @@ depends: [
   "ocamlfind" {build}
   "ocamlbuild" {build}
   "topkg" {build & >= "1.1.0"}
-  "js_of_ocaml-compiler" {>= "6.0.1"}
-  "js_of_ocaml-toplevel" {>= "6.0.1"}
+  "js_of_ocaml-compiler" {>= "6.5.0"}
+  "js_of_ocaml-toplevel" {>= "6.5.0"}
 ]
 build: ["ocaml" "pkg/pkg.ml" "build" "--dev-pkg" "%{dev}%"]
 dev-repo: "git+https://erratique.ch/repos/brr.git"
