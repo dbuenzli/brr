@@ -174,9 +174,7 @@ let default =
     |> ~~ B0_meta.licenses ["ISC"; "BSD-3-Clause"]
     |> ~~ B0_meta.repo "git+https://erratique.ch/repos/brr.git"
     |> ~~ B0_meta.issues "https://github.com/dbuenzli/brr/issues"
-    |> ~~ B0_meta.description_tags
-      [ "reactive"; "declarative"; "frp"; "front-end"; "browser";
-        "org:erratique"]
+    |> ~~ B0_meta.description_tags [ "front-end"; "browser"; "org:erratique"]
     |> ~~ B0_opam.build
       {|[["ocaml" "pkg/pkg.ml" "build" "--dev-pkg" "%{dev}%"]]|}
     |> ~~ B0_opam.depends

@@ -20,7 +20,7 @@ Homepage: <https://erratique.ch/software/brr>"""
 maintainer: "Daniel Bünzli <daniel.buenzl i@erratique.ch>"
 authors: "The brr programmers"
 license: ["ISC" "BSD-3-Clause"]
-tags: ["reactive" "declarative" "frp" "front-end" "browser" "org:erratique"]
+tags: ["front-end" "browser" "org:erratique"]
 homepage: "https://erratique.ch/software/brr"
 doc: "https://erratique.ch/software/brr/doc/"
 bug-reports: "https://github.com/dbuenzli/brr/issues"

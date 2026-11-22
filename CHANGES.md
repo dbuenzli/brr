@@ -1,4 +1,5 @@
-
+v0.1.0 2026-11-22 Zagreb
+-------------------------
 
 - Use `replaceChildren` to implement `El.set_children`. 
   Thanks to Arthur Wendling for the patch (#87).
